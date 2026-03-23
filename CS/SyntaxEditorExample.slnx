@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SyntaxEditor/SyntaxEditor.csproj" />
+  <Project Path="SyntaxEditorExample/SyntaxEditorExample.csproj" />
+  <Project Path="SyntaxEditorExampleWinForms/SyntaxEditorExampleWinForms.csproj" Id="a6a9b264-e174-4910-8ca7-bd7dde74a61b" />
+  <Project Path="SyntaxEditorWinForms/SyntaxEditorWinForms.csproj" Id="9db65daa-96f6-403b-8dc9-b40ab6731848" />
+</Solution>
