@@ -32,6 +32,9 @@ namespace SyntaxEditorWinForms.Theming {
         // Brackets
         public const string BracketMatchBackground = "editorBracketMatch.background";
         public const string BracketMatchBorder = "editorBracketMatch.border";
+        public const string BracketMatchHighlightForeground1 = "editorBracketHighlight.foreground1";
+        public const string BracketMatchHighlightForeground2 = "editorBracketHighlight.foreground2";
+        public const string BracketMatchHighlightForeground3 = "editorBracketHighlight.foreground3";
 
         // Find
         public const string FindMatchBackground = "editor.findMatchBackground";

@@ -4,6 +4,7 @@ using DevExpress.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace SyntaxEditorWinForms.Theming {
     public class ThemeBehavior : IDisposable {
@@ -95,9 +96,9 @@ namespace SyntaxEditorWinForms.Theming {
                 Name = $"{skinName.ToLowerInvariant().Replace(" ", "-")}",
                 Base = baseKind,
                 Colors = applyDevExpressColors ? CreateMonacoColors() : null,
-                Rules = rules
+                Rules = applyDevExpressColors ? CreateDevExpressTokenRules(rules) : rules,
+                Inherit = !applyDevExpressColors
             };
-
             return result;
         }
 
@@ -151,6 +152,9 @@ namespace SyntaxEditorWinForms.Theming {
             var bracketOpacity = reportElem.Properties.GetInteger("BracketHighlightColorAlpha", 40);
             result[MonacoColorKeys.BracketMatchBackground] = Color.FromArgb(bracketOpacity, bracketColor);
             result[MonacoColorKeys.BracketMatchBorder] = Color.FromArgb(bracketOpacity, bracketColor);
+            result[MonacoColorKeys.BracketMatchHighlightForeground1] = skin.Colors.GetColor("Question");
+            result[MonacoColorKeys.BracketMatchHighlightForeground2] = skin.Colors.GetColor("Information");
+            result[MonacoColorKeys.BracketMatchHighlightForeground3] = skin.Colors.GetColor("Critical");
 
             // === Find ===
             result[MonacoColorKeys.FindMatchBackground] = skin.Colors.GetColor("Warning");
@@ -163,6 +167,89 @@ namespace SyntaxEditorWinForms.Theming {
             // === Suggest ===
             result[MonacoColorKeys.SuggestWidgetBackground] = skin.Colors.GetColor("Window");
             result[MonacoColorKeys.SuggestWidgetSelectedBackground] = skin.Colors.GetColor("Highlight");
+
+            return result;
+        }
+
+        private static IReadOnlyList<MonacoThemeRule> CreateDevExpressTokenRules(IReadOnlyList<MonacoThemeRule>? rules) {
+            List<MonacoThemeRule> result = rules != null ? new List<MonacoThemeRule>(rules) : new List<MonacoThemeRule>();
+
+            var lookAndFeel = UserLookAndFeel.Default;
+            var skin = CommonSkins.GetSkin(lookAndFeel);
+            if(skin == null)
+                return result;
+
+            Color blue = skin.Colors.GetColor("Question");
+            Color green = skin.Colors.GetColor("Information");
+            Color red = skin.Colors.GetColor("Critical");
+            Color black = skin.Colors.GetColor("WindowText");
+            Color white = skin.Colors.GetColor("Window");
+
+            var existingTokens = new HashSet<string>(result.Select(r => r.Token));
+
+            void AddRuleIfNotExists(string token, Color foreground) {
+                if(!existingTokens.Contains(token)) {
+                    result.Add(new MonacoThemeRule { Token = token, Foreground = foreground });
+                }
+            }
+
+            // Comments
+            AddRuleIfNotExists("comment", green);
+
+            // Keywords
+            AddRuleIfNotExists("keyword", blue);
+
+            // Types and Classes
+            AddRuleIfNotExists("type", blue);
+            AddRuleIfNotExists("class", blue);
+            AddRuleIfNotExists("interface", blue);
+            AddRuleIfNotExists("enum", blue);
+            AddRuleIfNotExists("struct", blue);
+
+            // Functions and Methods
+            AddRuleIfNotExists("function", black);
+            AddRuleIfNotExists("method", black);
+
+            // Strings
+            AddRuleIfNotExists("string", red);
+            AddRuleIfNotExists("regexp", red);
+            AddRuleIfNotExists("regex", red);
+
+            // Numbers and Constants
+            AddRuleIfNotExists("number", green);
+            AddRuleIfNotExists("constant", green);
+            AddRuleIfNotExists("constant.language", blue);
+
+            // Variables and Identifiers
+            AddRuleIfNotExists("variable", black);
+            AddRuleIfNotExists("identifier", black);
+            AddRuleIfNotExists("parameter", black);
+            AddRuleIfNotExists("property", black);
+            AddRuleIfNotExists("member", black);
+
+            // Operators and Delimiters
+            AddRuleIfNotExists("operator", black);
+            AddRuleIfNotExists("delimiter", black);
+            AddRuleIfNotExists("punctuation", black);
+
+            // Namespaces
+            AddRuleIfNotExists("namespace", black);
+
+            // Attributes and Annotations
+            AddRuleIfNotExists("annotation", green);
+            AddRuleIfNotExists("decorator", green);
+            AddRuleIfNotExists("attribute", green);
+
+            // Preprocessor
+            AddRuleIfNotExists("preprocessor", blue);
+            AddRuleIfNotExists("macro", blue);
+
+            // Tags (for XML/HTML)
+            AddRuleIfNotExists("tag", blue);
+
+            // Invalid and Errors
+            AddRuleIfNotExists("invalid", red);
+            AddRuleIfNotExists("error", red);
 
             return result;
         }
