@@ -90,11 +90,9 @@ namespace SyntaxEditorWinForms.Theming {
         }
 
         public static MonacoTheme CreateFromDXTheme(string skinName, IReadOnlyList<MonacoThemeRule>? rules = null, bool applyDevExpressColors = false) {
-            var baseKind = ResolveBase(skinName);
-
             var result = new MonacoTheme {
                 Name = $"{skinName.ToLowerInvariant().Replace(" ", "-")}",
-                Base = baseKind,
+                Base = MonacoThemeBase.Light,
                 Colors = applyDevExpressColors ? CreateMonacoColors() : null,
                 Rules = applyDevExpressColors ? CreateDevExpressTokenRules(rules) : rules,
                 Inherit = !applyDevExpressColors
