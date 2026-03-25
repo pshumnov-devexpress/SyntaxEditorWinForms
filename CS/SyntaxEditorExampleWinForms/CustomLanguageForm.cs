@@ -1,5 +1,4 @@
 using DevExpress.XtraEditors;
-using DevExpress.XtraLayout;
 using SyntaxEditorWinForms;
 using SyntaxEditorWinForms.Theming;
 using System;
@@ -7,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace SyntaxEditorExampleWinForms {
-    public class CustomLanguageForm : XtraForm {
+    public partial class CustomLanguageForm : XtraForm {
 
         private TextEdit txtLanguageId;
         private SyntaxEditor monarchEditor;
@@ -35,16 +34,11 @@ namespace SyntaxEditorExampleWinForms {
         }
 
         public CustomLanguageForm() {
-            BuildUI();
+            InitializeComponent();
+            ConfigureUI();
         }
 
-        private void BuildUI() {
-            this.Text = "Register Custom Language";
-            this.Size = new System.Drawing.Size(800, 600);
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.MinimizeBox = false;
-            this.MaximizeBox = false;
-
+        private void ConfigureUI() {
             var mainLayout = new TableLayoutPanel();
             mainLayout.Dock = DockStyle.Fill;
             mainLayout.RowCount = 3;
@@ -114,16 +108,6 @@ namespace SyntaxEditorExampleWinForms {
                 && LanguageIdRegex.IsMatch(id)
                 && id.Length <= 50;
             btnSave.Enabled = valid;
-        }
-
-        protected override void Dispose(bool disposing) {
-            if (disposing) {
-                monarchThemeBehavior?.Dispose();
-                configThemeBehavior?.Dispose();
-                monarchEditor?.Dispose();
-                configEditor?.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

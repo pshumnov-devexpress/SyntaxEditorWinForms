@@ -14,7 +14,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 namespace SyntaxEditorExampleWinForms {
-    public class RulesForm : XtraForm {
+    public partial class RulesForm : XtraForm {
 
         private CheckEdit chkRawMode;
         private GridControl gridControl;
@@ -29,37 +29,11 @@ namespace SyntaxEditorExampleWinForms {
         private BindingList<RuleItem> ruleItems = new BindingList<RuleItem>();
 
         public RulesForm() {
-            BuildUI();
+            InitializeComponent();
+            ConfigureUI();
         }
 
-        public void SetRules(IReadOnlyList<MonacoThemeRule> rules) {
-            ruleItems.Clear();
-            foreach (var r in rules) {
-                ruleItems.Add(new RuleItem {
-                    Token = r.Token,
-                    Foreground = r.Foreground,
-                    Background = r.Background,
-                    FontStyle = r.FontStyle
-                });
-            }
-        }
-
-        public List<MonacoThemeRule> GetRules() {
-            return ruleItems.Select(r => new MonacoThemeRule {
-                Token = r.Token,
-                Foreground = r.Foreground,
-                Background = r.Background,
-                FontStyle = r.FontStyle
-            }).ToList();
-        }
-
-        private void BuildUI() {
-            this.Text = "Change Rules";
-            this.Size = new System.Drawing.Size(800, 600);
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.MinimizeBox = false;
-            this.MaximizeBox = false;
-
+        private void ConfigureUI() {
             var mainLayout = new TableLayoutPanel();
             mainLayout.Dock = DockStyle.Fill;
             mainLayout.RowCount = 3;
@@ -122,7 +96,7 @@ namespace SyntaxEditorExampleWinForms {
             gridView.OptionsView.ShowGroupPanel = false;
 
             // Delete button column
-            var colDelete = new GridColumn { Caption = "", FieldName = "Delete", Width = 50, UnboundType = DevExpress.Data.UnboundColumnType.Object };
+            var colDelete = new GridColumn { Caption = "Delete", FieldName = "Delete", Width = 50, UnboundType = DevExpress.Data.UnboundColumnType.Object };
             colDelete.OptionsColumn.AllowSort = DevExpress.Utils.DefaultBoolean.False;
             colDelete.OptionsColumn.AllowGroup = DevExpress.Utils.DefaultBoolean.False;
             colDelete.OptionsColumn.AllowMove = false;
@@ -130,7 +104,7 @@ namespace SyntaxEditorExampleWinForms {
             colDelete.OptionsColumn.FixedWidth = true;
             var deleteButtonRepo = new RepositoryItemButtonEdit();
             deleteButtonRepo.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
-            deleteButtonRepo.Buttons[0].Caption = "X";
+            deleteButtonRepo.Buttons[0].Caption = "Delete Rule";
             deleteButtonRepo.Buttons[0].Kind = DevExpress.XtraEditors.Controls.ButtonPredefines.Delete;
             deleteButtonRepo.ButtonClick += (s, e) => {
                 if (gridView.FocusedRowHandle >= 0)
@@ -183,6 +157,28 @@ namespace SyntaxEditorExampleWinForms {
                 gridView.SetRowCellValue(e.RowHandle, "Token", "new-token");
             };
         }
+
+        public void SetRules(IReadOnlyList<MonacoThemeRule> rules) {
+            ruleItems.Clear();
+            foreach (var r in rules) {
+                ruleItems.Add(new RuleItem {
+                    Token = r.Token,
+                    Foreground = r.Foreground,
+                    Background = r.Background,
+                    FontStyle = r.FontStyle
+                });
+            }
+        }
+
+        public List<MonacoThemeRule> GetRules() {
+            return ruleItems.Select(r => new MonacoThemeRule {
+                Token = r.Token,
+                Foreground = r.Foreground,
+                Background = r.Background,
+                FontStyle = r.FontStyle
+            }).ToList();
+        }
+
 
         private void ChkRawMode_CheckedChanged(object? sender, EventArgs e) {
             bool isRaw = chkRawMode.Checked;
@@ -237,13 +233,6 @@ namespace SyntaxEditorExampleWinForms {
             this.Close();
         }
 
-        protected override void Dispose(bool disposing) {
-            if (disposing) {
-                rawEditorThemeBehavior?.Dispose();
-                rawEditor?.Dispose();
-            }
-            base.Dispose(disposing);
-        }
 
         // Bindable data class for grid
         public class RuleItem {

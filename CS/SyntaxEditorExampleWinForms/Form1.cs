@@ -210,15 +210,6 @@ namespace VS
         private SyntaxEditor syntaxEditor;
         private ThemeBehavior themeBehavior;
         private IReadOnlyList<MonacoThemeRule>? currentRules;
-
-        // Toolbar items
-        private BarCheckItem barApplyThemeColors;
-        private BarButtonItem barOpenFile;
-        private BarButtonItem barSaveFile;
-        private BarButtonItem barRegisterLanguage;
-        private BarButtonItem barChangeRules;
-
-        // Options controls
         private CheckEdit chkReadOnly;
         private ComboBoxEdit cmbLanguage;
         private SimpleButton btnRefreshLanguages;
@@ -244,87 +235,24 @@ namespace VS
         private CheckEdit chkSuggestOnTrigger;
         private CheckEdit chkParameterHints;
 
-        // Status bar
-        private BarStaticItem barStatusModified;
-
         public Form1() {
             InitializeComponent();
-            BuildUI();
+            ConfigureUI();
             syntaxEditor.Text = defaultCSharpText;
         }
 
-        private void BuildUI() {
-            this.Text = "Syntax Editor Example";
-            this.Size = new System.Drawing.Size(1500, 850);
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            // === Ribbon / Bar Manager ===
-            var ribbon = new DevExpress.XtraBars.Ribbon.RibbonControl();
-
+        private void ConfigureUI() {
             // Skin dropdown
-            var skinItem = new BarSubItem(ribbon.Manager, "Select Theme");
-            SkinHelper.InitSkinPopupMenu(skinItem);
+            SkinHelper.InitSkinPopupMenu(skinBarSubItem);
 
-            // Apply Theme Colors
-            barApplyThemeColors = new BarCheckItem(ribbon.Manager) {
-                Caption = "Apply Theme Colors",
-                Checked = true
-            };
-            barApplyThemeColors.CheckedChanged += (s, e) => {
-                if (themeBehavior != null)
-                    themeBehavior.ApplyDevExpressColors = barApplyThemeColors.Checked;
-            };
-
-            // Open File
-            barOpenFile = new BarButtonItem(ribbon.Manager, "Open File");
-            barOpenFile.ItemClick += BarOpenFile_ItemClick;
-
-            // Save File
-            barSaveFile = new BarButtonItem(ribbon.Manager, "Save File");
-            barSaveFile.ItemClick += BarSaveFile_ItemClick;
-
-            // Register Custom Language
-            barRegisterLanguage = new BarButtonItem(ribbon.Manager, "Register Custom Language");
-            barRegisterLanguage.ItemClick += BarRegisterLanguage_ItemClick;
-
-            // Change Rules
-            barChangeRules = new BarButtonItem(ribbon.Manager, "Change Rules");
-            barChangeRules.ItemClick += BarChangeRules_ItemClick;
-
-            // Status bar item
-            barStatusModified = new BarStaticItem() {
-                Caption = "Has Changes: False",
-                Alignment = BarItemLinkAlignment.Right
-            };
-
-            var page = new DevExpress.XtraBars.Ribbon.RibbonPage("Main");
-            var group = new DevExpress.XtraBars.Ribbon.RibbonPageGroup("Tools");
-            group.ItemLinks.Add(skinItem);
-            group.ItemLinks.Add(barApplyThemeColors);
-            group.ItemLinks.Add(barOpenFile);
-            group.ItemLinks.Add(barSaveFile);
-            group.ItemLinks.Add(barRegisterLanguage);
-            group.ItemLinks.Add(barChangeRules);
-            page.Groups.Add(group);
-            ribbon.Pages.Add(page);
-
-            // Status bar
-            var statusBar = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
-            statusBar.Ribbon = ribbon;
-            statusBar.ItemLinks.Add(barStatusModified);
-            ribbon.StatusBar = statusBar;
-
-            ribbon.Dock = DockStyle.Top;
-            statusBar.Dock = DockStyle.Bottom;
-
-            // === SyntaxEditor ===
+            // SyntaxEditor
             syntaxEditor = new SyntaxEditor();
             syntaxEditor.Dock = DockStyle.Fill;
             syntaxEditor.IsModifiedChanged += (s, e) => {
                 barStatusModified.Caption = $"Has Changes: {syntaxEditor.IsModified}";
             };
 
-            // === Theme Behavior ===
+            // Theme Behavior
             themeBehavior = new ThemeBehavior();
             themeBehavior.Attach(syntaxEditor);
 
@@ -333,21 +261,14 @@ namespace VS
                 SetSelectedLanguage("csharp");
             };
 
-            // === Options Panel ===
+            // Options Panel
             var optionsPanel = BuildOptionsPanel();
 
-            // === Layout ===
-            var splitContainer = new SplitContainerControl();
-            splitContainer.Dock = DockStyle.Fill;
-            splitContainer.SplitterPosition = 1100;
-            splitContainer.FixedPanel = SplitFixedPanel.Panel2;
+            // Add to split container
             splitContainer.Panel1.Controls.Add(syntaxEditor);
-            splitContainer.Panel2.MinSize = 300;
             splitContainer.Panel2.Controls.Add(optionsPanel);
 
-            Controls.Add(splitContainer);
-            Controls.Add(statusBar);
-            Controls.Add(ribbon);
+            // Clear default ribbon toolbar items
             ribbon.Toolbar.ItemLinks.Clear();
         }
 
@@ -361,7 +282,7 @@ namespace VS
             layout.Root.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
             layout.Root.GroupBordersVisible = false;
 
-            // === General ===
+            // General
             var grpGeneral = layout.Root.AddGroup("General");
             grpGeneral.LayoutMode = DevExpress.XtraLayout.Utils.LayoutMode.Regular;
 
@@ -377,15 +298,13 @@ namespace VS
                 if (!string.IsNullOrWhiteSpace(lang))
                     syntaxEditor.EditorLanguage = lang;
             };
+            grpGeneral.AddItem("Language", cmbLanguage);
 
-            var langItem = grpGeneral.AddItem("Language", cmbLanguage);
-
-            btnRefreshLanguages = new SimpleButton { Text = "Refresh" };
+            btnRefreshLanguages = new SimpleButton { Text = "Refresh Languages" };
             btnRefreshLanguages.Click += async (s, e) => await RefreshLanguages();
-
             grpGeneral.AddItem(string.Empty, btnRefreshLanguages).TextVisible = false;
 
-            // === Interaction ===
+            // Interaction
             var grpInteraction = layout.Root.AddGroup("Interaction");
 
             chkContextMenu = new CheckEdit { Checked = true };
@@ -396,7 +315,7 @@ namespace VS
             chkDragAndDrop.CheckedChanged += (s, e) => syntaxEditor.EnableDragAndDrop = chkDragAndDrop.Checked;
             grpInteraction.AddItem("Drag and Drop", chkDragAndDrop);
 
-            // === Appearance ===
+            // Appearance
             var grpAppearance = layout.Root.AddGroup("Appearance");
 
             chkLineNumbers = new CheckEdit { Checked = true };
@@ -455,7 +374,7 @@ namespace VS
             chkMouseWheelZoom.CheckedChanged += (s, e) => syntaxEditor.EnableMouseWheelZoom = chkMouseWheelZoom.Checked;
             grpAppearance.AddItem("Mouse Wheel Zoom", chkMouseWheelZoom);
 
-            // === Editing ===
+            // Editing
             var grpEditing = layout.Root.AddGroup("Editing");
 
             spnTabSize = new SpinEdit();
@@ -484,7 +403,7 @@ namespace VS
             };
             grpEditing.AddItem("Auto Indent", cmbAutoIndent);
 
-            // === IntelliSense ===
+            // IntelliSense
             var grpIntelliSense = layout.Root.AddGroup("IntelliSense");
 
             chkQuickSuggestions = new CheckEdit { Checked = true };
@@ -506,6 +425,12 @@ namespace VS
             scroll.Controls.Add(layout);
             return scroll;
         }
+
+        private void BarApplyThemeColors_CheckedChanged(object sender, ItemClickEventArgs e) {
+            if (themeBehavior != null)
+                themeBehavior.ApplyDevExpressColors = barApplyThemeColors.Checked;
+        }
+
 
         private void SetSelectedLanguage(string language) {
             if (cmbLanguage.Properties.Items.Contains(language))
@@ -570,15 +495,6 @@ namespace VS
                 themeBehavior.Rules = currentRules;
                 themeBehavior.ApplyCurrentTheme();
             }
-        }
-
-        protected override void Dispose(bool disposing) {
-            if (disposing) {
-                themeBehavior?.Dispose();
-                syntaxEditor?.Dispose();
-                components?.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

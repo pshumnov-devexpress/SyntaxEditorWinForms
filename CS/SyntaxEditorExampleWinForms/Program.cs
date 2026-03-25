@@ -8,8 +8,9 @@ namespace SyntaxEditorExampleWinForms {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            UserLookAndFeel.Default.SetSkinStyle("WXI");
-            Application.Run(new Form1());
+            UserLookAndFeel.Default.SetSkinStyle(SkinStyle.WXI);
+
+            Application.Run(new MainForm());
         }
     }
 }
