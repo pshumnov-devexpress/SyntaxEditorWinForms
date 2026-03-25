@@ -628,7 +628,7 @@ namespace SyntaxEditorWinForms {
         };
 
         private static string ToHex(Color c, bool addHashTag = true)
-            => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}".ToLower();
+            => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}".ToLower();
 
         private string _themeName = "vs";
         public string ThemeName {

@@ -20,8 +20,8 @@ namespace SyntaxEditorWinForms.Theming {
         public const string GutterBackground = "editorGutter.background";
 
         // Indent guides
-        public const string IndentGuideBackground = "editorIndentGuide.background";
-        public const string IndentGuideActiveBackground = "editorIndentGuide.activeBackground";
+        public const string IndentGuideBackground = "editorIndentGuide.background1";
+        public const string IndentGuideActiveBackground = "editorIndentGuide.activeBackground1";
 
         // Scrollbar
         public const string ScrollbarShadow = "scrollbar.shadow";
