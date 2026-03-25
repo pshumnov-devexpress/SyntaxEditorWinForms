@@ -89,9 +89,11 @@ namespace SyntaxEditorWinForms.Theming {
         }
 
         public static MonacoTheme CreateFromDXTheme(string skinName, IReadOnlyList<MonacoThemeRule>? rules = null, bool applyDevExpressColors = false) {
+            var baseKind = ResolveBase(skinName);
+
             var result = new MonacoTheme {
                 Name = $"{skinName.ToLowerInvariant().Replace(" ", "-")}",
-                Base = MonacoThemeBase.Light,
+                Base = baseKind,
                 Colors = applyDevExpressColors ? CreateMonacoColors() : null,
                 Rules = rules
             };
@@ -163,6 +165,20 @@ namespace SyntaxEditorWinForms.Theming {
             result[MonacoColorKeys.SuggestWidgetSelectedBackground] = skin.Colors.GetColor("Highlight");
 
             return result;
+        }
+
+        private static MonacoThemeBase ResolveBase(string skinName) {
+            if (string.IsNullOrWhiteSpace(skinName))
+                return MonacoThemeBase.Light;
+
+            if (skinName.Contains("HighContrast", StringComparison.OrdinalIgnoreCase))
+                return MonacoThemeBase.HighContrast;
+
+            if (skinName.Contains("Dark", StringComparison.OrdinalIgnoreCase) ||
+                skinName.Contains("Black", StringComparison.OrdinalIgnoreCase))
+                return MonacoThemeBase.Dark;
+
+            return MonacoThemeBase.Light;
         }
 
         public void Dispose() {
