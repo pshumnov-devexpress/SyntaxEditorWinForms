@@ -4,6 +4,7 @@ using DevExpress.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace SyntaxEditorWinForms.Theming {
     public class ThemeBehavior : IDisposable {
@@ -56,53 +57,9 @@ namespace SyntaxEditorWinForms.Theming {
 
             var skinName = UserLookAndFeel.Default.ActiveSkinName;
             var monacoTheme = CreateFromDXTheme(skinName, this.Rules, this.ApplyDevExpressColors);
-            AdjustDXColors(monacoTheme, skinName);
 
             _editor.RegisterTheme(monacoTheme);
             _editor.ThemeName = monacoTheme.Name;
-        }
-
-        private void AdjustDXColors(MonacoTheme monacoTheme, string skinName) {
-            if (monacoTheme.Colors == null)
-                return;
-
-            switch (skinName) {
-                case "WXI":
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.SelectionBackground))
-                        monacoTheme.Colors[MonacoColorKeys.SelectionBackground] = monacoTheme.Colors[MonacoColorKeys.SelectionBackground].Lighten(0.5);
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.InactiveSelectionBackground))
-                        monacoTheme.Colors[MonacoColorKeys.InactiveSelectionBackground] = monacoTheme.Colors[MonacoColorKeys.InactiveSelectionBackground].Lighten(0.5);
-                    break;
-                case "VS2019Light":
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.SelectionBackground))
-                        monacoTheme.Colors[MonacoColorKeys.SelectionBackground] = monacoTheme.Colors[MonacoColorKeys.SelectionBackground].Lighten(0.5);
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.InactiveSelectionBackground))
-                        monacoTheme.Colors[MonacoColorKeys.InactiveSelectionBackground] = monacoTheme.Colors[MonacoColorKeys.InactiveSelectionBackground].Lighten(0.5);
-                    break;
-                case "Office 2019 Colorful":
-                case "WXI Compact":
-                case "VS2019Blue":
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.SuggestWidgetSelectedBackground))
-                        monacoTheme.Colors[MonacoColorKeys.SuggestWidgetSelectedBackground] = monacoTheme.Colors[MonacoColorKeys.SuggestWidgetSelectedBackground].Darken(0.3);
-                    break;
-                case "WXI Dark":
-                case "WXI Dark Compact":
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.SelectionBackground))
-                        monacoTheme.Colors[MonacoColorKeys.SelectionBackground] = monacoTheme.Colors[MonacoColorKeys.SelectionBackground].Darken(0.4);
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.InactiveSelectionBackground))
-                        monacoTheme.Colors[MonacoColorKeys.InactiveSelectionBackground] = monacoTheme.Colors[MonacoColorKeys.InactiveSelectionBackground].Darken(0.4);
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.SuggestWidgetSelectedBackground))
-                        monacoTheme.Colors[MonacoColorKeys.SuggestWidgetSelectedBackground] = monacoTheme.Colors[MonacoColorKeys.SuggestWidgetSelectedBackground].Darken(0.4);
-                    break;
-                case "VS2019Dark":
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.SelectionBackground))
-                        monacoTheme.Colors[MonacoColorKeys.SelectionBackground] = monacoTheme.Colors[MonacoColorKeys.SelectionBackground].Darken(0.1);
-                    if (monacoTheme.Colors.ContainsKey(MonacoColorKeys.InactiveSelectionBackground))
-                        monacoTheme.Colors[MonacoColorKeys.InactiveSelectionBackground] = monacoTheme.Colors[MonacoColorKeys.InactiveSelectionBackground].Darken(0.1);
-                    break;
-                default:
-                    break;
-            }
         }
 
         public static Color? GetColor(string skinElementName) {
@@ -133,15 +90,13 @@ namespace SyntaxEditorWinForms.Theming {
         }
 
         public static MonacoTheme CreateFromDXTheme(string skinName, IReadOnlyList<MonacoThemeRule>? rules = null, bool applyDevExpressColors = false) {
-            var baseKind = ResolveBase(skinName);
-
             var result = new MonacoTheme {
                 Name = $"{skinName.ToLowerInvariant().Replace(" ", "-")}",
-                Base = baseKind,
+                Base = MonacoThemeBase.Light,
                 Colors = applyDevExpressColors ? CreateMonacoColors() : null,
-                Rules = rules
+                Rules = applyDevExpressColors ? CreateDevExpressTokenRules(rules) : rules,
+                Inherit = !applyDevExpressColors
             };
-
             return result;
         }
 
@@ -153,75 +108,146 @@ namespace SyntaxEditorWinForms.Theming {
             if (skin == null)
                 return result;
 
-            Color? TrySystem(params KnownColor[] knownColors) {
-                foreach (var kc in knownColors) {
-                    try {
-                        var c = LookAndFeelHelper.GetSystemColor(lookAndFeel, Color.FromKnownColor(kc));
-                        if (c != Color.Empty && c != Color.Transparent)
-                            return c;
-                    } catch { }
-                }
-                return null;
-            }
-
-            void Map(string monacoKey, Color? color) {
-                if (color.HasValue)
-                    result[monacoKey] = color.Value;
-            }
+            var reportSkin = ReportsSkins.GetSkin(lookAndFeel);
+            var reportElem = reportSkin[ReportsSkins.SkinScriptControl];
 
             // === Base colors ===
-            var windowBg = TrySystem(KnownColor.Window, KnownColor.Control);
-            var windowFg = TrySystem(KnownColor.WindowText, KnownColor.ControlText);
-            var highlight = TrySystem(KnownColor.Highlight);
-            var highlightText = TrySystem(KnownColor.HighlightText);
-            var grayText = TrySystem(KnownColor.GrayText);
-            var controlBg = TrySystem(KnownColor.Control);
-            var controlDark = TrySystem(KnownColor.ControlDark);
-            var controlDarkDark = TrySystem(KnownColor.ControlDarkDark);
-
-            Map(MonacoColorKeys.EditorBackground, windowBg);
-            Map(MonacoColorKeys.EditorForeground, windowFg);
+            result[MonacoColorKeys.EditorBackground] = skin.Colors.GetColor("Window");
+            result[MonacoColorKeys.EditorForeground] = skin.Colors.GetColor("WindowText");
 
             // === Line numbers ===
-            Map(MonacoColorKeys.LineNumberForeground, grayText);
-            Map(MonacoColorKeys.LineNumberActiveForeground, windowFg);
+            result[MonacoColorKeys.LineNumberForeground] = reportElem.Properties.GetColor("LineNumbersColor");
+            result[MonacoColorKeys.LineNumberActiveForeground] = skin.Colors.GetColor("HighlightAlternate");
 
-            // === Cursor & selection ===
-            Map(MonacoColorKeys.CursorForeground, highlight ?? windowFg);
-            Map(MonacoColorKeys.SelectionBackground, highlight);
-            Map(MonacoColorKeys.InactiveSelectionBackground, highlight ?? controlDark);
+            // === Cursor ===
+            result[MonacoColorKeys.CursorForeground] = skin.Colors.GetColor("WindowText");
+
+            // === Selection ===
+            var selectionElem = skin[CommonSkins.SkinSelection];
+            int opacity = selectionElem.Properties.GetInteger(CommonSkins.SkinSelectionOpacity, 40);
+            var color = Color.FromArgb(opacity, selectionElem.Color.GetBackColor());
+            result[MonacoColorKeys.SelectionBackground] = color;
+            result[MonacoColorKeys.InactiveSelectionBackground] = color;
 
             // === Current line ===
-            Map(MonacoColorKeys.LineHighlightBackground, controlBg);
+            result[MonacoColorKeys.LineHighlightBackground] = skin.Colors.GetColor("Control");
 
             // === Gutter ===
-            Map(MonacoColorKeys.GutterBackground, windowBg);
+            result[MonacoColorKeys.GutterBackground] = skin.Colors.GetColor("Window");
 
             // === Indent guides ===
-            Map(MonacoColorKeys.IndentGuideBackground, controlDark);
-            Map(MonacoColorKeys.IndentGuideActiveBackground, grayText);
+            result[MonacoColorKeys.IndentGuideBackground] = skin.Colors.GetColor("DisabledText");
+            result[MonacoColorKeys.IndentGuideActiveBackground] = reportElem.Properties.GetColor("LineNumbersColor");
 
             // === Scrollbar ===
-            Map(MonacoColorKeys.ScrollbarShadow, controlDark);
-            Map(MonacoColorKeys.ScrollbarSliderBackground, controlDark);
-            Map(MonacoColorKeys.ScrollbarSliderHoverBackground, controlDarkDark);
-            Map(MonacoColorKeys.ScrollbarSliderActiveBackground, controlDark);
+            result[MonacoColorKeys.ScrollbarShadow] = ColorTranslator.FromHtml("#a0a0a0");
+            result[MonacoColorKeys.ScrollbarSliderBackground] = skin.Colors.GetColor("DisabledText");
+            result[MonacoColorKeys.ScrollbarSliderHoverBackground] = skin.Colors.GetColor("WindowText");
+            result[MonacoColorKeys.ScrollbarSliderActiveBackground] = skin.Colors.GetColor("WindowText");
 
             // === Brackets ===
-            Map(MonacoColorKeys.BracketMatchBackground, controlBg);
-            Map(MonacoColorKeys.BracketMatchBorder, highlight);
+            var bracketColor = reportElem.Properties.GetColor("BracketHighlightColor");
+            var bracketOpacity = reportElem.Properties.GetInteger("BracketHighlightColorAlpha", 40);
+            result[MonacoColorKeys.BracketMatchBackground] = Color.FromArgb(bracketOpacity, bracketColor);
+            result[MonacoColorKeys.BracketMatchBorder] = Color.FromArgb(bracketOpacity, bracketColor);
+            result[MonacoColorKeys.BracketMatchHighlightForeground1] = skin.Colors.GetColor("Question");
+            result[MonacoColorKeys.BracketMatchHighlightForeground2] = skin.Colors.GetColor("Information");
+            result[MonacoColorKeys.BracketMatchHighlightForeground3] = skin.Colors.GetColor("Critical");
 
             // === Find ===
-            Map(MonacoColorKeys.FindMatchBackground, highlight);
-            Map(MonacoColorKeys.FindMatchHighlightBackground, highlight);
+            result[MonacoColorKeys.FindMatchBackground] = skin.Colors.GetColor("Warning");
+            result[MonacoColorKeys.FindMatchHighlightBackground] = skin.Colors.GetColor("Warning");
 
             // === Hover ===
-            Map(MonacoColorKeys.HoverWidgetBackground, controlBg);
-            Map(MonacoColorKeys.HoverWidgetBorder, controlDark);
+            result[MonacoColorKeys.HoverWidgetBackground] = skin.Colors.GetColor("Window");
+            result[MonacoColorKeys.HoverWidgetBorder] = skin.Colors.GetColor("DisabledText");
 
             // === Suggest ===
-            Map(MonacoColorKeys.SuggestWidgetBackground, controlBg ?? windowBg);
-            Map(MonacoColorKeys.SuggestWidgetSelectedBackground, highlight);
+            result[MonacoColorKeys.SuggestWidgetBackground] = skin.Colors.GetColor("Window");
+            result[MonacoColorKeys.SuggestWidgetSelectedBackground] = skin.Colors.GetColor("Highlight");
+
+            return result;
+        }
+
+        private static IReadOnlyList<MonacoThemeRule> CreateDevExpressTokenRules(IReadOnlyList<MonacoThemeRule>? rules) {
+            List<MonacoThemeRule> result = rules != null ? new List<MonacoThemeRule>(rules) : new List<MonacoThemeRule>();
+
+            var lookAndFeel = UserLookAndFeel.Default;
+            var skin = CommonSkins.GetSkin(lookAndFeel);
+            if(skin == null)
+                return result;
+
+            Color blue = skin.Colors.GetColor("Question");
+            Color green = skin.Colors.GetColor("Information");
+            Color red = skin.Colors.GetColor("Critical");
+            Color black = skin.Colors.GetColor("WindowText");
+            Color white = skin.Colors.GetColor("Window");
+
+            var existingTokens = new HashSet<string>(result.Select(r => r.Token));
+
+            void AddRuleIfNotExists(string token, Color foreground) {
+                if(!existingTokens.Contains(token)) {
+                    result.Add(new MonacoThemeRule { Token = token, Foreground = foreground });
+                }
+            }
+
+            // Comments
+            AddRuleIfNotExists("comment", green);
+
+            // Keywords
+            AddRuleIfNotExists("keyword", blue);
+
+            // Types and Classes
+            AddRuleIfNotExists("type", blue);
+            AddRuleIfNotExists("class", blue);
+            AddRuleIfNotExists("interface", blue);
+            AddRuleIfNotExists("enum", blue);
+            AddRuleIfNotExists("struct", blue);
+
+            // Functions and Methods
+            AddRuleIfNotExists("function", black);
+            AddRuleIfNotExists("method", black);
+
+            // Strings
+            AddRuleIfNotExists("string", red);
+            AddRuleIfNotExists("regexp", red);
+            AddRuleIfNotExists("regex", red);
+
+            // Numbers and Constants
+            AddRuleIfNotExists("number", green);
+            AddRuleIfNotExists("constant", green);
+            AddRuleIfNotExists("constant.language", blue);
+
+            // Variables and Identifiers
+            AddRuleIfNotExists("variable", black);
+            AddRuleIfNotExists("identifier", black);
+            AddRuleIfNotExists("parameter", black);
+            AddRuleIfNotExists("property", black);
+            AddRuleIfNotExists("member", black);
+
+            // Operators and Delimiters
+            AddRuleIfNotExists("operator", black);
+            AddRuleIfNotExists("delimiter", black);
+            AddRuleIfNotExists("punctuation", black);
+
+            // Namespaces
+            AddRuleIfNotExists("namespace", black);
+
+            // Attributes and Annotations
+            AddRuleIfNotExists("annotation", green);
+            AddRuleIfNotExists("decorator", green);
+            AddRuleIfNotExists("attribute", green);
+
+            // Preprocessor
+            AddRuleIfNotExists("preprocessor", blue);
+            AddRuleIfNotExists("macro", blue);
+
+            // Tags (for XML/HTML)
+            AddRuleIfNotExists("tag", blue);
+
+            // Invalid and Errors
+            AddRuleIfNotExists("invalid", red);
+            AddRuleIfNotExists("error", red);
 
             return result;
         }

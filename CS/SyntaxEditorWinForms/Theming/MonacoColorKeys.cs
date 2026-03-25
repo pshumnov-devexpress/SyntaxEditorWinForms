@@ -20,8 +20,8 @@ namespace SyntaxEditorWinForms.Theming {
         public const string GutterBackground = "editorGutter.background";
 
         // Indent guides
-        public const string IndentGuideBackground = "editorIndentGuide.background";
-        public const string IndentGuideActiveBackground = "editorIndentGuide.activeBackground";
+        public const string IndentGuideBackground = "editorIndentGuide.background1";
+        public const string IndentGuideActiveBackground = "editorIndentGuide.activeBackground1";
 
         // Scrollbar
         public const string ScrollbarShadow = "scrollbar.shadow";
@@ -32,6 +32,9 @@ namespace SyntaxEditorWinForms.Theming {
         // Brackets
         public const string BracketMatchBackground = "editorBracketMatch.background";
         public const string BracketMatchBorder = "editorBracketMatch.border";
+        public const string BracketMatchHighlightForeground1 = "editorBracketHighlight.foreground1";
+        public const string BracketMatchHighlightForeground2 = "editorBracketHighlight.foreground2";
+        public const string BracketMatchHighlightForeground3 = "editorBracketHighlight.foreground3";
 
         // Find
         public const string FindMatchBackground = "editor.findMatchBackground";
