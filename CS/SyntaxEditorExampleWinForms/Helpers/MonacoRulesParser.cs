@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Drawing;
 
-namespace SyntaxEditorExampleWinForms.Common {
+namespace SyntaxEditorExampleWinForms.Helpers {
     public static class MonacoRulesParser {
 
         private static string? ConvertFontStyle(MonacoFontStyle style) {

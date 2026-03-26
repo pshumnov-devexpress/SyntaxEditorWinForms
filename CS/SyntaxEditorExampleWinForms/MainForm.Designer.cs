@@ -10,8 +10,9 @@
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing) {
-            if(disposing && (components != null)) {
-                components.Dispose();
+            if(disposing) {
+                components?.Dispose();
+                themeBehavior?.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -31,11 +32,12 @@
             saveItem = new DevExpress.XtraBars.BarButtonItem();
             customLanguageItem = new DevExpress.XtraBars.BarButtonItem();
             rulesItem = new DevExpress.XtraBars.BarButtonItem();
+            applySkinColorsCheckItem = new DevExpress.XtraBars.BarCheckItem();
             ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            syntaxEditor1 = new SyntaxEditorWinForms.SyntaxEditor();
+            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            syntaxEditor = new SyntaxEditorWinForms.SyntaxEditor();
             sidePanel1 = new DevExpress.XtraEditors.SidePanel();
             tabPane1 = new DevExpress.XtraBars.Navigation.TabPane();
             optionsTabPage = new DevExpress.XtraBars.Navigation.TabNavigationPage();
@@ -55,6 +57,14 @@
             ceScrollBeyondLastLine = new DevExpress.XtraEditors.CheckEdit();
             seScrollBeyondLastColumn = new DevExpress.XtraEditors.SpinEdit();
             ceMouseWheelZoom = new DevExpress.XtraEditors.CheckEdit();
+            seTabSize = new DevExpress.XtraEditors.SpinEdit();
+            ceInsertSpaces = new DevExpress.XtraEditors.CheckEdit();
+            ceDetectIndentation = new DevExpress.XtraEditors.CheckEdit();
+            cbeAutoIndent = new DevExpress.XtraEditors.ComboBoxEdit();
+            ceQuickSuggestions = new DevExpress.XtraEditors.CheckEdit();
+            ceWordBasedSuggestions = new DevExpress.XtraEditors.CheckEdit();
+            ceSuggestOnTriggerCharacters = new DevExpress.XtraEditors.CheckEdit();
+            ceEnableParameterHints = new DevExpress.XtraEditors.CheckEdit();
             Root = new DevExpress.XtraLayout.LayoutControlGroup();
             emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
             lcgGeneral = new DevExpress.XtraLayout.LayoutControlGroup();
@@ -75,24 +85,16 @@
             layoutControlItem9 = new DevExpress.XtraLayout.LayoutControlItem();
             lciScrollBeyondLastColumn = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlItem11 = new DevExpress.XtraLayout.LayoutControlItem();
-            seTabSize = new DevExpress.XtraEditors.SpinEdit();
-            lciTabSize = new DevExpress.XtraLayout.LayoutControlItem();
             lcgEditing = new DevExpress.XtraLayout.LayoutControlGroup();
-            ceInsertSpaces = new DevExpress.XtraEditors.CheckEdit();
+            lciTabSize = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
-            ceDetectIndentation = new DevExpress.XtraEditors.CheckEdit();
             layoutControlItem7 = new DevExpress.XtraLayout.LayoutControlItem();
-            cbeAutoIndent = new DevExpress.XtraEditors.ComboBoxEdit();
             lciAutoIndent = new DevExpress.XtraLayout.LayoutControlItem();
-            ceQuickSuggestions = new DevExpress.XtraEditors.CheckEdit();
-            layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
-            ceWordBasedSuggestions = new DevExpress.XtraEditors.CheckEdit();
-            layoutControlItem12 = new DevExpress.XtraLayout.LayoutControlItem();
-            ceSuggestOnTriggerCharacters = new DevExpress.XtraEditors.CheckEdit();
-            layoutControlItem13 = new DevExpress.XtraLayout.LayoutControlItem();
-            ceEnableParameterHints = new DevExpress.XtraEditors.CheckEdit();
-            layoutControlItem14 = new DevExpress.XtraLayout.LayoutControlItem();
             lcgIntelliSense = new DevExpress.XtraLayout.LayoutControlGroup();
+            layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem12 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem13 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem14 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)ribbonControl1).BeginInit();
             sidePanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)tabPane1).BeginInit();
@@ -115,6 +117,14 @@
             ((System.ComponentModel.ISupportInitialize)ceScrollBeyondLastLine.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)seScrollBeyondLastColumn.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ceMouseWheelZoom.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)seTabSize.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ceInsertSpaces.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ceDetectIndentation.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)cbeAutoIndent.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ceQuickSuggestions.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ceWordBasedSuggestions.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ceSuggestOnTriggerCharacters.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ceEnableParameterHints.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Root).BeginInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)lcgGeneral).BeginInit();
@@ -135,32 +145,25 @@
             ((System.ComponentModel.ISupportInitialize)layoutControlItem9).BeginInit();
             ((System.ComponentModel.ISupportInitialize)lciScrollBeyondLastColumn).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem11).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)seTabSize.Properties).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)lciTabSize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)lcgEditing).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ceInsertSpaces.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)lciTabSize).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ceDetectIndentation.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem7).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)cbeAutoIndent.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)lciAutoIndent).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ceQuickSuggestions.Properties).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem10).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ceWordBasedSuggestions.Properties).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem12).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ceSuggestOnTriggerCharacters.Properties).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem13).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)ceEnableParameterHints.Properties).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem14).BeginInit();
             ((System.ComponentModel.ISupportInitialize)lcgIntelliSense).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem10).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem12).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem13).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem14).BeginInit();
             SuspendLayout();
             // 
             // ribbonControl1
             // 
             ribbonControl1.ExpandCollapseItem.Id = 0;
-            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, skinDropDownButtonItem1, skinPaletteDropDownButtonItem1, openItem, saveItem, customLanguageItem, rulesItem });
+            ribbonControl1.ItemPanelStyle = DevExpress.XtraBars.Ribbon.RibbonItemPanelStyle.Classic;
+            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, skinDropDownButtonItem1, skinPaletteDropDownButtonItem1, openItem, saveItem, customLanguageItem, rulesItem, applySkinColorsCheckItem });
             ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            ribbonControl1.MaxItemId = 7;
+            ribbonControl1.MaxItemId = 9;
             ribbonControl1.Name = "ribbonControl1";
             ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
             ribbonControl1.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonControlStyle.OfficeUniversal;
@@ -184,45 +187,46 @@
             openItem.Caption = "Open File";
             openItem.Id = 3;
             openItem.ImageOptions.ImageUri.Uri = "Open";
-            openItem.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(openItem_ItemClick);
             openItem.Name = "openItem";
+            openItem.ItemClick += openItem_ItemClick;
             // 
             // saveItem
             // 
             saveItem.Caption = "Save File";
             saveItem.Id = 4;
             saveItem.ImageOptions.ImageUri.Uri = "Save";
-            saveItem.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(saveItem_ItemClick);
             saveItem.Name = "saveItem";
+            saveItem.ItemClick += saveItem_ItemClick;
             // 
             // customLanguageItem
             // 
             customLanguageItem.Caption = "Register Custom Language";
             customLanguageItem.Id = 5;
             customLanguageItem.ImageOptions.ImageUri.Uri = "richedit/showallfieldcodes";
-            customLanguageItem.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(customLanguageItem_ItemClick);
             customLanguageItem.Name = "customLanguageItem";
+            customLanguageItem.ItemClick += customLanguageItem_ItemClick;
             // 
             // rulesItem
             // 
             rulesItem.Caption = "Change Rules";
             rulesItem.Id = 6;
             rulesItem.ImageOptions.ImageUri.Uri = "dashboards/editquery";
-            rulesItem.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(rulesItem_ItemClick);
             rulesItem.Name = "rulesItem";
+            rulesItem.ItemClick += rulesItem_ItemClick;
+            // 
+            // applySkinColorsCheckItem
+            // 
+            applySkinColorsCheckItem.Caption = "Apply Skin Colors";
+            applySkinColorsCheckItem.Id = 8;
+            applySkinColorsCheckItem.ImageOptions.ImageUri.Uri = "dashboards/editcolors";
+            applySkinColorsCheckItem.Name = "applySkinColorsCheckItem";
+            applySkinColorsCheckItem.CheckedChanged += applySkinColorsCheckItem_CheckedChanged;
             // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1, ribbonPageGroup2, ribbonPageGroup3 });
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup2, ribbonPageGroup3, ribbonPageGroup1 });
             ribbonPage1.Name = "ribbonPage1";
             ribbonPage1.Text = "ribbonPage1";
-            // 
-            // ribbonPageGroup1
-            // 
-            ribbonPageGroup1.ItemLinks.Add(skinDropDownButtonItem1);
-            ribbonPageGroup1.ItemLinks.Add(skinPaletteDropDownButtonItem1);
-            ribbonPageGroup1.Name = "ribbonPageGroup1";
-            ribbonPageGroup1.Text = "ribbonPageGroup1";
             // 
             // ribbonPageGroup2
             // 
@@ -238,37 +242,45 @@
             ribbonPageGroup3.Name = "ribbonPageGroup3";
             ribbonPageGroup3.Text = "ribbonPageGroup3";
             // 
-            // syntaxEditor1
+            // ribbonPageGroup1
             // 
-            syntaxEditor1.AutoIndent = SyntaxEditorWinForms.Models.EditorAutoIndent.Full;
-            syntaxEditor1.DetectIndentation = true;
-            syntaxEditor1.Dock = System.Windows.Forms.DockStyle.Fill;
-            syntaxEditor1.EditorLanguage = "csharp";
-            syntaxEditor1.EnableContextMenu = true;
-            syntaxEditor1.EnableDragAndDrop = true;
-            syntaxEditor1.EnableFolding = true;
-            syntaxEditor1.EnableMouseWheelZoom = false;
-            syntaxEditor1.EnableParameterHints = true;
-            syntaxEditor1.EnableQuickSuggestions = true;
-            syntaxEditor1.EnableScrollBeyondLastLine = true;
-            syntaxEditor1.EnableSmoothScrolling = false;
-            syntaxEditor1.EnableStickyScroll = true;
-            syntaxEditor1.EnableSuggestOnTriggerCharacters = true;
-            syntaxEditor1.EnableWordBasedSuggestions = true;
-            syntaxEditor1.InsertSpaces = true;
-            syntaxEditor1.LineNumbersMinChars = 5;
-            syntaxEditor1.Location = new System.Drawing.Point(0, 96);
-            syntaxEditor1.Name = "syntaxEditor1";
-            syntaxEditor1.ReadOnly = false;
-            syntaxEditor1.ScrollBeyondLastColumn = 5;
-            syntaxEditor1.ShowGlyphMargin = false;
-            syntaxEditor1.ShowLineNumbers = true;
-            syntaxEditor1.ShowMinimap = false;
-            syntaxEditor1.Size = new System.Drawing.Size(1797, 1382);
-            syntaxEditor1.TabIndex = 1;
-            syntaxEditor1.TabSize = 4;
-            syntaxEditor1.ThemeName = "vs";
-            syntaxEditor1.WordWrap = SyntaxEditorWinForms.Models.EditorWordWrap.Off;
+            ribbonPageGroup1.ItemLinks.Add(skinDropDownButtonItem1);
+            ribbonPageGroup1.ItemLinks.Add(skinPaletteDropDownButtonItem1);
+            ribbonPageGroup1.ItemLinks.Add(applySkinColorsCheckItem);
+            ribbonPageGroup1.Name = "ribbonPageGroup1";
+            ribbonPageGroup1.Text = "ribbonPageGroup1";
+            // 
+            // syntaxEditor
+            // 
+            syntaxEditor.AutoIndent = SyntaxEditorWinForms.Models.EditorAutoIndent.Full;
+            syntaxEditor.DetectIndentation = true;
+            syntaxEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            syntaxEditor.EditorLanguage = "csharp";
+            syntaxEditor.EnableContextMenu = true;
+            syntaxEditor.EnableDragAndDrop = true;
+            syntaxEditor.EnableFolding = true;
+            syntaxEditor.EnableMouseWheelZoom = false;
+            syntaxEditor.EnableParameterHints = true;
+            syntaxEditor.EnableQuickSuggestions = true;
+            syntaxEditor.EnableScrollBeyondLastLine = true;
+            syntaxEditor.EnableSmoothScrolling = false;
+            syntaxEditor.EnableStickyScroll = true;
+            syntaxEditor.EnableSuggestOnTriggerCharacters = true;
+            syntaxEditor.EnableWordBasedSuggestions = true;
+            syntaxEditor.InsertSpaces = true;
+            syntaxEditor.LineNumbersMinChars = 5;
+            syntaxEditor.Location = new System.Drawing.Point(0, 96);
+            syntaxEditor.Name = "syntaxEditor";
+            syntaxEditor.ReadOnly = false;
+            syntaxEditor.ScrollBeyondLastColumn = 5;
+            syntaxEditor.ShowGlyphMargin = false;
+            syntaxEditor.ShowLineNumbers = true;
+            syntaxEditor.ShowMinimap = false;
+            syntaxEditor.Size = new System.Drawing.Size(1797, 1382);
+            syntaxEditor.TabIndex = 1;
+            syntaxEditor.TabSize = 4;
+            syntaxEditor.ThemeName = "vs";
+            syntaxEditor.WordWrap = SyntaxEditorWinForms.Models.EditorWordWrap.Off;
             // 
             // sidePanel1
             // 
@@ -502,6 +514,95 @@
             ceMouseWheelZoom.TabIndex = 18;
             ceMouseWheelZoom.CheckedChanged += ceMouseWheelZoom_CheckedChanged;
             // 
+            // seTabSize
+            // 
+            seTabSize.EditValue = new decimal(new int[] { 0, 0, 0, 0 });
+            seTabSize.Location = new System.Drawing.Point(265, 922);
+            seTabSize.MenuManager = ribbonControl1;
+            seTabSize.Name = "seTabSize";
+            seTabSize.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            seTabSize.Size = new System.Drawing.Size(194, 38);
+            seTabSize.StyleController = layoutControl;
+            seTabSize.TabIndex = 19;
+            seTabSize.EditValueChanged += seTabSize_EditValueChanged;
+            // 
+            // ceInsertSpaces
+            // 
+            ceInsertSpaces.Location = new System.Drawing.Point(23, 966);
+            ceInsertSpaces.MenuManager = ribbonControl1;
+            ceInsertSpaces.Name = "ceInsertSpaces";
+            ceInsertSpaces.Properties.Caption = "Insert Spaces";
+            ceInsertSpaces.Size = new System.Drawing.Size(436, 35);
+            ceInsertSpaces.StyleController = layoutControl;
+            ceInsertSpaces.TabIndex = 20;
+            ceInsertSpaces.CheckedChanged += ceInsertSpaces_CheckedChanged;
+            // 
+            // ceDetectIndentation
+            // 
+            ceDetectIndentation.Location = new System.Drawing.Point(23, 1007);
+            ceDetectIndentation.MenuManager = ribbonControl1;
+            ceDetectIndentation.Name = "ceDetectIndentation";
+            ceDetectIndentation.Properties.Caption = "Detect Indentation";
+            ceDetectIndentation.Size = new System.Drawing.Size(436, 35);
+            ceDetectIndentation.StyleController = layoutControl;
+            ceDetectIndentation.TabIndex = 21;
+            ceDetectIndentation.CheckedChanged += ceDetectIndentation_CheckedChanged;
+            // 
+            // cbeAutoIndent
+            // 
+            cbeAutoIndent.Location = new System.Drawing.Point(265, 1048);
+            cbeAutoIndent.MenuManager = ribbonControl1;
+            cbeAutoIndent.Name = "cbeAutoIndent";
+            cbeAutoIndent.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
+            cbeAutoIndent.Size = new System.Drawing.Size(194, 38);
+            cbeAutoIndent.StyleController = layoutControl;
+            cbeAutoIndent.TabIndex = 22;
+            cbeAutoIndent.EditValueChanged += cbeAutoIndent_EditValueChanged;
+            // 
+            // ceQuickSuggestions
+            // 
+            ceQuickSuggestions.Location = new System.Drawing.Point(23, 1170);
+            ceQuickSuggestions.MenuManager = ribbonControl1;
+            ceQuickSuggestions.Name = "ceQuickSuggestions";
+            ceQuickSuggestions.Properties.Caption = "Quick Suggestions";
+            ceQuickSuggestions.Size = new System.Drawing.Size(436, 35);
+            ceQuickSuggestions.StyleController = layoutControl;
+            ceQuickSuggestions.TabIndex = 23;
+            ceQuickSuggestions.CheckedChanged += ceQuickSuggestions_CheckedChanged;
+            // 
+            // ceWordBasedSuggestions
+            // 
+            ceWordBasedSuggestions.Location = new System.Drawing.Point(23, 1211);
+            ceWordBasedSuggestions.MenuManager = ribbonControl1;
+            ceWordBasedSuggestions.Name = "ceWordBasedSuggestions";
+            ceWordBasedSuggestions.Properties.Caption = "Word Based Suggestions";
+            ceWordBasedSuggestions.Size = new System.Drawing.Size(436, 35);
+            ceWordBasedSuggestions.StyleController = layoutControl;
+            ceWordBasedSuggestions.TabIndex = 24;
+            ceWordBasedSuggestions.CheckedChanged += ceWordBasedSuggestions_CheckedChanged;
+            // 
+            // ceSuggestOnTriggerCharacters
+            // 
+            ceSuggestOnTriggerCharacters.Location = new System.Drawing.Point(23, 1252);
+            ceSuggestOnTriggerCharacters.MenuManager = ribbonControl1;
+            ceSuggestOnTriggerCharacters.Name = "ceSuggestOnTriggerCharacters";
+            ceSuggestOnTriggerCharacters.Properties.Caption = "Suggest On Trigger Characters";
+            ceSuggestOnTriggerCharacters.Size = new System.Drawing.Size(436, 35);
+            ceSuggestOnTriggerCharacters.StyleController = layoutControl;
+            ceSuggestOnTriggerCharacters.TabIndex = 25;
+            ceSuggestOnTriggerCharacters.CheckedChanged += ceSuggestOnTriggerCharacters_CheckedChanged;
+            // 
+            // ceEnableParameterHints
+            // 
+            ceEnableParameterHints.Location = new System.Drawing.Point(23, 1293);
+            ceEnableParameterHints.MenuManager = ribbonControl1;
+            ceEnableParameterHints.Name = "ceEnableParameterHints";
+            ceEnableParameterHints.Properties.Caption = "Enable Parameter Hints";
+            ceEnableParameterHints.Size = new System.Drawing.Size(436, 35);
+            ceEnableParameterHints.StyleController = layoutControl;
+            ceEnableParameterHints.TabIndex = 26;
+            ceEnableParameterHints.CheckedChanged += ceEnableParameterHints_CheckedChanged;
+            // 
             // Root
             // 
             Root.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.False;
@@ -665,17 +766,13 @@
             layoutControlItem11.Size = new System.Drawing.Size(442, 41);
             layoutControlItem11.TextVisible = false;
             // 
-            // seTabSize
+            // lcgEditing
             // 
-            seTabSize.EditValue = new decimal(new int[] { 0, 0, 0, 0 });
-            seTabSize.Location = new System.Drawing.Point(265, 922);
-            seTabSize.MenuManager = ribbonControl1;
-            seTabSize.Name = "seTabSize";
-            seTabSize.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            seTabSize.Size = new System.Drawing.Size(194, 38);
-            seTabSize.StyleController = layoutControl;
-            seTabSize.TabIndex = 19;
-            seTabSize.EditValueChanged += seTabSize_EditValueChanged;
+            lcgEditing.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { lciTabSize, layoutControlItem2, layoutControlItem7, lciAutoIndent });
+            lcgEditing.Location = new System.Drawing.Point(0, 861);
+            lcgEditing.Name = "lcgEditing";
+            lcgEditing.Size = new System.Drawing.Size(482, 248);
+            lcgEditing.Text = "Editing";
             // 
             // lciTabSize
             // 
@@ -686,25 +783,6 @@
             lciTabSize.Text = "Tab Size";
             lciTabSize.TextSize = new System.Drawing.Size(221, 23);
             // 
-            // lcgEditing
-            // 
-            lcgEditing.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { lciTabSize, layoutControlItem2, layoutControlItem7, lciAutoIndent });
-            lcgEditing.Location = new System.Drawing.Point(0, 861);
-            lcgEditing.Name = "lcgEditing";
-            lcgEditing.Size = new System.Drawing.Size(482, 248);
-            lcgEditing.Text = "Editing";
-            // 
-            // ceInsertSpaces
-            // 
-            ceInsertSpaces.Location = new System.Drawing.Point(23, 966);
-            ceInsertSpaces.MenuManager = ribbonControl1;
-            ceInsertSpaces.Name = "ceInsertSpaces";
-            ceInsertSpaces.Properties.Caption = "Insert Spaces";
-            ceInsertSpaces.Size = new System.Drawing.Size(436, 35);
-            ceInsertSpaces.StyleController = layoutControl;
-            ceInsertSpaces.TabIndex = 20;
-            ceInsertSpaces.CheckedChanged += ceInsertSpaces_CheckedChanged;
-            // 
             // layoutControlItem2
             // 
             layoutControlItem2.Control = ceInsertSpaces;
@@ -713,17 +791,6 @@
             layoutControlItem2.Size = new System.Drawing.Size(442, 41);
             layoutControlItem2.TextVisible = false;
             // 
-            // ceDetectIndentation
-            // 
-            ceDetectIndentation.Location = new System.Drawing.Point(23, 1007);
-            ceDetectIndentation.MenuManager = ribbonControl1;
-            ceDetectIndentation.Name = "ceDetectIndentation";
-            ceDetectIndentation.Properties.Caption = "Detect Indentation";
-            ceDetectIndentation.Size = new System.Drawing.Size(436, 35);
-            ceDetectIndentation.StyleController = layoutControl;
-            ceDetectIndentation.TabIndex = 21;
-            ceDetectIndentation.CheckedChanged += ceDetectIndentation_CheckedChanged;
-            // 
             // layoutControlItem7
             // 
             layoutControlItem7.Control = ceDetectIndentation;
@@ -731,17 +798,6 @@
             layoutControlItem7.Name = "layoutControlItem7";
             layoutControlItem7.Size = new System.Drawing.Size(442, 41);
             layoutControlItem7.TextVisible = false;
-            // 
-            // cbeAutoIndent
-            // 
-            cbeAutoIndent.Location = new System.Drawing.Point(265, 1048);
-            cbeAutoIndent.MenuManager = ribbonControl1;
-            cbeAutoIndent.Name = "cbeAutoIndent";
-            cbeAutoIndent.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            cbeAutoIndent.Size = new System.Drawing.Size(194, 38);
-            cbeAutoIndent.StyleController = layoutControl;
-            cbeAutoIndent.TabIndex = 22;
-            cbeAutoIndent.EditValueChanged += cbeAutoIndent_EditValueChanged;
             // 
             // lciAutoIndent
             // 
@@ -752,16 +808,13 @@
             lciAutoIndent.Text = "Auto Indent";
             lciAutoIndent.TextSize = new System.Drawing.Size(221, 23);
             // 
-            // ceQuickSuggestions
+            // lcgIntelliSense
             // 
-            ceQuickSuggestions.Location = new System.Drawing.Point(23, 1170);
-            ceQuickSuggestions.MenuManager = ribbonControl1;
-            ceQuickSuggestions.Name = "ceQuickSuggestions";
-            ceQuickSuggestions.Properties.Caption = "Quick Suggestions";
-            ceQuickSuggestions.Size = new System.Drawing.Size(436, 35);
-            ceQuickSuggestions.StyleController = layoutControl;
-            ceQuickSuggestions.TabIndex = 23;
-            ceQuickSuggestions.CheckedChanged += ceQuickSuggestions_CheckedChanged;
+            lcgIntelliSense.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem10, layoutControlItem12, layoutControlItem13, layoutControlItem14 });
+            lcgIntelliSense.Location = new System.Drawing.Point(0, 1109);
+            lcgIntelliSense.Name = "lcgIntelliSense";
+            lcgIntelliSense.Size = new System.Drawing.Size(482, 242);
+            lcgIntelliSense.Text = "Intelli Sense";
             // 
             // layoutControlItem10
             // 
@@ -771,17 +824,6 @@
             layoutControlItem10.Size = new System.Drawing.Size(442, 41);
             layoutControlItem10.TextVisible = false;
             // 
-            // ceWordBasedSuggestions
-            // 
-            ceWordBasedSuggestions.Location = new System.Drawing.Point(23, 1211);
-            ceWordBasedSuggestions.MenuManager = ribbonControl1;
-            ceWordBasedSuggestions.Name = "ceWordBasedSuggestions";
-            ceWordBasedSuggestions.Properties.Caption = "Word Based Suggestions";
-            ceWordBasedSuggestions.Size = new System.Drawing.Size(436, 35);
-            ceWordBasedSuggestions.StyleController = layoutControl;
-            ceWordBasedSuggestions.TabIndex = 24;
-            ceWordBasedSuggestions.CheckedChanged += ceWordBasedSuggestions_CheckedChanged;
-            // 
             // layoutControlItem12
             // 
             layoutControlItem12.Control = ceWordBasedSuggestions;
@@ -789,17 +831,6 @@
             layoutControlItem12.Name = "layoutControlItem12";
             layoutControlItem12.Size = new System.Drawing.Size(442, 41);
             layoutControlItem12.TextVisible = false;
-            // 
-            // ceSuggestOnTriggerCharacters
-            // 
-            ceSuggestOnTriggerCharacters.Location = new System.Drawing.Point(23, 1252);
-            ceSuggestOnTriggerCharacters.MenuManager = ribbonControl1;
-            ceSuggestOnTriggerCharacters.Name = "ceSuggestOnTriggerCharacters";
-            ceSuggestOnTriggerCharacters.Properties.Caption = "Suggest On Trigger Characters";
-            ceSuggestOnTriggerCharacters.Size = new System.Drawing.Size(436, 35);
-            ceSuggestOnTriggerCharacters.StyleController = layoutControl;
-            ceSuggestOnTriggerCharacters.TabIndex = 25;
-            ceSuggestOnTriggerCharacters.CheckedChanged += ceSuggestOnTriggerCharacters_CheckedChanged;
             // 
             // layoutControlItem13
             // 
@@ -809,17 +840,6 @@
             layoutControlItem13.Size = new System.Drawing.Size(442, 41);
             layoutControlItem13.TextVisible = false;
             // 
-            // ceEnableParameterHints
-            // 
-            ceEnableParameterHints.Location = new System.Drawing.Point(23, 1293);
-            ceEnableParameterHints.MenuManager = ribbonControl1;
-            ceEnableParameterHints.Name = "ceEnableParameterHints";
-            ceEnableParameterHints.Properties.Caption = "Enable Parameter Hints";
-            ceEnableParameterHints.Size = new System.Drawing.Size(436, 35);
-            ceEnableParameterHints.StyleController = layoutControl;
-            ceEnableParameterHints.TabIndex = 26;
-            ceEnableParameterHints.CheckedChanged += ceEnableParameterHints_CheckedChanged;
-            // 
             // layoutControlItem14
             // 
             layoutControlItem14.Control = ceEnableParameterHints;
@@ -828,20 +848,12 @@
             layoutControlItem14.Size = new System.Drawing.Size(442, 41);
             layoutControlItem14.TextVisible = false;
             // 
-            // lcgIntelliSense
-            // 
-            lcgIntelliSense.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem10, layoutControlItem12, layoutControlItem13, layoutControlItem14 });
-            lcgIntelliSense.Location = new System.Drawing.Point(0, 1109);
-            lcgIntelliSense.Name = "lcgIntelliSense";
-            lcgIntelliSense.Size = new System.Drawing.Size(482, 242);
-            lcgIntelliSense.Text = "Intelli Sense";
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(2311, 1478);
-            Controls.Add(syntaxEditor1);
+            Controls.Add(syntaxEditor);
             Controls.Add(sidePanel1);
             Controls.Add(ribbonControl1);
             Name = "MainForm";
@@ -868,6 +880,14 @@
             ((System.ComponentModel.ISupportInitialize)ceScrollBeyondLastLine.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)seScrollBeyondLastColumn.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)ceMouseWheelZoom.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)seTabSize.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ceInsertSpaces.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ceDetectIndentation.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)cbeAutoIndent.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ceQuickSuggestions.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ceWordBasedSuggestions.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ceSuggestOnTriggerCharacters.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ceEnableParameterHints.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)Root).EndInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).EndInit();
             ((System.ComponentModel.ISupportInitialize)lcgGeneral).EndInit();
@@ -888,24 +908,16 @@
             ((System.ComponentModel.ISupportInitialize)layoutControlItem9).EndInit();
             ((System.ComponentModel.ISupportInitialize)lciScrollBeyondLastColumn).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem11).EndInit();
-            ((System.ComponentModel.ISupportInitialize)seTabSize.Properties).EndInit();
-            ((System.ComponentModel.ISupportInitialize)lciTabSize).EndInit();
             ((System.ComponentModel.ISupportInitialize)lcgEditing).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ceInsertSpaces.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)lciTabSize).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ceDetectIndentation.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem7).EndInit();
-            ((System.ComponentModel.ISupportInitialize)cbeAutoIndent.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)lciAutoIndent).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ceQuickSuggestions.Properties).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem10).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ceWordBasedSuggestions.Properties).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem12).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ceSuggestOnTriggerCharacters.Properties).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem13).EndInit();
-            ((System.ComponentModel.ISupportInitialize)ceEnableParameterHints.Properties).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem14).EndInit();
             ((System.ComponentModel.ISupportInitialize)lcgIntelliSense).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem10).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem12).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem13).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem14).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -923,7 +935,7 @@
         private DevExpress.XtraBars.BarButtonItem customLanguageItem;
         private DevExpress.XtraBars.BarButtonItem rulesItem;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
-        private SyntaxEditorWinForms.SyntaxEditor syntaxEditor1;
+        private SyntaxEditorWinForms.SyntaxEditor syntaxEditor;
         private DevExpress.XtraEditors.SidePanel sidePanel1;
         private DevExpress.XtraBars.Navigation.TabPane tabPane1;
         private DevExpress.XtraBars.Navigation.TabNavigationPage optionsTabPage;
@@ -981,5 +993,6 @@
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem12;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem13;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem14;
+        private DevExpress.XtraBars.BarCheckItem applySkinColorsCheckItem;
     }
 }

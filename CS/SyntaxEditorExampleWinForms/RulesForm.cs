@@ -1,7 +1,7 @@
 using DevExpress.XtraEditors;
 using SyntaxEditorWinForms;
 using SyntaxEditorWinForms.Theming;
-using SyntaxEditorExampleWinForms.Common;
+using SyntaxEditorExampleWinForms.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
