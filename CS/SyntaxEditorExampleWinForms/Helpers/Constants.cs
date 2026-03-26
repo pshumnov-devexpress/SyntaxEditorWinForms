@@ -102,23 +102,23 @@ namespace SyntaxEditorExampleWinForms.Helpers {
 }";
 
         public const string MyLangConfiguration = @"{
-comments: {
+  comments: {
     lineComment: ""//"",
     blockComment: [""/*"", ""*/""]
   },
-brackets: [
+  brackets: [
     [""{"", ""}""],
     [""["", ""]""],
     [""("", "")""]
   ],
-autoClosingPairs: [
+  autoClosingPairs: [
     { open: ""{"", close: ""}"" },
     { open: ""["", close: ""]"" },
     { open: ""("", close: "")"" },
     { open: ""\"""", close: ""\"""" },
     { open: ""`"", close: ""`"" }
   ],
-surroundingPairs: [
+  surroundingPairs: [
     { open: ""{"", close: ""}"" },
     { open: ""["", close: ""]"" },
     { open: ""("", close: "")"" },
