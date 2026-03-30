@@ -6,7 +6,6 @@ namespace SyntaxEditorExampleWinForms {
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                rawEditorThemeBehavior?.Dispose();
                 rawEditor?.Dispose();
                 components?.Dispose();
             }
@@ -450,7 +449,6 @@ namespace SyntaxEditorExampleWinForms {
         private SyntaxEditorWinForms.SyntaxEditor rawEditor;
         private DevExpress.XtraEditors.SimpleButton btnCancel;
         private DevExpress.XtraEditors.SimpleButton btnSave;
-        private SyntaxEditorWinForms.Theming.ThemeBehavior rawEditorThemeBehavior;
         private DevExpress.XtraLayout.LayoutControl layoutControl1;
         private DevExpress.XtraLayout.LayoutControlGroup Root;
         private DevExpress.Utils.Layout.StackPanel stackPanel1;

@@ -9,7 +9,6 @@ using System.Windows.Forms;
 
 namespace SyntaxEditorExampleWinForms {
     public partial class MainForm : DevExpress.XtraEditors.XtraForm {
-        private ThemeBehavior themeBehavior;
         private IReadOnlyList<MonacoThemeRule>? currentRules;
 
         public MainForm() {
@@ -19,9 +18,6 @@ namespace SyntaxEditorExampleWinForms {
         }
 
         private void ConfigureUI() {
-            themeBehavior = new ThemeBehavior();
-            themeBehavior.Attach(syntaxEditor);
-
             syntaxEditor.EditorInitialized += async (s, e) => {
                 try {
                     await RefreshLanguages();
@@ -59,7 +55,7 @@ namespace SyntaxEditorExampleWinForms {
             seTabSize.EditValue = syntaxEditor.TabSize;
 
             // Sync check edits with initial editor values
-            applySkinColorsCheckItem.Checked = themeBehavior?.ApplyDevExpressColors ?? false;
+            applySkinColorsCheckItem.Checked = syntaxEditor.ApplyDevExpressColors;
             ceReadOnly.Checked = syntaxEditor.ReadOnly;
             ceContextMenu.Checked = syntaxEditor.EnableContextMenu;
             ceDragAndDrop.Checked = syntaxEditor.EnableDragAndDrop;
@@ -151,14 +147,13 @@ namespace SyntaxEditorExampleWinForms {
 
             if(form.ShowDialog(this) == DialogResult.OK) {
                 currentRules = form.GetRules();
-                themeBehavior.Rules = currentRules;
-                themeBehavior.ApplyCurrentTheme();
+                syntaxEditor.Rules = currentRules;
+                syntaxEditor.ApplyCurrentTheme();
             }
         }
 
         private void applySkinColorsCheckItem_CheckedChanged(object sender, ItemClickEventArgs e) {
-            if(themeBehavior != null)
-                themeBehavior.ApplyDevExpressColors = applySkinColorsCheckItem.Checked;
+            syntaxEditor.ApplyDevExpressColors = applySkinColorsCheckItem.Checked;
         }
 
         #endregion Ribbon Button Handlers

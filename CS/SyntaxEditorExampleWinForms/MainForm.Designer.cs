@@ -12,7 +12,6 @@
         protected override void Dispose(bool disposing) {
             if(disposing) {
                 components?.Dispose();
-                themeBehavior?.Dispose();
             }
             base.Dispose(disposing);
         }

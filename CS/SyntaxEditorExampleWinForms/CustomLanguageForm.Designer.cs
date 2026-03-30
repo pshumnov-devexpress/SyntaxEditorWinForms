@@ -4,8 +4,6 @@ namespace SyntaxEditorExampleWinForms {
 
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                monarchThemeBehavior?.Dispose();
-                configThemeBehavior?.Dispose();
                 monarchEditor?.Dispose();
                 configEditor?.Dispose();
                 components?.Dispose();
@@ -230,8 +228,6 @@ namespace SyntaxEditorExampleWinForms {
         private SyntaxEditorWinForms.SyntaxEditor monarchEditor;
         private SyntaxEditorWinForms.SyntaxEditor configEditor;
         private DevExpress.XtraEditors.SimpleButton btnCancel;
-        private SyntaxEditorWinForms.Theming.ThemeBehavior monarchThemeBehavior;
-        private SyntaxEditorWinForms.Theming.ThemeBehavior configThemeBehavior;
         private DevExpress.XtraLayout.LayoutControl layoutControl1;
         private DevExpress.XtraLayout.LayoutControlGroup Root;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem3;
