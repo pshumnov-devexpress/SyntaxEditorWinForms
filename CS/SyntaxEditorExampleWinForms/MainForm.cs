@@ -33,6 +33,7 @@ namespace SyntaxEditorExampleWinForms {
             };
 
             // Populate combo boxes
+
             cbeLanguage.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
             cbeLanguage.Properties.AutoComplete = true;
 
@@ -44,19 +45,25 @@ namespace SyntaxEditorExampleWinForms {
             cbeAutoIndent.Properties.Items.AddRange(Enum.GetValues(typeof(EditorAutoIndent)));
             cbeAutoIndent.EditValue = syntaxEditor.AutoIndent;
 
-            // Set SpinEdit constraints
+            // Configure SpinEdit 
+
             seLineNumbersMinChars.Properties.MinValue = 1;
+            seLineNumbersMinChars.Properties.MaxValue = decimal.MaxValue;
             seLineNumbersMinChars.Properties.IsFloatValue = false;
             seLineNumbersMinChars.EditValue = syntaxEditor.LineNumbersMinChars;
+            seLineNumbersMinChars.EditValueChanged += seLineNumbersMinChars_EditValueChanged;
 
             seScrollBeyondLastColumn.Properties.MinValue = 0;
+            seScrollBeyondLastColumn.Properties.MaxValue = decimal.MaxValue;
             seScrollBeyondLastColumn.Properties.IsFloatValue = false;
             seScrollBeyondLastColumn.EditValue = syntaxEditor.ScrollBeyondLastColumn;
+            seScrollBeyondLastColumn.EditValueChanged += seScrollBeyondLastColumn_EditValueChanged;
 
             seTabSize.Properties.MinValue = 1;
             seTabSize.Properties.MaxValue = 64;
             seTabSize.Properties.IsFloatValue = false;
             seTabSize.EditValue = syntaxEditor.TabSize;
+            seTabSize.EditValueChanged += seTabSize_EditValueChanged;
 
             // Sync check edits with initial editor values
             applySkinColorsCheckItem.Checked = themeBehavior?.ApplyDevExpressColors ?? false;
@@ -195,7 +202,7 @@ namespace SyntaxEditorExampleWinForms {
             syntaxEditor.ShowLineNumbers = ceLineNumbers.Checked;
         }
 
-        private void seLineNumbersMinChars_EditValueChanged(object sender, EventArgs e) {
+        private void seLineNumbersMinChars_EditValueChanged(object? sender, EventArgs e) {
             syntaxEditor.LineNumbersMinChars = Convert.ToInt32(seLineNumbersMinChars.EditValue);
         }
 
@@ -215,7 +222,7 @@ namespace SyntaxEditorExampleWinForms {
             syntaxEditor.EnableStickyScroll = ceStickyScroll.Checked;
         }
 
-        private void cbeWordWrap_EditValueChanged(object sender, EventArgs e) {
+        private void cbeWordWrap_EditValueChanged(object? sender, EventArgs e) {
             if(cbeWordWrap.EditValue is EditorWordWrap ww)
                 syntaxEditor.WordWrap = ww;
         }
@@ -228,7 +235,7 @@ namespace SyntaxEditorExampleWinForms {
             syntaxEditor.EnableScrollBeyondLastLine = ceScrollBeyondLastLine.Checked;
         }
 
-        private void seScrollBeyondLastColumn_EditValueChanged(object sender, EventArgs e) {
+        private void seScrollBeyondLastColumn_EditValueChanged(object? sender, EventArgs e) {
             syntaxEditor.ScrollBeyondLastColumn = Convert.ToInt32(seScrollBeyondLastColumn.EditValue);
         }
 
