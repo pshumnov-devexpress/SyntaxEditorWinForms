@@ -6,7 +6,8 @@ namespace SyntaxEditorWinForms.Theming {
     public enum MonacoThemeBase {
         Light,
         Dark,
-        HighContrast
+        HighContrast,
+        HighContrastLight
     }
 
     public sealed class MonacoTheme {
