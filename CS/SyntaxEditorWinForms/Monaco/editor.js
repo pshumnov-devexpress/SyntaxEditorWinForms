@@ -62,7 +62,7 @@ require(['vs/editor/editor.main'], function () {
     ===================================== */
 
     function updateDirtyState() {
-        // inform the wpf part that the content was modified
+        // inform the WinForms part that the content was modified
         const currentVersion = model.getAlternativeVersionId();
         const isDirty = currentVersion !== baselineVersion;
 
@@ -98,7 +98,7 @@ require(['vs/editor/editor.main'], function () {
 
             //Consider the new text as new and set the IsDirty flag to False.
             baselineVersion = model.getAlternativeVersionId();
-            //inform WPF that IsModified has changed
+            //inform WinForms that IsModified has changed
             updateDirtyState()
         }
     }
@@ -216,7 +216,7 @@ require(['vs/editor/editor.main'], function () {
         updateDirtyState();
     });
 
-    //listen to updates from the WPF side
+    //listen to updates from the WinForms side
     window.chrome.webview.addEventListener('message', event => {
         const msg = event.data;
         const handler = handlers[msg.type];
