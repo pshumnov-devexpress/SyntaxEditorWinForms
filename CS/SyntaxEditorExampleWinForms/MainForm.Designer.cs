@@ -411,7 +411,6 @@
             seLineNumbersMinChars.Size = new System.Drawing.Size(194, 38);
             seLineNumbersMinChars.StyleController = layoutControl;
             seLineNumbersMinChars.TabIndex = 9;
-            seLineNumbersMinChars.EditValueChanged += seLineNumbersMinChars_EditValueChanged;
             // 
             // ceMinimap
             // 
@@ -500,7 +499,6 @@
             seScrollBeyondLastColumn.Size = new System.Drawing.Size(194, 38);
             seScrollBeyondLastColumn.StyleController = layoutControl;
             seScrollBeyondLastColumn.TabIndex = 17;
-            seScrollBeyondLastColumn.EditValueChanged += seScrollBeyondLastColumn_EditValueChanged;
             // 
             // ceMouseWheelZoom
             // 
@@ -523,7 +521,6 @@
             seTabSize.Size = new System.Drawing.Size(194, 38);
             seTabSize.StyleController = layoutControl;
             seTabSize.TabIndex = 19;
-            seTabSize.EditValueChanged += seTabSize_EditValueChanged;
             // 
             // ceInsertSpaces
             // 
