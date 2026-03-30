@@ -5,37 +5,26 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using DevExpress.Utils.Frames;
 
 namespace SyntaxEditorWinForms.Theming {
     public static class LookAndFeelExtensions {
-
         public static MonacoTheme CreateMonacoTheme(this UserLookAndFeel lookAndFeel, IReadOnlyList<MonacoThemeRule>? rules, bool useSkinColors) {
-            if(useSkinColors) {
-                return lookAndFeel.CreateDXMonacoTheme(rules);
-            }
-            else {
-                return lookAndFeel.CreateDefaultMonacoTheme(rules);
-            }
-        }
-
-        static MonacoTheme CreateDefaultMonacoTheme(this UserLookAndFeel lookAndFeel, IReadOnlyList<MonacoThemeRule>? rules) {
             var result = new MonacoTheme {
                 Name = $"{lookAndFeel.ActiveSkinName.ToLowerInvariant().Replace(" ", "-")}",
-                Base = MonacoThemeBase.Light,
-                Rules = rules
+                Base = GetSkinBase(lookAndFeel),
+                Colors = useSkinColors ? CreateMonacoColors(lookAndFeel) : null,
+                Rules = useSkinColors ? CreateDevExpressTokenRules(lookAndFeel, rules) : rules,
+                Inherit = !useSkinColors
             };
             return result;
         }
 
-        static MonacoTheme CreateDXMonacoTheme(this UserLookAndFeel lookAndFeel, IReadOnlyList<MonacoThemeRule>? rules) {
-            var result = new MonacoTheme {
-                Name = $"{lookAndFeel.ActiveSkinName.ToLowerInvariant().Replace(" ", "-")}",
-                Base = MonacoThemeBase.Light,
-                Colors = CreateMonacoColors(lookAndFeel),
-                Rules = CreateDevExpressTokenRules(lookAndFeel, rules),
-                Inherit = false
-            };
-            return result;
+        static MonacoThemeBase GetSkinBase(UserLookAndFeel lookAndFeel) {
+            if(lookAndFeel.ActiveSkinName == SkinStyle.HighContrast || lookAndFeel.ActiveSkinName == SkinStyle.HighContrastClassic) {
+                return FrameHelper.IsDarkSkin(lookAndFeel) ? MonacoThemeBase.HighContrast : MonacoThemeBase.HighContrastLight;
+            }
+            return FrameHelper.IsDarkSkin(lookAndFeel) ? MonacoThemeBase.Dark : MonacoThemeBase.Light;
         }
 
         static Dictionary<string, Color> CreateMonacoColors(UserLookAndFeel lookAndFeel) {

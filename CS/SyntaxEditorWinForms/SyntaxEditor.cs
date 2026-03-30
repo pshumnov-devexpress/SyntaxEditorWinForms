@@ -646,6 +646,7 @@ namespace SyntaxEditorWinForms {
             MonacoThemeBase.Light => "vs",
             MonacoThemeBase.Dark => "vs-dark",
             MonacoThemeBase.HighContrast => "hc-black",
+            MonacoThemeBase.HighContrastLight => "hc-light",
             _ => throw new ArgumentOutOfRangeException()
         };
 
