@@ -24,6 +24,11 @@
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
+            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions2 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject5 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject6 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject7 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject8 = new DevExpress.Utils.SerializableAppearanceObject();
             ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
             skinDropDownButtonItem1 = new DevExpress.XtraBars.SkinDropDownButtonItem();
             skinPaletteDropDownButtonItem1 = new DevExpress.XtraBars.SkinPaletteDropDownButtonItem();
@@ -578,15 +583,17 @@
             cbeAutoIndent.Margin = new System.Windows.Forms.Padding(2);
             cbeAutoIndent.MenuManager = ribbonControl1;
             cbeAutoIndent.Name = "cbeAutoIndent";
-            cbeAutoIndent.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            cbeAutoIndent.Size = new System.Drawing.Size(129, 20);
+            editorButtonImageOptions2.ImageUri.Uri = "icon%20builder/actions_info";
+            editorButtonImageOptions2.SvgImageSize = new System.Drawing.Size(16, 16);
+            cbeAutoIndent.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo), new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, editorButtonImageOptions2, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject5, serializableAppearanceObject6, serializableAppearanceObject7, serializableAppearanceObject8, "Changes take effect after editor configuration refresh (e.g. TabSize change).", null, null, DevExpress.Utils.ToolTipAnchor.Default) });
+            cbeAutoIndent.Size = new System.Drawing.Size(129, 24);
             cbeAutoIndent.StyleController = layoutControl;
             cbeAutoIndent.TabIndex = 19;
             cbeAutoIndent.EditValueChanged += cbeAutoIndent_EditValueChanged;
             // 
             // ceQuickSuggestions
             // 
-            ceQuickSuggestions.Location = new System.Drawing.Point(12, 658);
+            ceQuickSuggestions.Location = new System.Drawing.Point(12, 662);
             ceQuickSuggestions.Margin = new System.Windows.Forms.Padding(2);
             ceQuickSuggestions.MenuManager = ribbonControl1;
             ceQuickSuggestions.Name = "ceQuickSuggestions";
@@ -598,7 +605,7 @@
             // 
             // ceWordBasedSuggestions
             // 
-            ceWordBasedSuggestions.Location = new System.Drawing.Point(12, 682);
+            ceWordBasedSuggestions.Location = new System.Drawing.Point(12, 686);
             ceWordBasedSuggestions.Margin = new System.Windows.Forms.Padding(2);
             ceWordBasedSuggestions.MenuManager = ribbonControl1;
             ceWordBasedSuggestions.Name = "ceWordBasedSuggestions";
@@ -610,7 +617,7 @@
             // 
             // ceSuggestOnTriggerCharacters
             // 
-            ceSuggestOnTriggerCharacters.Location = new System.Drawing.Point(12, 706);
+            ceSuggestOnTriggerCharacters.Location = new System.Drawing.Point(12, 710);
             ceSuggestOnTriggerCharacters.Margin = new System.Windows.Forms.Padding(2);
             ceSuggestOnTriggerCharacters.MenuManager = ribbonControl1;
             ceSuggestOnTriggerCharacters.Name = "ceSuggestOnTriggerCharacters";
@@ -622,7 +629,7 @@
             // 
             // ceEnableParameterHints
             // 
-            ceEnableParameterHints.Location = new System.Drawing.Point(12, 730);
+            ceEnableParameterHints.Location = new System.Drawing.Point(12, 734);
             ceEnableParameterHints.Margin = new System.Windows.Forms.Padding(2);
             ceEnableParameterHints.MenuManager = ribbonControl1;
             ceEnableParameterHints.Name = "ceEnableParameterHints";
@@ -638,12 +645,12 @@
             Root.GroupBordersVisible = false;
             Root.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { emptySpaceItem1, lcgGeneral, lcgInteraction, lcgAppearance, lcgEditing, lcgIntelliSense });
             Root.Name = "Root";
-            Root.Size = new System.Drawing.Size(290, 772);
+            Root.Size = new System.Drawing.Size(290, 776);
             Root.TextVisible = false;
             // 
             // emptySpaceItem1
             // 
-            emptySpaceItem1.Location = new System.Drawing.Point(0, 762);
+            emptySpaceItem1.Location = new System.Drawing.Point(0, 766);
             emptySpaceItem1.Name = "emptySpaceItem1";
             emptySpaceItem1.Size = new System.Drawing.Size(290, 10);
             // 
@@ -662,7 +669,7 @@
             lciLanguage.Location = new System.Drawing.Point(0, 24);
             lciLanguage.Name = "lciLanguage";
             lciLanguage.Size = new System.Drawing.Size(270, 24);
-            lciLanguage.Text = "Language";
+            lciLanguage.Text = "Language:";
             lciLanguage.TextSize = new System.Drawing.Size(125, 13);
             // 
             // lciReadOnly
@@ -729,7 +736,7 @@
             lciLineNumbersMinChars.Location = new System.Drawing.Point(0, 24);
             lciLineNumbersMinChars.Name = "lciLineNumbersMinChars";
             lciLineNumbersMinChars.Size = new System.Drawing.Size(270, 24);
-            lciLineNumbersMinChars.Text = "Line Numbers Min Chars";
+            lciLineNumbersMinChars.Text = "Line Numbers Min Chars:";
             lciLineNumbersMinChars.TextSize = new System.Drawing.Size(125, 13);
             // 
             // layoutControlItem4
@@ -762,7 +769,7 @@
             lciWordWrap.Location = new System.Drawing.Point(0, 144);
             lciWordWrap.Name = "lciWordWrap";
             lciWordWrap.Size = new System.Drawing.Size(270, 24);
-            lciWordWrap.Text = "Word Wrap";
+            lciWordWrap.Text = "Word Wrap:";
             lciWordWrap.TextSize = new System.Drawing.Size(125, 13);
             // 
             // layoutControlItem8
@@ -787,7 +794,7 @@
             lciScrollBeyondLastColumn.Location = new System.Drawing.Point(0, 216);
             lciScrollBeyondLastColumn.Name = "lciScrollBeyondLastColumn";
             lciScrollBeyondLastColumn.Size = new System.Drawing.Size(270, 24);
-            lciScrollBeyondLastColumn.Text = "Scroll Beyond Last Column";
+            lciScrollBeyondLastColumn.Text = "Scroll Beyond Last Column:";
             lciScrollBeyondLastColumn.TextSize = new System.Drawing.Size(125, 13);
             // 
             // layoutControlItem11
@@ -803,7 +810,7 @@
             lcgEditing.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { lciTabSize, layoutControlItem2, layoutControlItem7, lciAutoIndent });
             lcgEditing.Location = new System.Drawing.Point(0, 486);
             lcgEditing.Name = "lcgEditing";
-            lcgEditing.Size = new System.Drawing.Size(290, 138);
+            lcgEditing.Size = new System.Drawing.Size(290, 142);
             lcgEditing.Spacing = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
             lcgEditing.Text = "Editing";
             // 
@@ -813,7 +820,7 @@
             lciTabSize.Location = new System.Drawing.Point(0, 0);
             lciTabSize.Name = "lciTabSize";
             lciTabSize.Size = new System.Drawing.Size(270, 24);
-            lciTabSize.Text = "Tab Size";
+            lciTabSize.Text = "Tab Size:";
             lciTabSize.TextSize = new System.Drawing.Size(125, 13);
             // 
             // layoutControlItem2
@@ -837,14 +844,14 @@
             lciAutoIndent.Control = cbeAutoIndent;
             lciAutoIndent.Location = new System.Drawing.Point(0, 72);
             lciAutoIndent.Name = "lciAutoIndent";
-            lciAutoIndent.Size = new System.Drawing.Size(270, 24);
-            lciAutoIndent.Text = "Auto Indent";
+            lciAutoIndent.Size = new System.Drawing.Size(270, 28);
+            lciAutoIndent.Text = "Auto Indent:";
             lciAutoIndent.TextSize = new System.Drawing.Size(125, 13);
             // 
             // lcgIntelliSense
             // 
             lcgIntelliSense.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem10, layoutControlItem12, layoutControlItem13, layoutControlItem14 });
-            lcgIntelliSense.Location = new System.Drawing.Point(0, 624);
+            lcgIntelliSense.Location = new System.Drawing.Point(0, 628);
             lcgIntelliSense.Name = "lcgIntelliSense";
             lcgIntelliSense.Size = new System.Drawing.Size(290, 138);
             lcgIntelliSense.Spacing = new DevExpress.XtraLayout.Utils.Padding(0, 0, 0, 0);
