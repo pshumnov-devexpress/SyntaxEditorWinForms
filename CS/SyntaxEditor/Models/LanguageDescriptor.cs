@@ -1,4 +1,4 @@
-namespace SyntaxEditorWinForms.Models {
+namespace SyntaxEditor.Models {
     public sealed class LanguageDescriptor {
         public string Id { get; init; } = null!;
 

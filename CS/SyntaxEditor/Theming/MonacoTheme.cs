@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace SyntaxEditorWinForms.Theming {
+namespace SyntaxEditor.Theming {
 
     public enum MonacoThemeBase {
         Light,

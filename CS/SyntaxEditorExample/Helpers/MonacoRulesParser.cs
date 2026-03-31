@@ -1,4 +1,4 @@
-using SyntaxEditorWinForms.Theming;
+using SyntaxEditor.Theming;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Drawing;
 
-namespace SyntaxEditorExampleWinForms.Helpers {
+namespace SyntaxEditorExample.Helpers {
     public static class MonacoRulesParser {
 
         private static string? ConvertFontStyle(MonacoFontStyle style) {

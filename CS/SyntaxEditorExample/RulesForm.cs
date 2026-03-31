@@ -1,7 +1,7 @@
 using DevExpress.XtraEditors;
-using SyntaxEditorWinForms;
-using SyntaxEditorWinForms.Theming;
-using SyntaxEditorExampleWinForms.Helpers;
+using SyntaxEditor;
+using SyntaxEditor.Theming;
+using SyntaxEditorExample.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Windows.Forms;
 using DevExpress.XtraEditors.Controls;
 
-namespace SyntaxEditorExampleWinForms {
+namespace SyntaxEditorExample {
     public partial class RulesForm : XtraForm {
 
         private BindingList<RuleItem> ruleItems = new BindingList<RuleItem>();

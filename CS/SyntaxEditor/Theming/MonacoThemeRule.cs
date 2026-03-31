@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 
-namespace SyntaxEditorWinForms.Theming {
+namespace SyntaxEditor.Theming {
     public sealed class MonacoThemeRule {
         [Required]
         public required string Token { get; set; }

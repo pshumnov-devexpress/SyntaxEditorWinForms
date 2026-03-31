@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using DevExpress.LookAndFeel;
 using DevExpress.XtraEditors;
 
-namespace SyntaxEditorExampleWinForms {
+namespace SyntaxEditorExample {
     internal static class Program {
         [STAThread]
         static void Main() {

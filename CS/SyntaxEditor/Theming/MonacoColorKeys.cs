@@ -1,4 +1,4 @@
-namespace SyntaxEditorWinForms.Theming {
+namespace SyntaxEditor.Theming {
     public static class MonacoColorKeys {
         // Base
         public const string EditorBackground = "editor.background";

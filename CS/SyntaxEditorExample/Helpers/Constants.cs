@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SyntaxEditorExampleWinForms.Helpers {
+namespace SyntaxEditorExample.Helpers {
     internal static class Constants {
         public static string MyLangMonarch = @"{
   defaultToken: ""invalid"",

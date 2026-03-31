@@ -1,13 +1,13 @@
 ﻿using DevExpress.XtraBars;
-using SyntaxEditorExampleWinForms.Helpers;
-using SyntaxEditorWinForms.Models;
-using SyntaxEditorWinForms.Theming;
+using SyntaxEditorExample.Helpers;
+using SyntaxEditor.Models;
+using SyntaxEditor.Theming;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace SyntaxEditorExampleWinForms {
+namespace SyntaxEditorExample {
     public partial class MainForm : DevExpress.XtraEditors.XtraForm {
         private IReadOnlyList<MonacoThemeRule>? currentRules;
 

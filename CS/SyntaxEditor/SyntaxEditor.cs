@@ -3,8 +3,8 @@ using DevExpress.Skins;
 using DevExpress.XtraEditors;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
-using SyntaxEditorWinForms.Models;
-using SyntaxEditorWinForms.Theming;
+using SyntaxEditor.Models;
+using SyntaxEditor.Theming;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SyntaxEditorWinForms {
+namespace SyntaxEditor {
     public class SyntaxEditor : XtraUserControl {
 
         private WebView2? _webView;

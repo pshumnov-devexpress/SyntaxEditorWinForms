@@ -1,4 +1,4 @@
-﻿namespace SyntaxEditorExampleWinForms {
+﻿namespace SyntaxEditorExample {
     partial class MainForm {
         /// <summary>
         /// Required designer variable.
@@ -36,7 +36,7 @@
             ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            syntaxEditor = new SyntaxEditorWinForms.SyntaxEditor();
+            syntaxEditor = new SyntaxEditor.SyntaxEditor();
             sidePanel1 = new DevExpress.XtraEditors.SidePanel();
             tabPane1 = new DevExpress.XtraBars.Navigation.TabPane();
             optionsTabPage = new DevExpress.XtraBars.Navigation.TabNavigationPage();
@@ -158,16 +158,19 @@
             // 
             // ribbonControl1
             // 
+            ribbonControl1.EmptyAreaImageOptions.ImagePadding = new System.Windows.Forms.Padding(18, 17, 18, 17);
             ribbonControl1.ExpandCollapseItem.Id = 0;
             ribbonControl1.ItemPanelStyle = DevExpress.XtraBars.Ribbon.RibbonItemPanelStyle.Classic;
             ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, skinDropDownButtonItem1, skinPaletteDropDownButtonItem1, openItem, saveItem, customLanguageItem, rulesItem, applySkinColorsCheckItem });
             ribbonControl1.Location = new System.Drawing.Point(0, 0);
+            ribbonControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ribbonControl1.MaxItemId = 9;
             ribbonControl1.Name = "ribbonControl1";
+            ribbonControl1.OptionsMenuMinWidth = 198;
             ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage1 });
             ribbonControl1.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonControlStyle.OfficeUniversal;
             ribbonControl1.ShowPageHeadersMode = DevExpress.XtraBars.Ribbon.ShowPageHeadersMode.Hide;
-            ribbonControl1.Size = new System.Drawing.Size(2311, 96);
+            ribbonControl1.Size = new System.Drawing.Size(1327, 57);
             // 
             // skinDropDownButtonItem1
             // 
@@ -251,7 +254,8 @@
             // 
             // syntaxEditor
             // 
-            syntaxEditor.AutoIndent = SyntaxEditorWinForms.Models.EditorAutoIndent.Full;
+            syntaxEditor.ApplyDevExpressColors = true;
+            syntaxEditor.AutoIndent = SyntaxEditor.Models.EditorAutoIndent.Full;
             syntaxEditor.DetectIndentation = true;
             syntaxEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             syntaxEditor.EditorLanguage = "csharp";
@@ -268,26 +272,29 @@
             syntaxEditor.EnableWordBasedSuggestions = true;
             syntaxEditor.InsertSpaces = true;
             syntaxEditor.LineNumbersMinChars = 5;
-            syntaxEditor.Location = new System.Drawing.Point(0, 96);
+            syntaxEditor.Location = new System.Drawing.Point(0, 57);
+            syntaxEditor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             syntaxEditor.Name = "syntaxEditor";
             syntaxEditor.ReadOnly = false;
+            syntaxEditor.Rules = null;
             syntaxEditor.ScrollBeyondLastColumn = 5;
             syntaxEditor.ShowGlyphMargin = false;
             syntaxEditor.ShowLineNumbers = true;
             syntaxEditor.ShowMinimap = false;
-            syntaxEditor.Size = new System.Drawing.Size(1797, 1382);
+            syntaxEditor.Size = new System.Drawing.Size(1019, 634);
             syntaxEditor.TabIndex = 1;
             syntaxEditor.TabSize = 4;
             syntaxEditor.ThemeName = "vs";
-            syntaxEditor.WordWrap = SyntaxEditorWinForms.Models.EditorWordWrap.Off;
+            syntaxEditor.WordWrap = SyntaxEditor.Models.EditorWordWrap.Off;
             // 
             // sidePanel1
             // 
             sidePanel1.Controls.Add(tabPane1);
             sidePanel1.Dock = System.Windows.Forms.DockStyle.Right;
-            sidePanel1.Location = new System.Drawing.Point(1797, 96);
+            sidePanel1.Location = new System.Drawing.Point(1019, 57);
+            sidePanel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             sidePanel1.Name = "sidePanel1";
-            sidePanel1.Size = new System.Drawing.Size(514, 1382);
+            sidePanel1.Size = new System.Drawing.Size(308, 634);
             sidePanel1.TabIndex = 2;
             sidePanel1.Text = "sidePanel1";
             // 
@@ -295,12 +302,13 @@
             // 
             tabPane1.Controls.Add(optionsTabPage);
             tabPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            tabPane1.Location = new System.Drawing.Point(2, 0);
+            tabPane1.Location = new System.Drawing.Point(1, 0);
+            tabPane1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             tabPane1.Name = "tabPane1";
             tabPane1.Pages.AddRange(new DevExpress.XtraBars.Navigation.NavigationPageBase[] { optionsTabPage });
-            tabPane1.RegularSize = new System.Drawing.Size(512, 1382);
+            tabPane1.RegularSize = new System.Drawing.Size(307, 634);
             tabPane1.SelectedPage = optionsTabPage;
-            tabPane1.Size = new System.Drawing.Size(512, 1382);
+            tabPane1.Size = new System.Drawing.Size(307, 634);
             tabPane1.TabIndex = 0;
             tabPane1.Text = "tabPane1";
             // 
@@ -308,8 +316,9 @@
             // 
             optionsTabPage.Caption = "Options";
             optionsTabPage.Controls.Add(layoutControl);
+            optionsTabPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             optionsTabPage.Name = "optionsTabPage";
-            optionsTabPage.Size = new System.Drawing.Size(512, 1324);
+            optionsTabPage.Size = new System.Drawing.Size(307, 601);
             // 
             // layoutControl
             // 
@@ -338,65 +347,71 @@
             layoutControl.Controls.Add(ceEnableParameterHints);
             layoutControl.Dock = System.Windows.Forms.DockStyle.Fill;
             layoutControl.Location = new System.Drawing.Point(0, 0);
+            layoutControl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             layoutControl.Name = "layoutControl";
-            layoutControl.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(1544, 605, 1137, 700);
+            layoutControl.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(1057, 486, 1137, 700);
             layoutControl.OptionsView.GroupStyle = DevExpress.Utils.GroupStyle.Title;
             layoutControl.Root = Root;
-            layoutControl.Size = new System.Drawing.Size(512, 1324);
+            layoutControl.Size = new System.Drawing.Size(307, 601);
             layoutControl.TabIndex = 0;
             layoutControl.Text = "layoutControl1";
             // 
             // ceDragAndDrop
             // 
-            ceDragAndDrop.Location = new System.Drawing.Point(23, 265);
+            ceDragAndDrop.Location = new System.Drawing.Point(8, 132);
+            ceDragAndDrop.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceDragAndDrop.MenuManager = ribbonControl1;
             ceDragAndDrop.Name = "ceDragAndDrop";
             ceDragAndDrop.Properties.Caption = "Drag and Drop";
-            ceDragAndDrop.Size = new System.Drawing.Size(436, 35);
+            ceDragAndDrop.Size = new System.Drawing.Size(274, 20);
             ceDragAndDrop.StyleController = layoutControl;
             ceDragAndDrop.TabIndex = 7;
             ceDragAndDrop.CheckedChanged += ceDragAndDrop_CheckedChanged;
             // 
             // ceContextMenu
             // 
-            ceContextMenu.Location = new System.Drawing.Point(23, 224);
+            ceContextMenu.Location = new System.Drawing.Point(8, 110);
+            ceContextMenu.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceContextMenu.MenuManager = ribbonControl1;
             ceContextMenu.Name = "ceContextMenu";
             ceContextMenu.Properties.Caption = "Context Menu";
-            ceContextMenu.Size = new System.Drawing.Size(436, 35);
+            ceContextMenu.Size = new System.Drawing.Size(274, 20);
             ceContextMenu.StyleController = layoutControl;
             ceContextMenu.TabIndex = 6;
             ceContextMenu.CheckedChanged += ceContextMenu_CheckedChanged;
             // 
             // cbeLanguage
             // 
-            cbeLanguage.Location = new System.Drawing.Point(265, 102);
+            cbeLanguage.Location = new System.Drawing.Point(140, 52);
+            cbeLanguage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             cbeLanguage.MenuManager = ribbonControl1;
             cbeLanguage.Name = "cbeLanguage";
             cbeLanguage.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            cbeLanguage.Size = new System.Drawing.Size(194, 38);
+            cbeLanguage.Size = new System.Drawing.Size(142, 20);
             cbeLanguage.StyleController = layoutControl;
             cbeLanguage.TabIndex = 5;
             cbeLanguage.EditValueChanged += cbeLanguage_EditValueChanged;
             // 
             // ceReadOnly
             // 
-            ceReadOnly.Location = new System.Drawing.Point(23, 61);
+            ceReadOnly.Location = new System.Drawing.Point(8, 30);
+            ceReadOnly.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceReadOnly.MenuManager = ribbonControl1;
             ceReadOnly.Name = "ceReadOnly";
             ceReadOnly.Properties.Caption = "Read Only";
-            ceReadOnly.Size = new System.Drawing.Size(436, 35);
+            ceReadOnly.Size = new System.Drawing.Size(274, 20);
             ceReadOnly.StyleController = layoutControl;
             ceReadOnly.TabIndex = 4;
             ceReadOnly.CheckedChanged += ceReadOnly_CheckedChanged;
             // 
             // ceLineNumbers
             // 
-            ceLineNumbers.Location = new System.Drawing.Point(23, 384);
+            ceLineNumbers.Location = new System.Drawing.Point(8, 190);
+            ceLineNumbers.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceLineNumbers.MenuManager = ribbonControl1;
             ceLineNumbers.Name = "ceLineNumbers";
             ceLineNumbers.Properties.Caption = "Line Numbers";
-            ceLineNumbers.Size = new System.Drawing.Size(436, 35);
+            ceLineNumbers.Size = new System.Drawing.Size(274, 20);
             ceLineNumbers.StyleController = layoutControl;
             ceLineNumbers.TabIndex = 8;
             ceLineNumbers.CheckedChanged += ceLineNumbers_CheckedChanged;
@@ -404,87 +419,95 @@
             // seLineNumbersMinChars
             // 
             seLineNumbersMinChars.EditValue = new decimal(new int[] { 0, 0, 0, 0 });
-            seLineNumbersMinChars.Location = new System.Drawing.Point(265, 425);
+            seLineNumbersMinChars.Location = new System.Drawing.Point(140, 212);
+            seLineNumbersMinChars.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             seLineNumbersMinChars.MenuManager = ribbonControl1;
             seLineNumbersMinChars.Name = "seLineNumbersMinChars";
             seLineNumbersMinChars.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            seLineNumbersMinChars.Size = new System.Drawing.Size(194, 38);
+            seLineNumbersMinChars.Size = new System.Drawing.Size(142, 20);
             seLineNumbersMinChars.StyleController = layoutControl;
             seLineNumbersMinChars.TabIndex = 9;
             // 
             // ceMinimap
             // 
-            ceMinimap.Location = new System.Drawing.Point(23, 469);
+            ceMinimap.Location = new System.Drawing.Point(8, 234);
+            ceMinimap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceMinimap.MenuManager = ribbonControl1;
             ceMinimap.Name = "ceMinimap";
             ceMinimap.Properties.Caption = "Minimap";
-            ceMinimap.Size = new System.Drawing.Size(436, 35);
+            ceMinimap.Size = new System.Drawing.Size(274, 20);
             ceMinimap.StyleController = layoutControl;
             ceMinimap.TabIndex = 10;
             ceMinimap.CheckedChanged += ceMinimap_CheckedChanged;
             // 
             // ceGlyphMargin
             // 
-            ceGlyphMargin.Location = new System.Drawing.Point(23, 510);
+            ceGlyphMargin.Location = new System.Drawing.Point(8, 256);
+            ceGlyphMargin.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceGlyphMargin.MenuManager = ribbonControl1;
             ceGlyphMargin.Name = "ceGlyphMargin";
             ceGlyphMargin.Properties.Caption = "Glyph Margin";
-            ceGlyphMargin.Size = new System.Drawing.Size(436, 35);
+            ceGlyphMargin.Size = new System.Drawing.Size(274, 20);
             ceGlyphMargin.StyleController = layoutControl;
             ceGlyphMargin.TabIndex = 11;
             ceGlyphMargin.CheckedChanged += ceGlyphMargin_CheckedChanged;
             // 
             // ceFolding
             // 
-            ceFolding.Location = new System.Drawing.Point(23, 551);
+            ceFolding.Location = new System.Drawing.Point(8, 278);
+            ceFolding.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceFolding.MenuManager = ribbonControl1;
             ceFolding.Name = "ceFolding";
             ceFolding.Properties.Caption = "Folding";
-            ceFolding.Size = new System.Drawing.Size(436, 35);
+            ceFolding.Size = new System.Drawing.Size(274, 20);
             ceFolding.StyleController = layoutControl;
             ceFolding.TabIndex = 12;
             ceFolding.CheckedChanged += ceFolding_CheckedChanged;
             // 
             // ceStickyScroll
             // 
-            ceStickyScroll.Location = new System.Drawing.Point(23, 592);
+            ceStickyScroll.Location = new System.Drawing.Point(8, 300);
+            ceStickyScroll.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceStickyScroll.MenuManager = ribbonControl1;
             ceStickyScroll.Name = "ceStickyScroll";
             ceStickyScroll.Properties.Caption = "Sticky Scroll";
-            ceStickyScroll.Size = new System.Drawing.Size(436, 35);
+            ceStickyScroll.Size = new System.Drawing.Size(274, 20);
             ceStickyScroll.StyleController = layoutControl;
             ceStickyScroll.TabIndex = 13;
             ceStickyScroll.CheckedChanged += ceStickyScroll_CheckedChanged;
             // 
             // cbeWordWrap
             // 
-            cbeWordWrap.Location = new System.Drawing.Point(265, 633);
+            cbeWordWrap.Location = new System.Drawing.Point(140, 322);
+            cbeWordWrap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             cbeWordWrap.MenuManager = ribbonControl1;
             cbeWordWrap.Name = "cbeWordWrap";
             cbeWordWrap.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            cbeWordWrap.Size = new System.Drawing.Size(194, 38);
+            cbeWordWrap.Size = new System.Drawing.Size(142, 20);
             cbeWordWrap.StyleController = layoutControl;
             cbeWordWrap.TabIndex = 14;
             cbeWordWrap.EditValueChanged += cbeWordWrap_EditValueChanged;
             // 
             // ceSmoothScrolling
             // 
-            ceSmoothScrolling.Location = new System.Drawing.Point(23, 677);
+            ceSmoothScrolling.Location = new System.Drawing.Point(8, 344);
+            ceSmoothScrolling.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceSmoothScrolling.MenuManager = ribbonControl1;
             ceSmoothScrolling.Name = "ceSmoothScrolling";
             ceSmoothScrolling.Properties.Caption = "Smooth Scrolling";
-            ceSmoothScrolling.Size = new System.Drawing.Size(436, 35);
+            ceSmoothScrolling.Size = new System.Drawing.Size(274, 20);
             ceSmoothScrolling.StyleController = layoutControl;
             ceSmoothScrolling.TabIndex = 15;
             ceSmoothScrolling.CheckedChanged += ceSmoothScrolling_CheckedChanged;
             // 
             // ceScrollBeyondLastLine
             // 
-            ceScrollBeyondLastLine.Location = new System.Drawing.Point(23, 718);
+            ceScrollBeyondLastLine.Location = new System.Drawing.Point(8, 366);
+            ceScrollBeyondLastLine.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceScrollBeyondLastLine.MenuManager = ribbonControl1;
             ceScrollBeyondLastLine.Name = "ceScrollBeyondLastLine";
             ceScrollBeyondLastLine.Properties.Caption = "Scroll Beyond Last Line";
-            ceScrollBeyondLastLine.Size = new System.Drawing.Size(436, 35);
+            ceScrollBeyondLastLine.Size = new System.Drawing.Size(274, 20);
             ceScrollBeyondLastLine.StyleController = layoutControl;
             ceScrollBeyondLastLine.TabIndex = 16;
             ceScrollBeyondLastLine.CheckedChanged += ceScrollBeyondLastLine_CheckedChanged;
@@ -492,21 +515,23 @@
             // seScrollBeyondLastColumn
             // 
             seScrollBeyondLastColumn.EditValue = new decimal(new int[] { 0, 0, 0, 0 });
-            seScrollBeyondLastColumn.Location = new System.Drawing.Point(265, 759);
+            seScrollBeyondLastColumn.Location = new System.Drawing.Point(140, 388);
+            seScrollBeyondLastColumn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             seScrollBeyondLastColumn.MenuManager = ribbonControl1;
             seScrollBeyondLastColumn.Name = "seScrollBeyondLastColumn";
             seScrollBeyondLastColumn.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            seScrollBeyondLastColumn.Size = new System.Drawing.Size(194, 38);
+            seScrollBeyondLastColumn.Size = new System.Drawing.Size(142, 20);
             seScrollBeyondLastColumn.StyleController = layoutControl;
             seScrollBeyondLastColumn.TabIndex = 17;
             // 
             // ceMouseWheelZoom
             // 
-            ceMouseWheelZoom.Location = new System.Drawing.Point(23, 803);
+            ceMouseWheelZoom.Location = new System.Drawing.Point(8, 410);
+            ceMouseWheelZoom.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceMouseWheelZoom.MenuManager = ribbonControl1;
             ceMouseWheelZoom.Name = "ceMouseWheelZoom";
             ceMouseWheelZoom.Properties.Caption = "Mouse Wheel Zoom";
-            ceMouseWheelZoom.Size = new System.Drawing.Size(436, 35);
+            ceMouseWheelZoom.Size = new System.Drawing.Size(274, 20);
             ceMouseWheelZoom.StyleController = layoutControl;
             ceMouseWheelZoom.TabIndex = 18;
             ceMouseWheelZoom.CheckedChanged += ceMouseWheelZoom_CheckedChanged;
@@ -514,87 +539,95 @@
             // seTabSize
             // 
             seTabSize.EditValue = new decimal(new int[] { 0, 0, 0, 0 });
-            seTabSize.Location = new System.Drawing.Point(265, 922);
+            seTabSize.Location = new System.Drawing.Point(140, 468);
+            seTabSize.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             seTabSize.MenuManager = ribbonControl1;
             seTabSize.Name = "seTabSize";
             seTabSize.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            seTabSize.Size = new System.Drawing.Size(194, 38);
+            seTabSize.Size = new System.Drawing.Size(142, 20);
             seTabSize.StyleController = layoutControl;
             seTabSize.TabIndex = 19;
             // 
             // ceInsertSpaces
             // 
-            ceInsertSpaces.Location = new System.Drawing.Point(23, 966);
+            ceInsertSpaces.Location = new System.Drawing.Point(8, 490);
+            ceInsertSpaces.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceInsertSpaces.MenuManager = ribbonControl1;
             ceInsertSpaces.Name = "ceInsertSpaces";
             ceInsertSpaces.Properties.Caption = "Insert Spaces";
-            ceInsertSpaces.Size = new System.Drawing.Size(436, 35);
+            ceInsertSpaces.Size = new System.Drawing.Size(274, 20);
             ceInsertSpaces.StyleController = layoutControl;
             ceInsertSpaces.TabIndex = 20;
             ceInsertSpaces.CheckedChanged += ceInsertSpaces_CheckedChanged;
             // 
             // ceDetectIndentation
             // 
-            ceDetectIndentation.Location = new System.Drawing.Point(23, 1007);
+            ceDetectIndentation.Location = new System.Drawing.Point(8, 512);
+            ceDetectIndentation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceDetectIndentation.MenuManager = ribbonControl1;
             ceDetectIndentation.Name = "ceDetectIndentation";
             ceDetectIndentation.Properties.Caption = "Detect Indentation";
-            ceDetectIndentation.Size = new System.Drawing.Size(436, 35);
+            ceDetectIndentation.Size = new System.Drawing.Size(274, 20);
             ceDetectIndentation.StyleController = layoutControl;
             ceDetectIndentation.TabIndex = 21;
             ceDetectIndentation.CheckedChanged += ceDetectIndentation_CheckedChanged;
             // 
             // cbeAutoIndent
             // 
-            cbeAutoIndent.Location = new System.Drawing.Point(265, 1048);
+            cbeAutoIndent.Location = new System.Drawing.Point(140, 534);
+            cbeAutoIndent.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             cbeAutoIndent.MenuManager = ribbonControl1;
             cbeAutoIndent.Name = "cbeAutoIndent";
             cbeAutoIndent.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            cbeAutoIndent.Size = new System.Drawing.Size(194, 38);
+            cbeAutoIndent.Size = new System.Drawing.Size(142, 20);
             cbeAutoIndent.StyleController = layoutControl;
             cbeAutoIndent.TabIndex = 22;
             cbeAutoIndent.EditValueChanged += cbeAutoIndent_EditValueChanged;
             // 
             // ceQuickSuggestions
             // 
-            ceQuickSuggestions.Location = new System.Drawing.Point(23, 1170);
+            ceQuickSuggestions.Location = new System.Drawing.Point(8, 592);
+            ceQuickSuggestions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceQuickSuggestions.MenuManager = ribbonControl1;
             ceQuickSuggestions.Name = "ceQuickSuggestions";
             ceQuickSuggestions.Properties.Caption = "Quick Suggestions";
-            ceQuickSuggestions.Size = new System.Drawing.Size(436, 35);
+            ceQuickSuggestions.Size = new System.Drawing.Size(274, 20);
             ceQuickSuggestions.StyleController = layoutControl;
             ceQuickSuggestions.TabIndex = 23;
             ceQuickSuggestions.CheckedChanged += ceQuickSuggestions_CheckedChanged;
             // 
             // ceWordBasedSuggestions
             // 
-            ceWordBasedSuggestions.Location = new System.Drawing.Point(23, 1211);
+            ceWordBasedSuggestions.Location = new System.Drawing.Point(8, 614);
+            ceWordBasedSuggestions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceWordBasedSuggestions.MenuManager = ribbonControl1;
             ceWordBasedSuggestions.Name = "ceWordBasedSuggestions";
             ceWordBasedSuggestions.Properties.Caption = "Word Based Suggestions";
-            ceWordBasedSuggestions.Size = new System.Drawing.Size(436, 35);
+            ceWordBasedSuggestions.Size = new System.Drawing.Size(274, 20);
             ceWordBasedSuggestions.StyleController = layoutControl;
             ceWordBasedSuggestions.TabIndex = 24;
             ceWordBasedSuggestions.CheckedChanged += ceWordBasedSuggestions_CheckedChanged;
             // 
             // ceSuggestOnTriggerCharacters
             // 
-            ceSuggestOnTriggerCharacters.Location = new System.Drawing.Point(23, 1252);
+            ceSuggestOnTriggerCharacters.Location = new System.Drawing.Point(8, 636);
+            ceSuggestOnTriggerCharacters.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceSuggestOnTriggerCharacters.MenuManager = ribbonControl1;
             ceSuggestOnTriggerCharacters.Name = "ceSuggestOnTriggerCharacters";
             ceSuggestOnTriggerCharacters.Properties.Caption = "Suggest On Trigger Characters";
-            ceSuggestOnTriggerCharacters.Size = new System.Drawing.Size(436, 35);
+            ceSuggestOnTriggerCharacters.Size = new System.Drawing.Size(274, 20);
             ceSuggestOnTriggerCharacters.StyleController = layoutControl;
             ceSuggestOnTriggerCharacters.TabIndex = 25;
             ceSuggestOnTriggerCharacters.CheckedChanged += ceSuggestOnTriggerCharacters_CheckedChanged;
             // 
             // ceEnableParameterHints
             // 
-            ceEnableParameterHints.Location = new System.Drawing.Point(23, 1293);
+            ceEnableParameterHints.Location = new System.Drawing.Point(8, 658);
+            ceEnableParameterHints.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             ceEnableParameterHints.MenuManager = ribbonControl1;
             ceEnableParameterHints.Name = "ceEnableParameterHints";
             ceEnableParameterHints.Properties.Caption = "Enable Parameter Hints";
-            ceEnableParameterHints.Size = new System.Drawing.Size(436, 35);
+            ceEnableParameterHints.Size = new System.Drawing.Size(274, 20);
             ceEnableParameterHints.StyleController = layoutControl;
             ceEnableParameterHints.TabIndex = 26;
             ceEnableParameterHints.CheckedChanged += ceEnableParameterHints_CheckedChanged;
@@ -605,46 +638,46 @@
             Root.GroupBordersVisible = false;
             Root.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { emptySpaceItem1, lcgGeneral, lcgInteraction, lcgAppearance, lcgEditing, lcgIntelliSense });
             Root.Name = "Root";
-            Root.Size = new System.Drawing.Size(482, 1361);
+            Root.Size = new System.Drawing.Size(290, 696);
             Root.TextVisible = false;
             // 
             // emptySpaceItem1
             // 
-            emptySpaceItem1.Location = new System.Drawing.Point(0, 1351);
+            emptySpaceItem1.Location = new System.Drawing.Point(0, 686);
             emptySpaceItem1.Name = "emptySpaceItem1";
-            emptySpaceItem1.Size = new System.Drawing.Size(482, 10);
+            emptySpaceItem1.Size = new System.Drawing.Size(290, 10);
             // 
             // lcgGeneral
             // 
             lcgGeneral.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { lciLanguage, lciReadOnly });
             lcgGeneral.Location = new System.Drawing.Point(0, 0);
             lcgGeneral.Name = "lcgGeneral";
-            lcgGeneral.Size = new System.Drawing.Size(482, 163);
+            lcgGeneral.Size = new System.Drawing.Size(290, 80);
             lcgGeneral.Text = "General";
             // 
             // lciLanguage
             // 
             lciLanguage.Control = cbeLanguage;
-            lciLanguage.Location = new System.Drawing.Point(0, 41);
+            lciLanguage.Location = new System.Drawing.Point(0, 22);
             lciLanguage.Name = "lciLanguage";
-            lciLanguage.Size = new System.Drawing.Size(442, 44);
+            lciLanguage.Size = new System.Drawing.Size(276, 22);
             lciLanguage.Text = "Language";
-            lciLanguage.TextSize = new System.Drawing.Size(221, 23);
+            lciLanguage.TextSize = new System.Drawing.Size(125, 13);
             // 
             // lciReadOnly
             // 
             lciReadOnly.Control = ceReadOnly;
             lciReadOnly.Location = new System.Drawing.Point(0, 0);
             lciReadOnly.Name = "lciReadOnly";
-            lciReadOnly.Size = new System.Drawing.Size(442, 41);
+            lciReadOnly.Size = new System.Drawing.Size(276, 22);
             lciReadOnly.TextVisible = false;
             // 
             // lcgInteraction
             // 
             lcgInteraction.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { lciContextMenu, lciDragAndDrop });
-            lcgInteraction.Location = new System.Drawing.Point(0, 163);
+            lcgInteraction.Location = new System.Drawing.Point(0, 80);
             lcgInteraction.Name = "lcgInteraction";
-            lcgInteraction.Size = new System.Drawing.Size(482, 160);
+            lcgInteraction.Size = new System.Drawing.Size(290, 80);
             lcgInteraction.Text = "Interaction";
             // 
             // lciContextMenu
@@ -652,31 +685,31 @@
             lciContextMenu.Control = ceContextMenu;
             lciContextMenu.Location = new System.Drawing.Point(0, 0);
             lciContextMenu.Name = "lciContextMenu";
-            lciContextMenu.Size = new System.Drawing.Size(442, 41);
+            lciContextMenu.Size = new System.Drawing.Size(276, 22);
             lciContextMenu.TextVisible = false;
             // 
             // lciDragAndDrop
             // 
             lciDragAndDrop.Control = ceDragAndDrop;
-            lciDragAndDrop.Location = new System.Drawing.Point(0, 41);
+            lciDragAndDrop.Location = new System.Drawing.Point(0, 22);
             lciDragAndDrop.Name = "lciDragAndDrop";
-            lciDragAndDrop.Size = new System.Drawing.Size(442, 41);
+            lciDragAndDrop.Size = new System.Drawing.Size(276, 22);
             lciDragAndDrop.TextVisible = false;
             // 
             // lcgAppearance
             // 
             lcgAppearance.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem3, layoutControlItem1, lciLineNumbersMinChars, layoutControlItem4, layoutControlItem5, layoutControlItem6, lciWordWrap, layoutControlItem8, layoutControlItem9, lciScrollBeyondLastColumn, layoutControlItem11 });
-            lcgAppearance.Location = new System.Drawing.Point(0, 323);
+            lcgAppearance.Location = new System.Drawing.Point(0, 160);
             lcgAppearance.Name = "lcgAppearance";
-            lcgAppearance.Size = new System.Drawing.Size(482, 538);
+            lcgAppearance.Size = new System.Drawing.Size(290, 278);
             lcgAppearance.Text = "Appearance";
             // 
             // layoutControlItem3
             // 
             layoutControlItem3.Control = ceMinimap;
-            layoutControlItem3.Location = new System.Drawing.Point(0, 85);
+            layoutControlItem3.Location = new System.Drawing.Point(0, 44);
             layoutControlItem3.Name = "layoutControlItem3";
-            layoutControlItem3.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem3.Size = new System.Drawing.Size(276, 22);
             layoutControlItem3.TextVisible = false;
             // 
             // layoutControlItem1
@@ -684,90 +717,90 @@
             layoutControlItem1.Control = ceLineNumbers;
             layoutControlItem1.Location = new System.Drawing.Point(0, 0);
             layoutControlItem1.Name = "layoutControlItem1";
-            layoutControlItem1.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem1.Size = new System.Drawing.Size(276, 22);
             layoutControlItem1.TextVisible = false;
             // 
             // lciLineNumbersMinChars
             // 
             lciLineNumbersMinChars.Control = seLineNumbersMinChars;
-            lciLineNumbersMinChars.Location = new System.Drawing.Point(0, 41);
+            lciLineNumbersMinChars.Location = new System.Drawing.Point(0, 22);
             lciLineNumbersMinChars.Name = "lciLineNumbersMinChars";
-            lciLineNumbersMinChars.Size = new System.Drawing.Size(442, 44);
+            lciLineNumbersMinChars.Size = new System.Drawing.Size(276, 22);
             lciLineNumbersMinChars.Text = "Line Numbers Min Chars";
-            lciLineNumbersMinChars.TextSize = new System.Drawing.Size(221, 23);
+            lciLineNumbersMinChars.TextSize = new System.Drawing.Size(125, 13);
             // 
             // layoutControlItem4
             // 
             layoutControlItem4.Control = ceGlyphMargin;
-            layoutControlItem4.Location = new System.Drawing.Point(0, 126);
+            layoutControlItem4.Location = new System.Drawing.Point(0, 66);
             layoutControlItem4.Name = "layoutControlItem4";
-            layoutControlItem4.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem4.Size = new System.Drawing.Size(276, 22);
             layoutControlItem4.TextVisible = false;
             // 
             // layoutControlItem5
             // 
             layoutControlItem5.Control = ceFolding;
-            layoutControlItem5.Location = new System.Drawing.Point(0, 167);
+            layoutControlItem5.Location = new System.Drawing.Point(0, 88);
             layoutControlItem5.Name = "layoutControlItem5";
-            layoutControlItem5.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem5.Size = new System.Drawing.Size(276, 22);
             layoutControlItem5.TextVisible = false;
             // 
             // layoutControlItem6
             // 
             layoutControlItem6.Control = ceStickyScroll;
-            layoutControlItem6.Location = new System.Drawing.Point(0, 208);
+            layoutControlItem6.Location = new System.Drawing.Point(0, 110);
             layoutControlItem6.Name = "layoutControlItem6";
-            layoutControlItem6.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem6.Size = new System.Drawing.Size(276, 22);
             layoutControlItem6.TextVisible = false;
             // 
             // lciWordWrap
             // 
             lciWordWrap.Control = cbeWordWrap;
-            lciWordWrap.Location = new System.Drawing.Point(0, 249);
+            lciWordWrap.Location = new System.Drawing.Point(0, 132);
             lciWordWrap.Name = "lciWordWrap";
-            lciWordWrap.Size = new System.Drawing.Size(442, 44);
+            lciWordWrap.Size = new System.Drawing.Size(276, 22);
             lciWordWrap.Text = "Word Wrap";
-            lciWordWrap.TextSize = new System.Drawing.Size(221, 23);
+            lciWordWrap.TextSize = new System.Drawing.Size(125, 13);
             // 
             // layoutControlItem8
             // 
             layoutControlItem8.Control = ceSmoothScrolling;
-            layoutControlItem8.Location = new System.Drawing.Point(0, 293);
+            layoutControlItem8.Location = new System.Drawing.Point(0, 154);
             layoutControlItem8.Name = "layoutControlItem8";
-            layoutControlItem8.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem8.Size = new System.Drawing.Size(276, 22);
             layoutControlItem8.TextVisible = false;
             // 
             // layoutControlItem9
             // 
             layoutControlItem9.Control = ceScrollBeyondLastLine;
-            layoutControlItem9.Location = new System.Drawing.Point(0, 334);
+            layoutControlItem9.Location = new System.Drawing.Point(0, 176);
             layoutControlItem9.Name = "layoutControlItem9";
-            layoutControlItem9.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem9.Size = new System.Drawing.Size(276, 22);
             layoutControlItem9.TextVisible = false;
             // 
             // lciScrollBeyondLastColumn
             // 
             lciScrollBeyondLastColumn.Control = seScrollBeyondLastColumn;
-            lciScrollBeyondLastColumn.Location = new System.Drawing.Point(0, 375);
+            lciScrollBeyondLastColumn.Location = new System.Drawing.Point(0, 198);
             lciScrollBeyondLastColumn.Name = "lciScrollBeyondLastColumn";
-            lciScrollBeyondLastColumn.Size = new System.Drawing.Size(442, 44);
+            lciScrollBeyondLastColumn.Size = new System.Drawing.Size(276, 22);
             lciScrollBeyondLastColumn.Text = "Scroll Beyond Last Column";
-            lciScrollBeyondLastColumn.TextSize = new System.Drawing.Size(221, 23);
+            lciScrollBeyondLastColumn.TextSize = new System.Drawing.Size(125, 13);
             // 
             // layoutControlItem11
             // 
             layoutControlItem11.Control = ceMouseWheelZoom;
-            layoutControlItem11.Location = new System.Drawing.Point(0, 419);
+            layoutControlItem11.Location = new System.Drawing.Point(0, 220);
             layoutControlItem11.Name = "layoutControlItem11";
-            layoutControlItem11.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem11.Size = new System.Drawing.Size(276, 22);
             layoutControlItem11.TextVisible = false;
             // 
             // lcgEditing
             // 
             lcgEditing.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { lciTabSize, layoutControlItem2, layoutControlItem7, lciAutoIndent });
-            lcgEditing.Location = new System.Drawing.Point(0, 861);
+            lcgEditing.Location = new System.Drawing.Point(0, 438);
             lcgEditing.Name = "lcgEditing";
-            lcgEditing.Size = new System.Drawing.Size(482, 248);
+            lcgEditing.Size = new System.Drawing.Size(290, 124);
             lcgEditing.Text = "Editing";
             // 
             // lciTabSize
@@ -775,41 +808,41 @@
             lciTabSize.Control = seTabSize;
             lciTabSize.Location = new System.Drawing.Point(0, 0);
             lciTabSize.Name = "lciTabSize";
-            lciTabSize.Size = new System.Drawing.Size(442, 44);
+            lciTabSize.Size = new System.Drawing.Size(276, 22);
             lciTabSize.Text = "Tab Size";
-            lciTabSize.TextSize = new System.Drawing.Size(221, 23);
+            lciTabSize.TextSize = new System.Drawing.Size(125, 13);
             // 
             // layoutControlItem2
             // 
             layoutControlItem2.Control = ceInsertSpaces;
-            layoutControlItem2.Location = new System.Drawing.Point(0, 44);
+            layoutControlItem2.Location = new System.Drawing.Point(0, 22);
             layoutControlItem2.Name = "layoutControlItem2";
-            layoutControlItem2.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem2.Size = new System.Drawing.Size(276, 22);
             layoutControlItem2.TextVisible = false;
             // 
             // layoutControlItem7
             // 
             layoutControlItem7.Control = ceDetectIndentation;
-            layoutControlItem7.Location = new System.Drawing.Point(0, 85);
+            layoutControlItem7.Location = new System.Drawing.Point(0, 44);
             layoutControlItem7.Name = "layoutControlItem7";
-            layoutControlItem7.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem7.Size = new System.Drawing.Size(276, 22);
             layoutControlItem7.TextVisible = false;
             // 
             // lciAutoIndent
             // 
             lciAutoIndent.Control = cbeAutoIndent;
-            lciAutoIndent.Location = new System.Drawing.Point(0, 126);
+            lciAutoIndent.Location = new System.Drawing.Point(0, 66);
             lciAutoIndent.Name = "lciAutoIndent";
-            lciAutoIndent.Size = new System.Drawing.Size(442, 44);
+            lciAutoIndent.Size = new System.Drawing.Size(276, 22);
             lciAutoIndent.Text = "Auto Indent";
-            lciAutoIndent.TextSize = new System.Drawing.Size(221, 23);
+            lciAutoIndent.TextSize = new System.Drawing.Size(125, 13);
             // 
             // lcgIntelliSense
             // 
             lcgIntelliSense.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem10, layoutControlItem12, layoutControlItem13, layoutControlItem14 });
-            lcgIntelliSense.Location = new System.Drawing.Point(0, 1109);
+            lcgIntelliSense.Location = new System.Drawing.Point(0, 562);
             lcgIntelliSense.Name = "lcgIntelliSense";
-            lcgIntelliSense.Size = new System.Drawing.Size(482, 242);
+            lcgIntelliSense.Size = new System.Drawing.Size(290, 124);
             lcgIntelliSense.Text = "Intelli Sense";
             // 
             // layoutControlItem10
@@ -817,41 +850,42 @@
             layoutControlItem10.Control = ceQuickSuggestions;
             layoutControlItem10.Location = new System.Drawing.Point(0, 0);
             layoutControlItem10.Name = "layoutControlItem10";
-            layoutControlItem10.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem10.Size = new System.Drawing.Size(276, 22);
             layoutControlItem10.TextVisible = false;
             // 
             // layoutControlItem12
             // 
             layoutControlItem12.Control = ceWordBasedSuggestions;
-            layoutControlItem12.Location = new System.Drawing.Point(0, 41);
+            layoutControlItem12.Location = new System.Drawing.Point(0, 22);
             layoutControlItem12.Name = "layoutControlItem12";
-            layoutControlItem12.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem12.Size = new System.Drawing.Size(276, 22);
             layoutControlItem12.TextVisible = false;
             // 
             // layoutControlItem13
             // 
             layoutControlItem13.Control = ceSuggestOnTriggerCharacters;
-            layoutControlItem13.Location = new System.Drawing.Point(0, 82);
+            layoutControlItem13.Location = new System.Drawing.Point(0, 44);
             layoutControlItem13.Name = "layoutControlItem13";
-            layoutControlItem13.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem13.Size = new System.Drawing.Size(276, 22);
             layoutControlItem13.TextVisible = false;
             // 
             // layoutControlItem14
             // 
             layoutControlItem14.Control = ceEnableParameterHints;
-            layoutControlItem14.Location = new System.Drawing.Point(0, 123);
+            layoutControlItem14.Location = new System.Drawing.Point(0, 66);
             layoutControlItem14.Name = "layoutControlItem14";
-            layoutControlItem14.Size = new System.Drawing.Size(442, 41);
+            layoutControlItem14.Size = new System.Drawing.Size(276, 22);
             layoutControlItem14.TextVisible = false;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(10F, 23F);
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(2311, 1478);
+            ClientSize = new System.Drawing.Size(1327, 691);
             Controls.Add(syntaxEditor);
             Controls.Add(sidePanel1);
             Controls.Add(ribbonControl1);
+            Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             Name = "MainForm";
             Text = "MainForm";
             ((System.ComponentModel.ISupportInitialize)ribbonControl1).EndInit();
@@ -931,7 +965,7 @@
         private DevExpress.XtraBars.BarButtonItem customLanguageItem;
         private DevExpress.XtraBars.BarButtonItem rulesItem;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
-        private SyntaxEditorWinForms.SyntaxEditor syntaxEditor;
+        private SyntaxEditor.SyntaxEditor syntaxEditor;
         private DevExpress.XtraEditors.SidePanel sidePanel1;
         private DevExpress.XtraBars.Navigation.TabPane tabPane1;
         private DevExpress.XtraBars.Navigation.TabNavigationPage optionsTabPage;

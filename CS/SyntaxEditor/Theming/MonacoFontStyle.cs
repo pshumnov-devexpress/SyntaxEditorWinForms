@@ -1,6 +1,6 @@
 using System;
 
-namespace SyntaxEditorWinForms.Theming {
+namespace SyntaxEditor.Theming {
     [Flags]
     public enum MonacoFontStyle {
         None = 0,

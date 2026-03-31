@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace SyntaxEditorWinForms.Models {
+namespace SyntaxEditor.Models {
 
     public enum EditorMessageType {
         TextChanged,

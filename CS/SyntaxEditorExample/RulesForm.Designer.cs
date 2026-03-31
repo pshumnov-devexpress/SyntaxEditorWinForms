@@ -1,6 +1,6 @@
-using SyntaxEditorWinForms.Theming;
+using SyntaxEditor.Theming;
 
-namespace SyntaxEditorExampleWinForms {
+namespace SyntaxEditorExample {
     partial class RulesForm {
         private System.ComponentModel.IContainer components = null;
 
@@ -34,7 +34,7 @@ namespace SyntaxEditorExampleWinForms {
             gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             repositoryItemButtonEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             rawPage = new DevExpress.XtraBars.Navigation.NavigationPage();
-            rawEditor = new SyntaxEditorWinForms.SyntaxEditor();
+            rawEditor = new SyntaxEditor.SyntaxEditor();
             Root = new DevExpress.XtraLayout.LayoutControlGroup();
             layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -213,7 +213,7 @@ namespace SyntaxEditorExampleWinForms {
             // 
             // rawEditor
             // 
-            rawEditor.AutoIndent = SyntaxEditorWinForms.Models.EditorAutoIndent.Full;
+            rawEditor.AutoIndent = SyntaxEditor.Models.EditorAutoIndent.Full;
             rawEditor.DetectIndentation = true;
             rawEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             rawEditor.EditorLanguage = "javascript";
@@ -241,7 +241,7 @@ namespace SyntaxEditorExampleWinForms {
             rawEditor.TabIndex = 0;
             rawEditor.TabSize = 4;
             rawEditor.ThemeName = "vs";
-            rawEditor.WordWrap = SyntaxEditorWinForms.Models.EditorWordWrap.Off;
+            rawEditor.WordWrap = SyntaxEditor.Models.EditorWordWrap.Off;
             // 
             // Root
             // 
@@ -432,9 +432,9 @@ namespace SyntaxEditorExampleWinForms {
                 Caption = "Font Style" 
             };
             var fontStyleRepo = new DevExpress.XtraEditors.Repository.RepositoryItemCheckedComboBoxEdit();
-            fontStyleRepo.Items.Add(SyntaxEditorWinForms.Theming.MonacoFontStyle.Bold, "Bold");
-            fontStyleRepo.Items.Add(SyntaxEditorWinForms.Theming.MonacoFontStyle.Italic, "Italic");
-            fontStyleRepo.Items.Add(SyntaxEditorWinForms.Theming.MonacoFontStyle.Underline, "Underline");
+            fontStyleRepo.Items.Add(SyntaxEditor.Theming.MonacoFontStyle.Bold, "Bold");
+            fontStyleRepo.Items.Add(SyntaxEditor.Theming.MonacoFontStyle.Italic, "Italic");
+            fontStyleRepo.Items.Add(SyntaxEditor.Theming.MonacoFontStyle.Underline, "Underline");
             colFontStyle.ColumnEdit = fontStyleRepo;
             gridControl.RepositoryItems.Add(fontStyleRepo);
             colFontStyle.Visible = true;
@@ -446,7 +446,7 @@ namespace SyntaxEditorExampleWinForms {
         private DevExpress.XtraEditors.CheckEdit chkRawMode;
         private DevExpress.XtraGrid.GridControl gridControl;
         private DevExpress.XtraGrid.Views.Grid.GridView gridView;
-        private SyntaxEditorWinForms.SyntaxEditor rawEditor;
+        private SyntaxEditor.SyntaxEditor rawEditor;
         private DevExpress.XtraEditors.SimpleButton btnCancel;
         private DevExpress.XtraEditors.SimpleButton btnSave;
         private DevExpress.XtraLayout.LayoutControl layoutControl1;

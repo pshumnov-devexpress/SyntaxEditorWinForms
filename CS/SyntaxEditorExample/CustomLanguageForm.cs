@@ -2,7 +2,7 @@ using DevExpress.XtraEditors;
 using System;
 using System.Text.RegularExpressions;
 
-namespace SyntaxEditorExampleWinForms {
+namespace SyntaxEditorExample {
     public partial class CustomLanguageForm : XtraForm {
 
         private static readonly Regex LanguageIdRegex = new("^[a-zA-Z0-9\\-_]+$", RegexOptions.Compiled);

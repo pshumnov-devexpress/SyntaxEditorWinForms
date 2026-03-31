@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using DevExpress.Utils.Frames;
 
-namespace SyntaxEditorWinForms.Theming {
+namespace SyntaxEditor.Theming {
     public static class LookAndFeelExtensions {
         public static MonacoTheme CreateMonacoTheme(this UserLookAndFeel lookAndFeel, IReadOnlyList<MonacoThemeRule>? rules, bool useSkinColors) {
             var result = new MonacoTheme {

@@ -1,4 +1,4 @@
-namespace SyntaxEditorExampleWinForms {
+namespace SyntaxEditorExample {
     partial class CustomLanguageForm {
         private System.ComponentModel.IContainer components = null;
 
@@ -16,8 +16,8 @@ namespace SyntaxEditorExampleWinForms {
         private void InitializeComponent() {
             txtLanguageId = new DevExpress.XtraEditors.TextEdit();
             layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
-            configEditor = new SyntaxEditorWinForms.SyntaxEditor();
-            monarchEditor = new SyntaxEditorWinForms.SyntaxEditor();
+            configEditor = new SyntaxEditor.SyntaxEditor();
+            monarchEditor = new SyntaxEditor.SyntaxEditor();
             Root = new DevExpress.XtraLayout.LayoutControlGroup();
             layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -64,7 +64,7 @@ namespace SyntaxEditorExampleWinForms {
             // 
             // configEditor
             // 
-            configEditor.AutoIndent = SyntaxEditorWinForms.Models.EditorAutoIndent.Full;
+            configEditor.AutoIndent = SyntaxEditor.Models.EditorAutoIndent.Full;
             configEditor.DetectIndentation = true;
             configEditor.EditorLanguage = "javascript";
             configEditor.EnableContextMenu = true;
@@ -91,11 +91,11 @@ namespace SyntaxEditorExampleWinForms {
             configEditor.TabIndex = 3;
             configEditor.TabSize = 4;
             configEditor.ThemeName = "vs";
-            configEditor.WordWrap = SyntaxEditorWinForms.Models.EditorWordWrap.Off;
+            configEditor.WordWrap = SyntaxEditor.Models.EditorWordWrap.Off;
             // 
             // monarchEditor
             // 
-            monarchEditor.AutoIndent = SyntaxEditorWinForms.Models.EditorAutoIndent.Full;
+            monarchEditor.AutoIndent = SyntaxEditor.Models.EditorAutoIndent.Full;
             monarchEditor.DetectIndentation = true;
             monarchEditor.EditorLanguage = "javascript";
             monarchEditor.EnableContextMenu = true;
@@ -122,7 +122,7 @@ namespace SyntaxEditorExampleWinForms {
             monarchEditor.TabIndex = 2;
             monarchEditor.TabSize = 4;
             monarchEditor.ThemeName = "vs";
-            monarchEditor.WordWrap = SyntaxEditorWinForms.Models.EditorWordWrap.Off;
+            monarchEditor.WordWrap = SyntaxEditor.Models.EditorWordWrap.Off;
             // 
             // Root
             // 
@@ -225,8 +225,8 @@ namespace SyntaxEditorExampleWinForms {
 
         #endregion
         private DevExpress.XtraEditors.TextEdit txtLanguageId;
-        private SyntaxEditorWinForms.SyntaxEditor monarchEditor;
-        private SyntaxEditorWinForms.SyntaxEditor configEditor;
+        private SyntaxEditor.SyntaxEditor monarchEditor;
+        private SyntaxEditor.SyntaxEditor configEditor;
         private DevExpress.XtraEditors.SimpleButton btnCancel;
         private DevExpress.XtraLayout.LayoutControl layoutControl1;
         private DevExpress.XtraLayout.LayoutControlGroup Root;

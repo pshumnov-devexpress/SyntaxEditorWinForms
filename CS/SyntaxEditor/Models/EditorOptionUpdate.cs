@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SyntaxEditorWinForms.Models {
+namespace SyntaxEditor.Models {
     public enum EditorOption {
         LineNumbers,
         Minimap,
