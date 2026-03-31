@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SyntaxEditorWinForms\SyntaxEditorWinForms.csproj" />
+    <ProjectReference Include="..\SyntaxEditor\SyntaxEditor.csproj" />
   </ItemGroup>
 
 </Project>
