@@ -8,6 +8,7 @@ using SyntaxEditor.Theming;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -65,7 +66,7 @@ namespace SyntaxEditor {
 
         #region Basic Properties
 
-        private string _text;
+        private string _text = string.Empty;
         [DefaultValue("")]
         [DXCategory(CategoryName.Appearance)]
         public override string Text {
@@ -85,7 +86,7 @@ namespace SyntaxEditor {
             SendCommand(EditorCommandType.SetText, text);
         }
 
-        private bool _readOnly;
+        private bool _readOnly = false;
         [DefaultValue(false)]
         [DXCategory(CategoryName.Behavior)]
         public bool ReadOnly {
@@ -102,7 +103,7 @@ namespace SyntaxEditor {
             SendCommand(EditorCommandType.SetReadOnly, readOnly);
         }
 
-        private bool _isModified;
+        private bool _isModified = false;
         [DefaultValue(false)]
         [DXCategory(CategoryName.Data)]
         public bool IsModified {
@@ -121,7 +122,7 @@ namespace SyntaxEditor {
         #region Theme Properties
         public List<MonacoThemeRule> Rules { get; }
 
-        bool _applyDevExpressColors;
+        bool _applyDevExpressColors = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Appearance)]
         public bool ApplyDevExpressColors {
@@ -138,7 +139,7 @@ namespace SyntaxEditor {
 
         #region ShowLineNumbers
 
-        private bool _showLineNumbers;
+        private bool _showLineNumbers = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Appearance)]
         public bool ShowLineNumbers {
@@ -158,7 +159,7 @@ namespace SyntaxEditor {
 
         #region ShowMinimap
 
-        private bool _showMinimap;
+        private bool _showMinimap = false;
         [DefaultValue(false)]
         [DXCategory(CategoryName.Appearance)]
         public bool ShowMinimap {
@@ -178,7 +179,7 @@ namespace SyntaxEditor {
 
         #region ShowGlyphMargin
 
-        private bool _showGlyphMargin;
+        private bool _showGlyphMargin = false;
         [DefaultValue(false)]
         [DXCategory(CategoryName.Appearance)]
         public bool ShowGlyphMargin {
@@ -198,7 +199,7 @@ namespace SyntaxEditor {
 
         #region EnableFolding
 
-        private bool _enableFolding;
+        private bool _enableFolding = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Appearance)]
         public bool EnableFolding {
@@ -218,7 +219,7 @@ namespace SyntaxEditor {
 
         #region EnableContextMenu
 
-        private bool _enableContextMenu;
+        private bool _enableContextMenu = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableContextMenu {
@@ -258,7 +259,7 @@ namespace SyntaxEditor {
 
         #region EnableScrollBeyondLastLine
 
-        private bool _enableScrollBeyondLastLine;
+        private bool _enableScrollBeyondLastLine = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableScrollBeyondLastLine {
@@ -278,7 +279,7 @@ namespace SyntaxEditor {
 
         #region ScrollBeyondLastColumn
 
-        private int _scrollBeyondLastColumn;
+        private int _scrollBeyondLastColumn = 5;
         [DefaultValue(5)]
         [DXCategory(CategoryName.Behavior)]
         public int ScrollBeyondLastColumn {
@@ -298,7 +299,7 @@ namespace SyntaxEditor {
 
         #region LineNumbersMinChars
 
-        private int _lineNumbersMinChars;
+        private int _lineNumbersMinChars = 5;
         [DefaultValue(5)]
         [DXCategory(CategoryName.Appearance)]
         public int LineNumbersMinChars {
@@ -318,7 +319,7 @@ namespace SyntaxEditor {
 
         #region EnableDragAndDrop
 
-        private bool _enableDragAndDrop;
+        private bool _enableDragAndDrop = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableDragAndDrop {
@@ -338,7 +339,7 @@ namespace SyntaxEditor {
 
         #region EnableMouseWheelZoom
 
-        private bool _enableMouseWheelZoom;
+        private bool _enableMouseWheelZoom = true;
         [DefaultValue(false)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableMouseWheelZoom {
@@ -358,7 +359,7 @@ namespace SyntaxEditor {
 
         #region WordWrap
 
-        private EditorWordWrap _wordWrap;
+        private EditorWordWrap _wordWrap = EditorWordWrap.Off;
         [DefaultValue(EditorWordWrap.Off)]
         [DXCategory(CategoryName.Appearance)]
         public EditorWordWrap WordWrap {
@@ -383,7 +384,7 @@ namespace SyntaxEditor {
 
         #region EnableStickyScroll
 
-        private bool _enableStickyScroll;
+        private bool _enableStickyScroll = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Appearance)]
         public bool EnableStickyScroll {
@@ -403,7 +404,7 @@ namespace SyntaxEditor {
 
         #region TabSize
 
-        private int _tabSize;
+        private int _tabSize = 4;
         [DefaultValue(4)]
         [DXCategory(CategoryName.Behavior)]
         public int TabSize {
@@ -425,7 +426,7 @@ namespace SyntaxEditor {
 
         #region DetectIndentation
 
-        private bool _detectIndentation;
+        private bool _detectIndentation = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool DetectIndentation {
@@ -445,7 +446,7 @@ namespace SyntaxEditor {
 
         #region InsertSpaces
 
-        private bool _insertSpaces;
+        private bool _insertSpaces = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool InsertSpaces {
@@ -465,7 +466,7 @@ namespace SyntaxEditor {
 
         #region AutoIndent
 
-        private EditorAutoIndent _autoIndent;
+        private EditorAutoIndent _autoIndent = EditorAutoIndent.Full;
         [DefaultValue(EditorAutoIndent.Full)]
         [DXCategory(CategoryName.Behavior)]
         public EditorAutoIndent AutoIndent {
@@ -495,7 +496,7 @@ namespace SyntaxEditor {
 
         #region EnableQuickSuggestions
 
-        private bool _enableQuickSuggestions;
+        private bool _enableQuickSuggestions = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableQuickSuggestions {
@@ -515,7 +516,7 @@ namespace SyntaxEditor {
 
         #region EnableWordBasedSuggestions
 
-        private bool _enableWordBasedSuggestions;
+        private bool _enableWordBasedSuggestions = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableWordBasedSuggestions {
@@ -536,7 +537,7 @@ namespace SyntaxEditor {
 
         #region EnableSuggestOnTriggerCharacters
 
-        private bool _enableSuggestOnTriggerCharacters;
+        private bool _enableSuggestOnTriggerCharacters = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableSuggestOnTriggerCharacters {
@@ -556,7 +557,7 @@ namespace SyntaxEditor {
 
         #region EnableParameterHints
 
-        private bool _enableParameterHints;
+        private bool _enableParameterHints = true;
         [DefaultValue(true)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableParameterHints {
@@ -716,7 +717,7 @@ namespace SyntaxEditor {
         private static string ToHex(Color c, bool addHashTag = true)
             => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}".ToLower();
 
-        private string _themeName;
+        private string _themeName = "vs";
         [DefaultValue("vs")]
         [DXCategory(CategoryName.Appearance)]
         public string ThemeName {
@@ -808,7 +809,7 @@ namespace SyntaxEditor {
 
         #region Language Support
 
-        private string _editorLanguage;
+        private string _editorLanguage = "csharp";
         [DefaultValue("csharp")]
         [DXCategory(CategoryName.Behavior)]
         public string EditorLanguage {
