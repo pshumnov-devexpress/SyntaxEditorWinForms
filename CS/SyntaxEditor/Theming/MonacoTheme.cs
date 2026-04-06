@@ -15,6 +15,6 @@ namespace SyntaxEditor.Theming {
         public MonacoThemeBase Base { get; init; }
         public bool Inherit { get; init; } = true;
         public Dictionary<string, Color>? Colors { get; init; } = new();
-        public IReadOnlyList<MonacoThemeRule>? Rules { get; init; } = new List<MonacoThemeRule>();
+        public IList<MonacoThemeRule>? Rules { get; init; } = new List<MonacoThemeRule>();
     }
 }

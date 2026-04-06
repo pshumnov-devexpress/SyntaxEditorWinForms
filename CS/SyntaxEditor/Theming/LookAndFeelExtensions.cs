@@ -9,7 +9,7 @@ using DevExpress.Utils.Frames;
 
 namespace SyntaxEditor.Theming {
     public static class LookAndFeelExtensions {
-        public static MonacoTheme CreateMonacoTheme(this UserLookAndFeel lookAndFeel, IReadOnlyList<MonacoThemeRule>? rules, bool useSkinColors) {
+        public static MonacoTheme CreateMonacoTheme(this UserLookAndFeel lookAndFeel, IList<MonacoThemeRule> rules, bool useSkinColors) {
             var result = new MonacoTheme {
                 Name = $"{lookAndFeel.ActiveSkinName.ToLowerInvariant().Replace(" ", "-")}",
                 Base = GetSkinBase(lookAndFeel),
@@ -94,7 +94,7 @@ namespace SyntaxEditor.Theming {
             return result;
         }
 
-        static IReadOnlyList<MonacoThemeRule> CreateDevExpressTokenRules(UserLookAndFeel lookAndFeel, IReadOnlyList<MonacoThemeRule>? rules) {
+        static IList<MonacoThemeRule> CreateDevExpressTokenRules(UserLookAndFeel lookAndFeel, IList<MonacoThemeRule>? rules) {
             List<MonacoThemeRule> result = rules != null ? new List<MonacoThemeRule>(rules) : new List<MonacoThemeRule>();
 
             var skin = CommonSkins.GetSkin(lookAndFeel);

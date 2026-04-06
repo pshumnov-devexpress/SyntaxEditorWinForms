@@ -281,7 +281,6 @@
             syntaxEditor.Margin = new System.Windows.Forms.Padding(2);
             syntaxEditor.Name = "syntaxEditor";
             syntaxEditor.ReadOnly = false;
-            syntaxEditor.Rules = null;
             syntaxEditor.ScrollBeyondLastColumn = 5;
             syntaxEditor.ShowGlyphMargin = false;
             syntaxEditor.ShowLineNumbers = true;

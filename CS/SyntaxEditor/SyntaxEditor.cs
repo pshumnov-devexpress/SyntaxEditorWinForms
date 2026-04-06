@@ -7,6 +7,7 @@ using SyntaxEditor.Models;
 using SyntaxEditor.Theming;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -24,10 +25,12 @@ namespace SyntaxEditor {
         private bool _updatingFromEditor;
 
         public SyntaxEditor() {
-            _webView = new WebView2();
-            _webView.Dock = DockStyle.Fill;
+            _webView = new WebView2 {
+                Dock = DockStyle.Fill
+            };
             Controls.Add(_webView);
             LookAndFeel.StyleChanged += LookAndFeel_StyleChanged;
+            Rules = new List<MonacoThemeRule>();
         }
 
         private void LookAndFeel_StyleChanged(object? sender, EventArgs e) {
@@ -41,16 +44,30 @@ namespace SyntaxEditor {
 
         #region Events
 
-        public event EventHandler? EditorInitialized;
-        public new event EventHandler? TextChanged;
-        public event EventHandler? IsModifiedChanged;
+        public event EventHandler EditorInitialized {
+            add {
+                Events.AddHandler(nameof(EditorInitialized), value);
+            }
+            remove {
+                Events.RemoveHandler(nameof(EditorInitialized), value);
+            }
+        }
+        public event EventHandler IsModifiedChanged {
+            add {
+                Events.AddHandler(nameof(IsModifiedChanged), value);
+            }
+            remove {
+                Events.RemoveHandler(nameof(IsModifiedChanged), value);
+            }
+        }
 
         #endregion Events
 
         #region Basic Properties
 
-        private string _text = string.Empty;
-        public new string Text {
+        private string _text;
+        [DefaultValue("")]
+        public override string Text {
             get => _text;
             set {
                 if (_text == value)
@@ -58,7 +75,8 @@ namespace SyntaxEditor {
                 _text = value ?? string.Empty;
                 if (!_updatingFromEditor)
                     SetEditorText(_text);
-                TextChanged?.Invoke(this, EventArgs.Empty);
+                var handler = Events[nameof(TextChanged)] as EventHandler;
+                handler?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -92,14 +110,15 @@ namespace SyntaxEditor {
                 if (_isModified == value)
                     return;
                 _isModified = value;
-                IsModifiedChanged?.Invoke(this, EventArgs.Empty);
+                var handler = Events[nameof(IsModifiedChanged)] as EventHandler;
+                handler?.Invoke(this, EventArgs.Empty);
             }
         }
 
         #endregion Basic Properties
 
         #region Theme Properties
-        public IReadOnlyList<MonacoThemeRule>? Rules { get; set; }
+        public List<MonacoThemeRule> Rules { get; }
 
         bool _applyDevExpressColors = true;
         public bool ApplyDevExpressColors {
@@ -564,6 +583,56 @@ namespace SyntaxEditor {
         #endregion Options
 
         #region Communication
+        private static string ToMonacoOption(EditorOption option) => option switch {
+            EditorOption.LineNumbers => "lineNumbers",
+            EditorOption.Minimap => "minimap",
+            EditorOption.GlyphMargin => "glyphMargin",
+            EditorOption.Folding => "folding",
+            EditorOption.ScrollBeyondLastLine => "scrollBeyondLastLine",
+            EditorOption.ScrollBeyondLastColumn => "scrollBeyondLastColumn",
+            EditorOption.ContextMenu => "contextmenu",
+            EditorOption.SmoothScrolling => "smoothScrolling",
+            EditorOption.DragAndDrop => "dragAndDrop",
+            EditorOption.MouseWheelZoom => "mouseWheelZoom",
+            EditorOption.LineNumbersMinChars => "lineNumbersMinChars",
+            EditorOption.WordWrap => "wordWrap",
+            EditorOption.StickyScroll => "stickyScroll",
+            EditorOption.TabSize => "tabSize",
+            EditorOption.InsertSpaces => "insertSpaces",
+            EditorOption.DetectIndentation => "detectIndentation",
+            EditorOption.AutoIndent => "autoIndent",
+            EditorOption.EnableQuickSuggestions => "quickSuggestions",
+            EditorOption.EnableWordBasedSuggestions => "wordBasedSuggestions",
+            EditorOption.EnableSuggestOnTriggerCharacters => "suggestOnTriggerCharacters",
+            EditorOption.EnableParameterHints => "parameterHints",
+            _ => throw new ArgumentOutOfRangeException(nameof(option))
+        };
+
+        private void UpdateOption(EditorOption option, object? value) {
+            var monacoOption = ToMonacoOption(option);
+
+            object? monacoValue = null;
+            switch(option) {
+                case EditorOption.LineNumbers:
+                    if(value is not bool show)
+                        throw new ArgumentException("LineNumbers requires boolean value.", nameof(value));
+                    monacoValue = show ? "on" : "off";
+                    break;
+                case EditorOption.Minimap:
+                    if(value is not bool enabled)
+                        throw new ArgumentException("Minimap requires boolean value.", nameof(value));
+                    monacoValue = new { enabled };
+                    break;
+                default:
+                    monacoValue = value;
+                    break;
+            }
+
+            SendCommand(EditorCommandType.UpdateOption, new {
+                option = monacoOption,
+                value = monacoValue
+            });
+        }
 
         private void SendCommand(EditorCommandType type, object? payload = null) {
             if (!_editorReady)
@@ -721,7 +790,8 @@ namespace SyntaxEditor {
             _updatingFromEditor = true;
             try {
                 _text = text;
-                TextChanged?.Invoke(this, EventArgs.Empty);
+                var handler = Events[nameof(TextChanged)] as EventHandler;
+                handler?.Invoke(this, EventArgs.Empty);
             } finally {
                 _updatingFromEditor = false;
             }
@@ -734,7 +804,8 @@ namespace SyntaxEditor {
             _editorReady = true;
             ApplyCurrentState();
             ApplyCurrentTheme();
-            EditorInitialized?.Invoke(this, EventArgs.Empty);
+            var handler = Events[nameof(EditorInitialized)] as EventHandler;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion Processing Monaco Messages
@@ -857,6 +928,10 @@ namespace SyntaxEditor {
         }
 
         #endregion Initialization and Cleanup
+
+        public void MarkAsSaved() {
+            SendCommand(EditorCommandType.MarkAsSaved);
+        }
 
         private void ApplyCurrentState() {
             RestoreRegisteredLanguages();
