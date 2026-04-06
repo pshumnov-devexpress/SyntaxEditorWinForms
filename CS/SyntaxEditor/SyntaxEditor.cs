@@ -67,6 +67,7 @@ namespace SyntaxEditor {
 
         private string _text;
         [DefaultValue("")]
+        [DXCategory(CategoryName.Appearance)]
         public override string Text {
             get => _text;
             set {
@@ -84,11 +85,9 @@ namespace SyntaxEditor {
             SendCommand(EditorCommandType.SetText, text);
         }
 
-        public void MarkAsSaved() {
-            SendCommand(EditorCommandType.MarkAsSaved);
-        }
-
         private bool _readOnly;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Behavior)]
         public bool ReadOnly {
             get => _readOnly;
             set {
@@ -104,6 +103,8 @@ namespace SyntaxEditor {
         }
 
         private bool _isModified;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Data)]
         public bool IsModified {
             get => _isModified;
             private set {
@@ -120,7 +121,9 @@ namespace SyntaxEditor {
         #region Theme Properties
         public List<MonacoThemeRule> Rules { get; }
 
-        bool _applyDevExpressColors = true;
+        bool _applyDevExpressColors;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Appearance)]
         public bool ApplyDevExpressColors {
             get => _applyDevExpressColors;
             set {
@@ -133,60 +136,11 @@ namespace SyntaxEditor {
 
         #region Options
 
-        private static string ToMonacoOption(EditorOption option) => option switch {
-            EditorOption.LineNumbers => "lineNumbers",
-            EditorOption.Minimap => "minimap",
-            EditorOption.GlyphMargin => "glyphMargin",
-            EditorOption.Folding => "folding",
-            EditorOption.ScrollBeyondLastLine => "scrollBeyondLastLine",
-            EditorOption.ScrollBeyondLastColumn => "scrollBeyondLastColumn",
-            EditorOption.ContextMenu => "contextmenu",
-            EditorOption.SmoothScrolling => "smoothScrolling",
-            EditorOption.DragAndDrop => "dragAndDrop",
-            EditorOption.MouseWheelZoom => "mouseWheelZoom",
-            EditorOption.LineNumbersMinChars => "lineNumbersMinChars",
-            EditorOption.WordWrap => "wordWrap",
-            EditorOption.StickyScroll => "stickyScroll",
-            EditorOption.TabSize => "tabSize",
-            EditorOption.InsertSpaces => "insertSpaces",
-            EditorOption.DetectIndentation => "detectIndentation",
-            EditorOption.AutoIndent => "autoIndent",
-            EditorOption.EnableQuickSuggestions => "quickSuggestions",
-            EditorOption.EnableWordBasedSuggestions => "wordBasedSuggestions",
-            EditorOption.EnableSuggestOnTriggerCharacters => "suggestOnTriggerCharacters",
-            EditorOption.EnableParameterHints => "parameterHints",
-            _ => throw new ArgumentOutOfRangeException(nameof(option))
-        };
-
-        private void UpdateOption(EditorOption option, object? value) {
-            var monacoOption = ToMonacoOption(option);
-
-            object? monacoValue = null;
-            switch (option) {
-                case EditorOption.LineNumbers:
-                    if (value is not bool show)
-                        throw new ArgumentException("LineNumbers requires boolean value.", nameof(value));
-                    monacoValue = show ? "on" : "off";
-                    break;
-                case EditorOption.Minimap:
-                    if (value is not bool enabled)
-                        throw new ArgumentException("Minimap requires boolean value.", nameof(value));
-                    monacoValue = new { enabled };
-                    break;
-                default:
-                    monacoValue = value;
-                    break;
-            }
-
-            SendCommand(EditorCommandType.UpdateOption, new {
-                option = monacoOption,
-                value = monacoValue
-            });
-        }
-
         #region ShowLineNumbers
 
-        private bool _showLineNumbers = true;
+        private bool _showLineNumbers;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Appearance)]
         public bool ShowLineNumbers {
             get => _showLineNumbers;
             set {
@@ -205,6 +159,8 @@ namespace SyntaxEditor {
         #region ShowMinimap
 
         private bool _showMinimap;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Appearance)]
         public bool ShowMinimap {
             get => _showMinimap;
             set {
@@ -223,6 +179,8 @@ namespace SyntaxEditor {
         #region ShowGlyphMargin
 
         private bool _showGlyphMargin;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Appearance)]
         public bool ShowGlyphMargin {
             get => _showGlyphMargin;
             set {
@@ -240,7 +198,9 @@ namespace SyntaxEditor {
 
         #region EnableFolding
 
-        private bool _enableFolding = true;
+        private bool _enableFolding;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Appearance)]
         public bool EnableFolding {
             get => _enableFolding;
             set {
@@ -258,7 +218,9 @@ namespace SyntaxEditor {
 
         #region EnableContextMenu
 
-        private bool _enableContextMenu = true;
+        private bool _enableContextMenu;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableContextMenu {
             get => _enableContextMenu;
             set {
@@ -277,6 +239,8 @@ namespace SyntaxEditor {
         #region EnableSmoothScrolling
 
         private bool _enableSmoothScrolling;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableSmoothScrolling {
             get => _enableSmoothScrolling;
             set {
@@ -294,7 +258,9 @@ namespace SyntaxEditor {
 
         #region EnableScrollBeyondLastLine
 
-        private bool _enableScrollBeyondLastLine = true;
+        private bool _enableScrollBeyondLastLine;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableScrollBeyondLastLine {
             get => _enableScrollBeyondLastLine;
             set {
@@ -312,7 +278,9 @@ namespace SyntaxEditor {
 
         #region ScrollBeyondLastColumn
 
-        private int _scrollBeyondLastColumn = 5;
+        private int _scrollBeyondLastColumn;
+        [DefaultValue(5)]
+        [DXCategory(CategoryName.Behavior)]
         public int ScrollBeyondLastColumn {
             get => _scrollBeyondLastColumn;
             set {
@@ -330,7 +298,9 @@ namespace SyntaxEditor {
 
         #region LineNumbersMinChars
 
-        private int _lineNumbersMinChars = 5;
+        private int _lineNumbersMinChars;
+        [DefaultValue(5)]
+        [DXCategory(CategoryName.Appearance)]
         public int LineNumbersMinChars {
             get => _lineNumbersMinChars;
             set {
@@ -348,7 +318,9 @@ namespace SyntaxEditor {
 
         #region EnableDragAndDrop
 
-        private bool _enableDragAndDrop = true;
+        private bool _enableDragAndDrop;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableDragAndDrop {
             get => _enableDragAndDrop;
             set {
@@ -367,6 +339,8 @@ namespace SyntaxEditor {
         #region EnableMouseWheelZoom
 
         private bool _enableMouseWheelZoom;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableMouseWheelZoom {
             get => _enableMouseWheelZoom;
             set {
@@ -384,7 +358,9 @@ namespace SyntaxEditor {
 
         #region WordWrap
 
-        private EditorWordWrap _wordWrap = EditorWordWrap.Off;
+        private EditorWordWrap _wordWrap;
+        [DefaultValue(EditorWordWrap.Off)]
+        [DXCategory(CategoryName.Appearance)]
         public EditorWordWrap WordWrap {
             get => _wordWrap;
             set {
@@ -407,7 +383,9 @@ namespace SyntaxEditor {
 
         #region EnableStickyScroll
 
-        private bool _enableStickyScroll = true;
+        private bool _enableStickyScroll;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Appearance)]
         public bool EnableStickyScroll {
             get => _enableStickyScroll;
             set {
@@ -425,7 +403,9 @@ namespace SyntaxEditor {
 
         #region TabSize
 
-        private int _tabSize = 4;
+        private int _tabSize;
+        [DefaultValue(4)]
+        [DXCategory(CategoryName.Behavior)]
         public int TabSize {
             get => _tabSize;
             set {
@@ -445,7 +425,9 @@ namespace SyntaxEditor {
 
         #region DetectIndentation
 
-        private bool _detectIndentation = true;
+        private bool _detectIndentation;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool DetectIndentation {
             get => _detectIndentation;
             set {
@@ -463,7 +445,9 @@ namespace SyntaxEditor {
 
         #region InsertSpaces
 
-        private bool _insertSpaces = true;
+        private bool _insertSpaces;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool InsertSpaces {
             get => _insertSpaces;
             set {
@@ -481,7 +465,9 @@ namespace SyntaxEditor {
 
         #region AutoIndent
 
-        private EditorAutoIndent _autoIndent = EditorAutoIndent.Full;
+        private EditorAutoIndent _autoIndent;
+        [DefaultValue(EditorAutoIndent.Full)]
+        [DXCategory(CategoryName.Behavior)]
         public EditorAutoIndent AutoIndent {
             get => _autoIndent;
             set {
@@ -509,7 +495,9 @@ namespace SyntaxEditor {
 
         #region EnableQuickSuggestions
 
-        private bool _enableQuickSuggestions = true;
+        private bool _enableQuickSuggestions;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableQuickSuggestions {
             get => _enableQuickSuggestions;
             set {
@@ -527,7 +515,9 @@ namespace SyntaxEditor {
 
         #region EnableWordBasedSuggestions
 
-        private bool _enableWordBasedSuggestions = true;
+        private bool _enableWordBasedSuggestions;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableWordBasedSuggestions {
             get => _enableWordBasedSuggestions;
             set {
@@ -546,7 +536,9 @@ namespace SyntaxEditor {
 
         #region EnableSuggestOnTriggerCharacters
 
-        private bool _enableSuggestOnTriggerCharacters = true;
+        private bool _enableSuggestOnTriggerCharacters;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableSuggestOnTriggerCharacters {
             get => _enableSuggestOnTriggerCharacters;
             set {
@@ -564,7 +556,9 @@ namespace SyntaxEditor {
 
         #region EnableParameterHints
 
-        private bool _enableParameterHints = true;
+        private bool _enableParameterHints;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
         public bool EnableParameterHints {
             get => _enableParameterHints;
             set {
@@ -722,7 +716,9 @@ namespace SyntaxEditor {
         private static string ToHex(Color c, bool addHashTag = true)
             => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}".ToLower();
 
-        private string _themeName = "vs";
+        private string _themeName;
+        [DefaultValue("vs")]
+        [DXCategory(CategoryName.Appearance)]
         public string ThemeName {
             get => _themeName;
             set {
@@ -812,7 +808,9 @@ namespace SyntaxEditor {
 
         #region Language Support
 
-        private string _editorLanguage = "csharp";
+        private string _editorLanguage;
+        [DefaultValue("csharp")]
+        [DXCategory(CategoryName.Behavior)]
         public string EditorLanguage {
             get => _editorLanguage;
             set {
