@@ -64,65 +64,21 @@ namespace SyntaxEditorExample {
             // 
             // configEditor
             // 
-            configEditor.AutoIndent = SyntaxEditor.Models.EditorAutoIndent.Full;
-            configEditor.DetectIndentation = true;
             configEditor.EditorLanguage = "javascript";
-            configEditor.EnableContextMenu = true;
-            configEditor.EnableDragAndDrop = true;
-            configEditor.EnableFolding = true;
-            configEditor.EnableMouseWheelZoom = false;
-            configEditor.EnableParameterHints = true;
-            configEditor.EnableQuickSuggestions = true;
-            configEditor.EnableScrollBeyondLastLine = true;
-            configEditor.EnableSmoothScrolling = false;
-            configEditor.EnableStickyScroll = true;
-            configEditor.EnableSuggestOnTriggerCharacters = true;
-            configEditor.EnableWordBasedSuggestions = true;
-            configEditor.InsertSpaces = true;
-            configEditor.LineNumbersMinChars = 5;
             configEditor.Location = new System.Drawing.Point(402, 40);
             configEditor.Name = "configEditor";
-            configEditor.ReadOnly = false;
-            configEditor.ScrollBeyondLastColumn = 5;
-            configEditor.ShowGlyphMargin = false;
             configEditor.ShowLineNumbers = false;
-            configEditor.ShowMinimap = false;
             configEditor.Size = new System.Drawing.Size(384, 554);
             configEditor.TabIndex = 3;
-            configEditor.TabSize = 4;
-            configEditor.ThemeName = "vs";
-            configEditor.WordWrap = SyntaxEditor.Models.EditorWordWrap.Off;
             // 
             // monarchEditor
             // 
-            monarchEditor.AutoIndent = SyntaxEditor.Models.EditorAutoIndent.Full;
-            monarchEditor.DetectIndentation = true;
             monarchEditor.EditorLanguage = "javascript";
-            monarchEditor.EnableContextMenu = true;
-            monarchEditor.EnableDragAndDrop = true;
-            monarchEditor.EnableFolding = true;
-            monarchEditor.EnableMouseWheelZoom = false;
-            monarchEditor.EnableParameterHints = true;
-            monarchEditor.EnableQuickSuggestions = true;
-            monarchEditor.EnableScrollBeyondLastLine = true;
-            monarchEditor.EnableSmoothScrolling = false;
-            monarchEditor.EnableStickyScroll = true;
-            monarchEditor.EnableSuggestOnTriggerCharacters = true;
-            monarchEditor.EnableWordBasedSuggestions = true;
-            monarchEditor.InsertSpaces = true;
-            monarchEditor.LineNumbersMinChars = 5;
             monarchEditor.Location = new System.Drawing.Point(14, 40);
             monarchEditor.Name = "monarchEditor";
-            monarchEditor.ReadOnly = false;
-            monarchEditor.ScrollBeyondLastColumn = 5;
-            monarchEditor.ShowGlyphMargin = false;
             monarchEditor.ShowLineNumbers = false;
-            monarchEditor.ShowMinimap = false;
             monarchEditor.Size = new System.Drawing.Size(384, 554);
             monarchEditor.TabIndex = 2;
-            monarchEditor.TabSize = 4;
-            monarchEditor.ThemeName = "vs";
-            monarchEditor.WordWrap = SyntaxEditor.Models.EditorWordWrap.Off;
             // 
             // Root
             // 

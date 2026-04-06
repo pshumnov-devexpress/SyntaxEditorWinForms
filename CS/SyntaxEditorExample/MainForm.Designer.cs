@@ -24,11 +24,11 @@
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
-            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions2 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
-            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject5 = new DevExpress.Utils.SerializableAppearanceObject();
-            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject6 = new DevExpress.Utils.SerializableAppearanceObject();
-            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject7 = new DevExpress.Utils.SerializableAppearanceObject();
-            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject8 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject3 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject4 = new DevExpress.Utils.SerializableAppearanceObject();
             ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
             skinDropDownButtonItem1 = new DevExpress.XtraBars.SkinDropDownButtonItem();
             skinPaletteDropDownButtonItem1 = new DevExpress.XtraBars.SkinPaletteDropDownButtonItem();
@@ -582,9 +582,9 @@
             cbeAutoIndent.Margin = new System.Windows.Forms.Padding(2);
             cbeAutoIndent.MenuManager = ribbonControl1;
             cbeAutoIndent.Name = "cbeAutoIndent";
-            editorButtonImageOptions2.ImageUri.Uri = "icon%20builder/actions_info";
-            editorButtonImageOptions2.SvgImageSize = new System.Drawing.Size(16, 16);
-            cbeAutoIndent.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo), new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, editorButtonImageOptions2, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject5, serializableAppearanceObject6, serializableAppearanceObject7, serializableAppearanceObject8, "Changes take effect after editor configuration refresh (e.g. TabSize change).", null, null, DevExpress.Utils.ToolTipAnchor.Default) });
+            editorButtonImageOptions1.ImageUri.Uri = "icon%20builder/actions_info";
+            editorButtonImageOptions1.SvgImageSize = new System.Drawing.Size(16, 16);
+            cbeAutoIndent.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo), new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph, "", -1, true, true, false, editorButtonImageOptions1, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject1, serializableAppearanceObject2, serializableAppearanceObject3, serializableAppearanceObject4, "Changes take effect after editor configuration refresh (e.g. TabSize change).", null, null, DevExpress.Utils.ToolTipAnchor.Default) });
             cbeAutoIndent.Size = new System.Drawing.Size(129, 24);
             cbeAutoIndent.StyleController = layoutControl;
             cbeAutoIndent.TabIndex = 19;
