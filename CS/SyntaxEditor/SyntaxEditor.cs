@@ -7,6 +7,8 @@ using SyntaxEditor.Models;
 using SyntaxEditor.Theming;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -24,10 +26,12 @@ namespace SyntaxEditor {
         private bool _updatingFromEditor;
 
         public SyntaxEditor() {
-            _webView = new WebView2();
-            _webView.Dock = DockStyle.Fill;
+            _webView = new WebView2 {
+                Dock = DockStyle.Fill
+            };
             Controls.Add(_webView);
             LookAndFeel.StyleChanged += LookAndFeel_StyleChanged;
+            Rules = new List<MonacoThemeRule>();
         }
 
         private void LookAndFeel_StyleChanged(object? sender, EventArgs e) {
@@ -41,16 +45,31 @@ namespace SyntaxEditor {
 
         #region Events
 
-        public event EventHandler? EditorInitialized;
-        public new event EventHandler? TextChanged;
-        public event EventHandler? IsModifiedChanged;
+        public event EventHandler EditorInitialized {
+            add {
+                Events.AddHandler(nameof(EditorInitialized), value);
+            }
+            remove {
+                Events.RemoveHandler(nameof(EditorInitialized), value);
+            }
+        }
+        public event EventHandler IsModifiedChanged {
+            add {
+                Events.AddHandler(nameof(IsModifiedChanged), value);
+            }
+            remove {
+                Events.RemoveHandler(nameof(IsModifiedChanged), value);
+            }
+        }
 
         #endregion Events
 
         #region Basic Properties
 
         private string _text = string.Empty;
-        public new string Text {
+        [DefaultValue("")]
+        [DXCategory(CategoryName.Appearance)]
+        public override string Text {
             get => _text;
             set {
                 if (_text == value)
@@ -58,7 +77,8 @@ namespace SyntaxEditor {
                 _text = value ?? string.Empty;
                 if (!_updatingFromEditor)
                     SetEditorText(_text);
-                TextChanged?.Invoke(this, EventArgs.Empty);
+                var handler = Events[nameof(TextChanged)] as EventHandler;
+                handler?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -66,11 +86,9 @@ namespace SyntaxEditor {
             SendCommand(EditorCommandType.SetText, text);
         }
 
-        public void MarkAsSaved() {
-            SendCommand(EditorCommandType.MarkAsSaved);
-        }
-
-        private bool _readOnly;
+        private bool _readOnly = false;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Behavior)]
         public bool ReadOnly {
             get => _readOnly;
             set {
@@ -85,23 +103,28 @@ namespace SyntaxEditor {
             SendCommand(EditorCommandType.SetReadOnly, readOnly);
         }
 
-        private bool _isModified;
+        private bool _isModified = false;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Data)]
         public bool IsModified {
             get => _isModified;
             private set {
                 if (_isModified == value)
                     return;
                 _isModified = value;
-                IsModifiedChanged?.Invoke(this, EventArgs.Empty);
+                var handler = Events[nameof(IsModifiedChanged)] as EventHandler;
+                handler?.Invoke(this, EventArgs.Empty);
             }
         }
 
         #endregion Basic Properties
 
         #region Theme Properties
-        public IReadOnlyList<MonacoThemeRule>? Rules { get; set; }
+        public List<MonacoThemeRule> Rules { get; }
 
         bool _applyDevExpressColors = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Appearance)]
         public bool ApplyDevExpressColors {
             get => _applyDevExpressColors;
             set {
@@ -114,6 +137,447 @@ namespace SyntaxEditor {
 
         #region Options
 
+        #region ShowLineNumbers
+
+        private bool _showLineNumbers = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Appearance)]
+        public bool ShowLineNumbers {
+            get => _showLineNumbers;
+            set {
+                if (_showLineNumbers == value) return;
+                _showLineNumbers = value;
+                SetShowLineNumbers(value);
+            }
+        }
+
+        private void SetShowLineNumbers(bool show) {
+            UpdateOption(EditorOption.LineNumbers, show);
+        }
+
+        #endregion ShowLineNumbers
+
+        #region ShowMinimap
+
+        private bool _showMinimap = false;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Appearance)]
+        public bool ShowMinimap {
+            get => _showMinimap;
+            set {
+                if (_showMinimap == value) return;
+                _showMinimap = value;
+                SetShowMinimap(value);
+            }
+        }
+
+        private void SetShowMinimap(bool show) {
+            UpdateOption(EditorOption.Minimap, show);
+        }
+
+        #endregion ShowMinimap
+
+        #region ShowGlyphMargin
+
+        private bool _showGlyphMargin = false;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Appearance)]
+        public bool ShowGlyphMargin {
+            get => _showGlyphMargin;
+            set {
+                if (_showGlyphMargin == value) return;
+                _showGlyphMargin = value;
+                SetShowGlyphMargin(value);
+            }
+        }
+
+        private void SetShowGlyphMargin(bool show) {
+            UpdateOption(EditorOption.GlyphMargin, show);
+        }
+
+        #endregion ShowGlyphMargin
+
+        #region EnableFolding
+
+        private bool _enableFolding = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Appearance)]
+        public bool EnableFolding {
+            get => _enableFolding;
+            set {
+                if (_enableFolding == value) return;
+                _enableFolding = value;
+                SetEnableFolding(value);
+            }
+        }
+
+        private void SetEnableFolding(bool enabled) {
+            UpdateOption(EditorOption.Folding, enabled);
+        }
+
+        #endregion EnableFolding
+
+        #region EnableContextMenu
+
+        private bool _enableContextMenu = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableContextMenu {
+            get => _enableContextMenu;
+            set {
+                if (_enableContextMenu == value) return;
+                _enableContextMenu = value;
+                SetEnableContextMenu(value);
+            }
+        }
+
+        private void SetEnableContextMenu(bool enabled) {
+            UpdateOption(EditorOption.ContextMenu, enabled);
+        }
+
+        #endregion EnableContextMenu
+
+        #region EnableSmoothScrolling
+
+        private bool _enableSmoothScrolling;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableSmoothScrolling {
+            get => _enableSmoothScrolling;
+            set {
+                if (_enableSmoothScrolling == value) return;
+                _enableSmoothScrolling = value;
+                SetEnableSmoothScrolling(value);
+            }
+        }
+
+        private void SetEnableSmoothScrolling(bool enabled) {
+            UpdateOption(EditorOption.SmoothScrolling, enabled);
+        }
+
+        #endregion EnableSmoothScrolling
+
+        #region EnableScrollBeyondLastLine
+
+        private bool _enableScrollBeyondLastLine = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableScrollBeyondLastLine {
+            get => _enableScrollBeyondLastLine;
+            set {
+                if (_enableScrollBeyondLastLine == value) return;
+                _enableScrollBeyondLastLine = value;
+                SetEnableScrollBeyondLastLine(value);
+            }
+        }
+
+        private void SetEnableScrollBeyondLastLine(bool enabled) {
+            UpdateOption(EditorOption.ScrollBeyondLastLine, enabled);
+        }
+
+        #endregion EnableScrollBeyondLastLine
+
+        #region ScrollBeyondLastColumn
+
+        private int _scrollBeyondLastColumn = 5;
+        [DefaultValue(5)]
+        [DXCategory(CategoryName.Behavior)]
+        public int ScrollBeyondLastColumn {
+            get => _scrollBeyondLastColumn;
+            set {
+                if (_scrollBeyondLastColumn == value) return;
+                _scrollBeyondLastColumn = value;
+                SetScrollBeyondLastColumn(value);
+            }
+        }
+
+        private void SetScrollBeyondLastColumn(int columns) {
+            UpdateOption(EditorOption.ScrollBeyondLastColumn, columns);
+        }
+
+        #endregion ScrollBeyondLastColumn
+
+        #region LineNumbersMinChars
+
+        private int _lineNumbersMinChars = 5;
+        [DefaultValue(5)]
+        [DXCategory(CategoryName.Appearance)]
+        public int LineNumbersMinChars {
+            get => _lineNumbersMinChars;
+            set {
+                if (_lineNumbersMinChars == value) return;
+                _lineNumbersMinChars = value;
+                SetLineNumbersMinChars(value);
+            }
+        }
+
+        private void SetLineNumbersMinChars(int minChars) {
+            UpdateOption(EditorOption.LineNumbersMinChars, minChars);
+        }
+
+        #endregion LineNumbersMinChars
+
+        #region EnableDragAndDrop
+
+        private bool _enableDragAndDrop = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableDragAndDrop {
+            get => _enableDragAndDrop;
+            set {
+                if (_enableDragAndDrop == value) return;
+                _enableDragAndDrop = value;
+                SetEnableDragAndDrop(value);
+            }
+        }
+
+        private void SetEnableDragAndDrop(bool enabled) {
+            UpdateOption(EditorOption.DragAndDrop, enabled);
+        }
+
+        #endregion EnableDragAndDrop
+
+        #region EnableMouseWheelZoom
+
+        private bool _enableMouseWheelZoom = true;
+        [DefaultValue(false)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableMouseWheelZoom {
+            get => _enableMouseWheelZoom;
+            set {
+                if (_enableMouseWheelZoom == value) return;
+                _enableMouseWheelZoom = value;
+                SetEnableMouseWheelZoom(value);
+            }
+        }
+
+        private void SetEnableMouseWheelZoom(bool enabled) {
+            UpdateOption(EditorOption.MouseWheelZoom, enabled);
+        }
+
+        #endregion EnableMouseWheelZoom
+
+        #region WordWrap
+
+        private EditorWordWrap _wordWrap = EditorWordWrap.Off;
+        [DefaultValue(EditorWordWrap.Off)]
+        [DXCategory(CategoryName.Appearance)]
+        public EditorWordWrap WordWrap {
+            get => _wordWrap;
+            set {
+                if (_wordWrap == value) return;
+                _wordWrap = value;
+                SetWordWrap(value);
+            }
+        }
+
+        private void SetWordWrap(EditorWordWrap wordWrap) {
+            string monacoValue = wordWrap switch {
+                EditorWordWrap.Off => "off",
+                EditorWordWrap.On => "on",
+                _ => throw new ArgumentOutOfRangeException(nameof(wordWrap))
+            };
+            UpdateOption(EditorOption.WordWrap, monacoValue);
+        }
+
+        #endregion WordWrap
+
+        #region EnableStickyScroll
+
+        private bool _enableStickyScroll = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Appearance)]
+        public bool EnableStickyScroll {
+            get => _enableStickyScroll;
+            set {
+                if (_enableStickyScroll == value) return;
+                _enableStickyScroll = value;
+                SetEnableStickyScroll(value);
+            }
+        }
+
+        private void SetEnableStickyScroll(bool enabled) {
+            UpdateOption(EditorOption.StickyScroll, new { enabled });
+        }
+
+        #endregion EnableStickyScroll
+
+        #region TabSize
+
+        private int _tabSize = 4;
+        [DefaultValue(4)]
+        [DXCategory(CategoryName.Behavior)]
+        public int TabSize {
+            get => _tabSize;
+            set {
+                if (value < 1 || value > 64)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                if (_tabSize == value) return;
+                _tabSize = value;
+                SetTabSize(value);
+            }
+        }
+
+        private void SetTabSize(int size) {
+            UpdateOption(EditorOption.TabSize, size);
+        }
+
+        #endregion TabSize
+
+        #region DetectIndentation
+
+        private bool _detectIndentation = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool DetectIndentation {
+            get => _detectIndentation;
+            set {
+                if (_detectIndentation == value) return;
+                _detectIndentation = value;
+                SetDetectIndentation(value);
+            }
+        }
+
+        private void SetDetectIndentation(bool detect) {
+            UpdateOption(EditorOption.DetectIndentation, detect);
+        }
+
+        #endregion DetectIndentation
+
+        #region InsertSpaces
+
+        private bool _insertSpaces = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool InsertSpaces {
+            get => _insertSpaces;
+            set {
+                if (_insertSpaces == value) return;
+                _insertSpaces = value;
+                SetInsertSpaces(value);
+            }
+        }
+
+        private void SetInsertSpaces(bool insertSpaces) {
+            UpdateOption(EditorOption.InsertSpaces, insertSpaces);
+        }
+
+        #endregion InsertSpaces
+
+        #region AutoIndent
+
+        private EditorAutoIndent _autoIndent = EditorAutoIndent.Full;
+        [DefaultValue(EditorAutoIndent.Full)]
+        [DXCategory(CategoryName.Behavior)]
+        public EditorAutoIndent AutoIndent {
+            get => _autoIndent;
+            set {
+                if (_autoIndent == value) return;
+                _autoIndent = value;
+                SetAutoIndent(value);
+            }
+        }
+
+        private void SetAutoIndent(EditorAutoIndent autoIndent) {
+            string monacoValue = autoIndent switch {
+                EditorAutoIndent.None => "none",
+                EditorAutoIndent.Keep => "keep",
+                EditorAutoIndent.Brackets => "brackets",
+                EditorAutoIndent.Advanced => "advanced",
+                EditorAutoIndent.Full => "full",
+                _ => throw new ArgumentOutOfRangeException(nameof(autoIndent))
+            };
+
+            UpdateOption(EditorOption.AutoIndent, monacoValue);
+            SetTabSize(TabSize);
+        }
+
+        #endregion AutoIndent
+
+        #region EnableQuickSuggestions
+
+        private bool _enableQuickSuggestions = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableQuickSuggestions {
+            get => _enableQuickSuggestions;
+            set {
+                if (_enableQuickSuggestions == value) return;
+                _enableQuickSuggestions = value;
+                SetEnableQuickSuggestions(value);
+            }
+        }
+
+        private void SetEnableQuickSuggestions(bool enabled) {
+            UpdateOption(EditorOption.EnableQuickSuggestions, enabled);
+        }
+
+        #endregion EnableQuickSuggestions
+
+        #region EnableWordBasedSuggestions
+
+        private bool _enableWordBasedSuggestions = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableWordBasedSuggestions {
+            get => _enableWordBasedSuggestions;
+            set {
+                if (_enableWordBasedSuggestions == value) return;
+                _enableWordBasedSuggestions = value;
+                SetEnableWordBasedSuggestions(value);
+            }
+        }
+
+        private void SetEnableWordBasedSuggestions(bool enabled) {
+            var value = enabled ? "currentDocument" : "off";
+            UpdateOption(EditorOption.EnableWordBasedSuggestions, value);
+        }
+
+        #endregion EnableWordBasedSuggestions
+
+        #region EnableSuggestOnTriggerCharacters
+
+        private bool _enableSuggestOnTriggerCharacters = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableSuggestOnTriggerCharacters {
+            get => _enableSuggestOnTriggerCharacters;
+            set {
+                if (_enableSuggestOnTriggerCharacters == value) return;
+                _enableSuggestOnTriggerCharacters = value;
+                SetEnableSuggestOnTriggerCharacters(value);
+            }
+        }
+
+        private void SetEnableSuggestOnTriggerCharacters(bool enabled) {
+            UpdateOption(EditorOption.EnableSuggestOnTriggerCharacters, enabled);
+        }
+
+        #endregion EnableSuggestOnTriggerCharacters
+
+        #region EnableParameterHints
+
+        private bool _enableParameterHints = true;
+        [DefaultValue(true)]
+        [DXCategory(CategoryName.Behavior)]
+        public bool EnableParameterHints {
+            get => _enableParameterHints;
+            set {
+                if (_enableParameterHints == value) return;
+                _enableParameterHints = value;
+                SetEnableParameterHints(value);
+            }
+        }
+
+        private void SetEnableParameterHints(bool enabled) {
+            UpdateOption(EditorOption.EnableParameterHints, new { enabled });
+        }
+
+        #endregion EnableParameterHints
+
+        #endregion Options
+
+        #region Communication
         private static string ToMonacoOption(EditorOption option) => option switch {
             EditorOption.LineNumbers => "lineNumbers",
             EditorOption.Minimap => "minimap",
@@ -143,14 +607,14 @@ namespace SyntaxEditor {
             var monacoOption = ToMonacoOption(option);
 
             object? monacoValue = null;
-            switch (option) {
+            switch(option) {
                 case EditorOption.LineNumbers:
-                    if (value is not bool show)
+                    if(value is not bool show)
                         throw new ArgumentException("LineNumbers requires boolean value.", nameof(value));
                     monacoValue = show ? "on" : "off";
                     break;
                 case EditorOption.Minimap:
-                    if (value is not bool enabled)
+                    if(value is not bool enabled)
                         throw new ArgumentException("Minimap requires boolean value.", nameof(value));
                     monacoValue = new { enabled };
                     break;
@@ -164,406 +628,6 @@ namespace SyntaxEditor {
                 value = monacoValue
             });
         }
-
-        #region ShowLineNumbers
-
-        private bool _showLineNumbers = true;
-        public bool ShowLineNumbers {
-            get => _showLineNumbers;
-            set {
-                if (_showLineNumbers == value) return;
-                _showLineNumbers = value;
-                SetShowLineNumbers(value);
-            }
-        }
-
-        private void SetShowLineNumbers(bool show) {
-            UpdateOption(EditorOption.LineNumbers, show);
-        }
-
-        #endregion ShowLineNumbers
-
-        #region ShowMinimap
-
-        private bool _showMinimap;
-        public bool ShowMinimap {
-            get => _showMinimap;
-            set {
-                if (_showMinimap == value) return;
-                _showMinimap = value;
-                SetShowMinimap(value);
-            }
-        }
-
-        private void SetShowMinimap(bool show) {
-            UpdateOption(EditorOption.Minimap, show);
-        }
-
-        #endregion ShowMinimap
-
-        #region ShowGlyphMargin
-
-        private bool _showGlyphMargin;
-        public bool ShowGlyphMargin {
-            get => _showGlyphMargin;
-            set {
-                if (_showGlyphMargin == value) return;
-                _showGlyphMargin = value;
-                SetShowGlyphMargin(value);
-            }
-        }
-
-        private void SetShowGlyphMargin(bool show) {
-            UpdateOption(EditorOption.GlyphMargin, show);
-        }
-
-        #endregion ShowGlyphMargin
-
-        #region EnableFolding
-
-        private bool _enableFolding = true;
-        public bool EnableFolding {
-            get => _enableFolding;
-            set {
-                if (_enableFolding == value) return;
-                _enableFolding = value;
-                SetEnableFolding(value);
-            }
-        }
-
-        private void SetEnableFolding(bool enabled) {
-            UpdateOption(EditorOption.Folding, enabled);
-        }
-
-        #endregion EnableFolding
-
-        #region EnableContextMenu
-
-        private bool _enableContextMenu = true;
-        public bool EnableContextMenu {
-            get => _enableContextMenu;
-            set {
-                if (_enableContextMenu == value) return;
-                _enableContextMenu = value;
-                SetEnableContextMenu(value);
-            }
-        }
-
-        private void SetEnableContextMenu(bool enabled) {
-            UpdateOption(EditorOption.ContextMenu, enabled);
-        }
-
-        #endregion EnableContextMenu
-
-        #region EnableSmoothScrolling
-
-        private bool _enableSmoothScrolling;
-        public bool EnableSmoothScrolling {
-            get => _enableSmoothScrolling;
-            set {
-                if (_enableSmoothScrolling == value) return;
-                _enableSmoothScrolling = value;
-                SetEnableSmoothScrolling(value);
-            }
-        }
-
-        private void SetEnableSmoothScrolling(bool enabled) {
-            UpdateOption(EditorOption.SmoothScrolling, enabled);
-        }
-
-        #endregion EnableSmoothScrolling
-
-        #region EnableScrollBeyondLastLine
-
-        private bool _enableScrollBeyondLastLine = true;
-        public bool EnableScrollBeyondLastLine {
-            get => _enableScrollBeyondLastLine;
-            set {
-                if (_enableScrollBeyondLastLine == value) return;
-                _enableScrollBeyondLastLine = value;
-                SetEnableScrollBeyondLastLine(value);
-            }
-        }
-
-        private void SetEnableScrollBeyondLastLine(bool enabled) {
-            UpdateOption(EditorOption.ScrollBeyondLastLine, enabled);
-        }
-
-        #endregion EnableScrollBeyondLastLine
-
-        #region ScrollBeyondLastColumn
-
-        private int _scrollBeyondLastColumn = 5;
-        public int ScrollBeyondLastColumn {
-            get => _scrollBeyondLastColumn;
-            set {
-                if (_scrollBeyondLastColumn == value) return;
-                _scrollBeyondLastColumn = value;
-                SetScrollBeyondLastColumn(value);
-            }
-        }
-
-        private void SetScrollBeyondLastColumn(int columns) {
-            UpdateOption(EditorOption.ScrollBeyondLastColumn, columns);
-        }
-
-        #endregion ScrollBeyondLastColumn
-
-        #region LineNumbersMinChars
-
-        private int _lineNumbersMinChars = 5;
-        public int LineNumbersMinChars {
-            get => _lineNumbersMinChars;
-            set {
-                if (_lineNumbersMinChars == value) return;
-                _lineNumbersMinChars = value;
-                SetLineNumbersMinChars(value);
-            }
-        }
-
-        private void SetLineNumbersMinChars(int minChars) {
-            UpdateOption(EditorOption.LineNumbersMinChars, minChars);
-        }
-
-        #endregion LineNumbersMinChars
-
-        #region EnableDragAndDrop
-
-        private bool _enableDragAndDrop = true;
-        public bool EnableDragAndDrop {
-            get => _enableDragAndDrop;
-            set {
-                if (_enableDragAndDrop == value) return;
-                _enableDragAndDrop = value;
-                SetEnableDragAndDrop(value);
-            }
-        }
-
-        private void SetEnableDragAndDrop(bool enabled) {
-            UpdateOption(EditorOption.DragAndDrop, enabled);
-        }
-
-        #endregion EnableDragAndDrop
-
-        #region EnableMouseWheelZoom
-
-        private bool _enableMouseWheelZoom;
-        public bool EnableMouseWheelZoom {
-            get => _enableMouseWheelZoom;
-            set {
-                if (_enableMouseWheelZoom == value) return;
-                _enableMouseWheelZoom = value;
-                SetEnableMouseWheelZoom(value);
-            }
-        }
-
-        private void SetEnableMouseWheelZoom(bool enabled) {
-            UpdateOption(EditorOption.MouseWheelZoom, enabled);
-        }
-
-        #endregion EnableMouseWheelZoom
-
-        #region WordWrap
-
-        private EditorWordWrap _wordWrap = EditorWordWrap.Off;
-        public EditorWordWrap WordWrap {
-            get => _wordWrap;
-            set {
-                if (_wordWrap == value) return;
-                _wordWrap = value;
-                SetWordWrap(value);
-            }
-        }
-
-        private void SetWordWrap(EditorWordWrap wordWrap) {
-            string monacoValue = wordWrap switch {
-                EditorWordWrap.Off => "off",
-                EditorWordWrap.On => "on",
-                _ => throw new ArgumentOutOfRangeException(nameof(wordWrap))
-            };
-            UpdateOption(EditorOption.WordWrap, monacoValue);
-        }
-
-        #endregion WordWrap
-
-        #region EnableStickyScroll
-
-        private bool _enableStickyScroll = true;
-        public bool EnableStickyScroll {
-            get => _enableStickyScroll;
-            set {
-                if (_enableStickyScroll == value) return;
-                _enableStickyScroll = value;
-                SetEnableStickyScroll(value);
-            }
-        }
-
-        private void SetEnableStickyScroll(bool enabled) {
-            UpdateOption(EditorOption.StickyScroll, new { enabled });
-        }
-
-        #endregion EnableStickyScroll
-
-        #region TabSize
-
-        private int _tabSize = 4;
-        public int TabSize {
-            get => _tabSize;
-            set {
-                if (value < 1 || value > 64)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                if (_tabSize == value) return;
-                _tabSize = value;
-                SetTabSize(value);
-            }
-        }
-
-        private void SetTabSize(int size) {
-            UpdateOption(EditorOption.TabSize, size);
-        }
-
-        #endregion TabSize
-
-        #region DetectIndentation
-
-        private bool _detectIndentation = true;
-        public bool DetectIndentation {
-            get => _detectIndentation;
-            set {
-                if (_detectIndentation == value) return;
-                _detectIndentation = value;
-                SetDetectIndentation(value);
-            }
-        }
-
-        private void SetDetectIndentation(bool detect) {
-            UpdateOption(EditorOption.DetectIndentation, detect);
-        }
-
-        #endregion DetectIndentation
-
-        #region InsertSpaces
-
-        private bool _insertSpaces = true;
-        public bool InsertSpaces {
-            get => _insertSpaces;
-            set {
-                if (_insertSpaces == value) return;
-                _insertSpaces = value;
-                SetInsertSpaces(value);
-            }
-        }
-
-        private void SetInsertSpaces(bool insertSpaces) {
-            UpdateOption(EditorOption.InsertSpaces, insertSpaces);
-        }
-
-        #endregion InsertSpaces
-
-        #region AutoIndent
-
-        private EditorAutoIndent _autoIndent = EditorAutoIndent.Full;
-        public EditorAutoIndent AutoIndent {
-            get => _autoIndent;
-            set {
-                if (_autoIndent == value) return;
-                _autoIndent = value;
-                SetAutoIndent(value);
-            }
-        }
-
-        private void SetAutoIndent(EditorAutoIndent autoIndent) {
-            string monacoValue = autoIndent switch {
-                EditorAutoIndent.None => "none",
-                EditorAutoIndent.Keep => "keep",
-                EditorAutoIndent.Brackets => "brackets",
-                EditorAutoIndent.Advanced => "advanced",
-                EditorAutoIndent.Full => "full",
-                _ => throw new ArgumentOutOfRangeException(nameof(autoIndent))
-            };
-
-            UpdateOption(EditorOption.AutoIndent, monacoValue);
-            SetTabSize(TabSize);
-        }
-
-        #endregion AutoIndent
-
-        #region EnableQuickSuggestions
-
-        private bool _enableQuickSuggestions = true;
-        public bool EnableQuickSuggestions {
-            get => _enableQuickSuggestions;
-            set {
-                if (_enableQuickSuggestions == value) return;
-                _enableQuickSuggestions = value;
-                SetEnableQuickSuggestions(value);
-            }
-        }
-
-        private void SetEnableQuickSuggestions(bool enabled) {
-            UpdateOption(EditorOption.EnableQuickSuggestions, enabled);
-        }
-
-        #endregion EnableQuickSuggestions
-
-        #region EnableWordBasedSuggestions
-
-        private bool _enableWordBasedSuggestions = true;
-        public bool EnableWordBasedSuggestions {
-            get => _enableWordBasedSuggestions;
-            set {
-                if (_enableWordBasedSuggestions == value) return;
-                _enableWordBasedSuggestions = value;
-                SetEnableWordBasedSuggestions(value);
-            }
-        }
-
-        private void SetEnableWordBasedSuggestions(bool enabled) {
-            var value = enabled ? "currentDocument" : "off";
-            UpdateOption(EditorOption.EnableWordBasedSuggestions, value);
-        }
-
-        #endregion EnableWordBasedSuggestions
-
-        #region EnableSuggestOnTriggerCharacters
-
-        private bool _enableSuggestOnTriggerCharacters = true;
-        public bool EnableSuggestOnTriggerCharacters {
-            get => _enableSuggestOnTriggerCharacters;
-            set {
-                if (_enableSuggestOnTriggerCharacters == value) return;
-                _enableSuggestOnTriggerCharacters = value;
-                SetEnableSuggestOnTriggerCharacters(value);
-            }
-        }
-
-        private void SetEnableSuggestOnTriggerCharacters(bool enabled) {
-            UpdateOption(EditorOption.EnableSuggestOnTriggerCharacters, enabled);
-        }
-
-        #endregion EnableSuggestOnTriggerCharacters
-
-        #region EnableParameterHints
-
-        private bool _enableParameterHints = true;
-        public bool EnableParameterHints {
-            get => _enableParameterHints;
-            set {
-                if (_enableParameterHints == value) return;
-                _enableParameterHints = value;
-                SetEnableParameterHints(value);
-            }
-        }
-
-        private void SetEnableParameterHints(bool enabled) {
-            UpdateOption(EditorOption.EnableParameterHints, new { enabled });
-        }
-
-        #endregion EnableParameterHints
-
-        #endregion Options
-
-        #region Communication
 
         private void SendCommand(EditorCommandType type, object? payload = null) {
             if (!_editorReady)
@@ -654,6 +718,8 @@ namespace SyntaxEditor {
             => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}".ToLower();
 
         private string _themeName = "vs";
+        [DefaultValue("vs")]
+        [DXCategory(CategoryName.Appearance)]
         public string ThemeName {
             get => _themeName;
             set {
@@ -721,7 +787,8 @@ namespace SyntaxEditor {
             _updatingFromEditor = true;
             try {
                 _text = text;
-                TextChanged?.Invoke(this, EventArgs.Empty);
+                var handler = Events[nameof(TextChanged)] as EventHandler;
+                handler?.Invoke(this, EventArgs.Empty);
             } finally {
                 _updatingFromEditor = false;
             }
@@ -734,7 +801,8 @@ namespace SyntaxEditor {
             _editorReady = true;
             ApplyCurrentState();
             ApplyCurrentTheme();
-            EditorInitialized?.Invoke(this, EventArgs.Empty);
+            var handler = Events[nameof(EditorInitialized)] as EventHandler;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion Processing Monaco Messages
@@ -742,6 +810,8 @@ namespace SyntaxEditor {
         #region Language Support
 
         private string _editorLanguage = "csharp";
+        [DefaultValue("csharp")]
+        [DXCategory(CategoryName.Behavior)]
         public string EditorLanguage {
             get => _editorLanguage;
             set {
@@ -857,6 +927,10 @@ namespace SyntaxEditor {
         }
 
         #endregion Initialization and Cleanup
+
+        public void MarkAsSaved() {
+            SendCommand(EditorCommandType.MarkAsSaved);
+        }
 
         private void ApplyCurrentState() {
             RestoreRegisteredLanguages();

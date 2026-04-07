@@ -9,12 +9,13 @@ using System.Windows.Forms;
 
 namespace SyntaxEditorExample {
     public partial class MainForm : DevExpress.XtraEditors.XtraForm {
-        private IReadOnlyList<MonacoThemeRule>? currentRules;
+        private List<MonacoThemeRule>? currentRules;
 
         public MainForm() {
             InitializeComponent();
             ConfigureUI();
             syntaxEditor.Text = Constants.defaultCSharpText;
+            currentRules = [.. syntaxEditor.Rules];
         }
 
         private void ConfigureUI() {
@@ -154,7 +155,8 @@ namespace SyntaxEditorExample {
 
             if(form.ShowDialog(this) == DialogResult.OK) {
                 currentRules = form.GetRules();
-                syntaxEditor.Rules = currentRules;
+                syntaxEditor.Rules.Clear();
+                syntaxEditor.Rules.AddRange(currentRules);
                 syntaxEditor.ApplyCurrentTheme();
             }
         }

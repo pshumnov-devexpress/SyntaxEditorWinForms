@@ -15,11 +15,11 @@ namespace SyntaxEditorExample {
         #region Windows Form Designer generated code
 
         private void InitializeComponent() {
-            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions2 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
-            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject5 = new DevExpress.Utils.SerializableAppearanceObject();
-            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject6 = new DevExpress.Utils.SerializableAppearanceObject();
-            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject7 = new DevExpress.Utils.SerializableAppearanceObject();
-            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject8 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject3 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject4 = new DevExpress.Utils.SerializableAppearanceObject();
             chkRawMode = new DevExpress.XtraEditors.CheckEdit();
             layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             navigationFrame1 = new DevExpress.XtraBars.Navigation.NavigationFrame();
@@ -35,15 +35,15 @@ namespace SyntaxEditorExample {
             repositoryItemButtonEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             rawPage = new DevExpress.XtraBars.Navigation.NavigationPage();
             rawEditor = new SyntaxEditor.SyntaxEditor();
+            simpleButton1 = new DevExpress.XtraEditors.SimpleButton();
             Root = new DevExpress.XtraLayout.LayoutControlGroup();
             layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
+            emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
+            layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             btnCancel = new DevExpress.XtraEditors.SimpleButton();
             btnSave = new DevExpress.XtraEditors.SimpleButton();
             stackPanel1 = new DevExpress.Utils.Layout.StackPanel();
-            simpleButton1 = new DevExpress.XtraEditors.SimpleButton();
-            layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
-            emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
             ((System.ComponentModel.ISupportInitialize)chkRawMode.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControl1).BeginInit();
             layoutControl1.SuspendLayout();
@@ -58,10 +58,10 @@ namespace SyntaxEditorExample {
             ((System.ComponentModel.ISupportInitialize)Root).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)stackPanel1).BeginInit();
             stackPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).BeginInit();
             SuspendLayout();
             // 
             // chkRawMode
@@ -199,7 +199,7 @@ namespace SyntaxEditorExample {
             // repositoryItemButtonEdit1
             // 
             repositoryItemButtonEdit1.AutoHeight = false;
-            repositoryItemButtonEdit1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Delete, "Delete token", -1, true, true, true, editorButtonImageOptions2, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject5, serializableAppearanceObject6, serializableAppearanceObject7, serializableAppearanceObject8, "", null, null, DevExpress.Utils.ToolTipAnchor.Default) });
+            repositoryItemButtonEdit1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Delete, "Delete token", -1, true, true, true, editorButtonImageOptions1, new DevExpress.Utils.KeyShortcut(System.Windows.Forms.Keys.None), serializableAppearanceObject1, serializableAppearanceObject2, serializableAppearanceObject3, serializableAppearanceObject4, "", null, null, DevExpress.Utils.ToolTipAnchor.Default) });
             repositoryItemButtonEdit1.Name = "repositoryItemButtonEdit1";
             repositoryItemButtonEdit1.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
             repositoryItemButtonEdit1.ButtonClick += repositoryItemButtonEdit1_ButtonClick;
@@ -213,35 +213,23 @@ namespace SyntaxEditorExample {
             // 
             // rawEditor
             // 
-            rawEditor.AutoIndent = SyntaxEditor.Models.EditorAutoIndent.Full;
-            rawEditor.DetectIndentation = true;
             rawEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             rawEditor.EditorLanguage = "javascript";
-            rawEditor.EnableContextMenu = true;
-            rawEditor.EnableDragAndDrop = true;
-            rawEditor.EnableFolding = true;
-            rawEditor.EnableMouseWheelZoom = false;
-            rawEditor.EnableParameterHints = true;
-            rawEditor.EnableQuickSuggestions = true;
-            rawEditor.EnableScrollBeyondLastLine = true;
-            rawEditor.EnableSmoothScrolling = false;
-            rawEditor.EnableStickyScroll = true;
-            rawEditor.EnableSuggestOnTriggerCharacters = true;
-            rawEditor.EnableWordBasedSuggestions = true;
-            rawEditor.InsertSpaces = true;
-            rawEditor.LineNumbersMinChars = 5;
             rawEditor.Location = new System.Drawing.Point(0, 0);
             rawEditor.Name = "rawEditor";
-            rawEditor.ReadOnly = false;
-            rawEditor.ScrollBeyondLastColumn = 5;
-            rawEditor.ShowGlyphMargin = false;
             rawEditor.ShowLineNumbers = false;
-            rawEditor.ShowMinimap = false;
             rawEditor.Size = new System.Drawing.Size(772, 552);
             rawEditor.TabIndex = 0;
-            rawEditor.TabSize = 4;
-            rawEditor.ThemeName = "vs";
-            rawEditor.WordWrap = SyntaxEditor.Models.EditorWordWrap.Off;
+            // 
+            // simpleButton1
+            // 
+            simpleButton1.Location = new System.Drawing.Point(643, 14);
+            simpleButton1.Name = "simpleButton1";
+            simpleButton1.Size = new System.Drawing.Size(143, 27);
+            simpleButton1.StyleController = layoutControl1;
+            simpleButton1.TabIndex = 2;
+            simpleButton1.Text = "Add new token";
+            simpleButton1.Click += simpleButton1_Click;
             // 
             // Root
             // 
@@ -270,6 +258,23 @@ namespace SyntaxEditorExample {
             layoutControlItem1.Name = "layoutControlItem1";
             layoutControlItem1.Size = new System.Drawing.Size(776, 556);
             layoutControlItem1.TextVisible = false;
+            // 
+            // emptySpaceItem1
+            // 
+            emptySpaceItem1.Location = new System.Drawing.Point(112, 0);
+            emptySpaceItem1.Name = "emptySpaceItem1";
+            emptySpaceItem1.Size = new System.Drawing.Size(517, 31);
+            // 
+            // layoutControlItem2
+            // 
+            layoutControlItem2.Control = simpleButton1;
+            layoutControlItem2.Location = new System.Drawing.Point(629, 0);
+            layoutControlItem2.MaxSize = new System.Drawing.Size(147, 31);
+            layoutControlItem2.MinSize = new System.Drawing.Size(147, 31);
+            layoutControlItem2.Name = "layoutControlItem2";
+            layoutControlItem2.Size = new System.Drawing.Size(147, 31);
+            layoutControlItem2.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
+            layoutControlItem2.TextVisible = false;
             // 
             // btnCancel
             // 
@@ -302,33 +307,6 @@ namespace SyntaxEditorExample {
             stackPanel1.TabIndex = 4;
             stackPanel1.UseSkinIndents = true;
             // 
-            // simpleButton1
-            // 
-            simpleButton1.Location = new System.Drawing.Point(643, 14);
-            simpleButton1.Name = "simpleButton1";
-            simpleButton1.Size = new System.Drawing.Size(143, 27);
-            simpleButton1.StyleController = layoutControl1;
-            simpleButton1.TabIndex = 2;
-            simpleButton1.Text = "Add new token";
-            simpleButton1.Click += simpleButton1_Click;
-            // 
-            // layoutControlItem2
-            // 
-            layoutControlItem2.Control = simpleButton1;
-            layoutControlItem2.Location = new System.Drawing.Point(629, 0);
-            layoutControlItem2.MaxSize = new System.Drawing.Size(147, 31);
-            layoutControlItem2.MinSize = new System.Drawing.Size(147, 31);
-            layoutControlItem2.Name = "layoutControlItem2";
-            layoutControlItem2.Size = new System.Drawing.Size(147, 31);
-            layoutControlItem2.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
-            layoutControlItem2.TextVisible = false;
-            // 
-            // emptySpaceItem1
-            // 
-            emptySpaceItem1.Location = new System.Drawing.Point(112, 0);
-            emptySpaceItem1.Name = "emptySpaceItem1";
-            emptySpaceItem1.Size = new System.Drawing.Size(517, 31);
-            // 
             // RulesForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -356,10 +334,10 @@ namespace SyntaxEditorExample {
             ((System.ComponentModel.ISupportInitialize)Root).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem3).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem2).EndInit();
             ((System.ComponentModel.ISupportInitialize)stackPanel1).EndInit();
             stackPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
