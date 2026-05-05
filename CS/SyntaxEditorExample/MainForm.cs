@@ -62,6 +62,14 @@ namespace SyntaxEditorExample {
             seTabSize.EditValue = syntaxEditor.TabSize;
             seTabSize.EditValueChanged += seTabSize_EditValueChanged;
 
+            // Configure active skin combo
+            cbeActiveSkin.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            cbeActiveSkin.Properties.Items.Add("Default");
+            cbeActiveSkin.Properties.Items.AddRange(Enum.GetValues(typeof(MonacoThemeBase)));
+            cbeActiveSkin.EditValue = "Default";
+            cbeActiveSkin.Enabled = !syntaxEditor.ApplyDevExpressColors;
+            cbeActiveSkin.EditValueChanged += cbeActiveSkin_EditValueChanged;
+
             // Sync check edits with initial editor values
             applySkinColorsCheckItem.Checked = syntaxEditor.ApplyDevExpressColors;
             ceReadOnly.Checked = syntaxEditor.ReadOnly;
@@ -162,7 +170,22 @@ namespace SyntaxEditorExample {
         }
 
         private void applySkinColorsCheckItem_CheckedChanged(object sender, ItemClickEventArgs e) {
+            cbeActiveSkin.Enabled = !applySkinColorsCheckItem.Checked;
+            object? theme = applySkinColorsCheckItem.Checked ? null : cbeActiveSkin.EditValue;
+            SetSkinOverride(theme);
             syntaxEditor.ApplyDevExpressColors = applySkinColorsCheckItem.Checked;
+        }
+
+        private void cbeActiveSkin_EditValueChanged(object? sender, EventArgs e) {
+            SetSkinOverride(cbeActiveSkin.EditValue);
+            syntaxEditor.ApplyCurrentTheme();
+        }
+
+        private void SetSkinOverride(object? theme) {
+            if(theme is MonacoThemeBase themeBase)
+                LookAndFeelExtensions.SkinBaseOverride = themeBase;
+            else
+                LookAndFeelExtensions.SkinBaseOverride = null;
         }
 
         #endregion Ribbon Button Handlers
