@@ -776,7 +776,7 @@ namespace SyntaxEditor {
                         .Select(x => x.GetString()!)
                         .ToList();
 
-                    LanguagesReceivedInternal?.Invoke(this, langs);
+                    _languagesTcs?.TrySetResult(langs);
                     break;
                 default:
                     break;
@@ -828,31 +828,22 @@ namespace SyntaxEditor {
             SendCommand(EditorCommandType.SetLanguage, language);
         }
 
-        private event EventHandler<IReadOnlyList<string>>? LanguagesReceivedInternal;
+        private TaskCompletionSource<IReadOnlyList<string>>? _languagesTcs;
 
         public async Task<IReadOnlyList<string>> GetAvailableLanguagesAsync(CancellationToken cancellationToken = default) {
 
             var tcs = new TaskCompletionSource<IReadOnlyList<string>>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            void Handler(object? s, IReadOnlyList<string> langs) {
-                LanguagesReceivedInternal -= Handler;
-                tcs.TrySetResult(langs);
-            }
-
-            LanguagesReceivedInternal += Handler;
+            _languagesTcs = tcs;
 
             using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
-            using (linkedCts.Token.Register(() => {
-                LanguagesReceivedInternal -= Handler;
-                tcs.TrySetCanceled(linkedCts.Token);
-            })) {
+            using (linkedCts.Token.Register(() => tcs.TrySetCanceled(linkedCts.Token))) {
                 try {
                     SendCommand(EditorCommandType.GetLanguages);
                     return await tcs.Task.ConfigureAwait(false);
                 } finally {
-                    LanguagesReceivedInternal -= Handler;
+                    Interlocked.CompareExchange(ref _languagesTcs, null, tcs);
                 }
             }
         }
