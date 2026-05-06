@@ -22,13 +22,14 @@ namespace SyntaxEditor {
     public class SyntaxEditor : XtraUserControl {
 
         private WebView2? _webView;
-        private bool _editorReady;
+        private IEditorCommandChannel _commandChannel = null!;
         private bool _updatingFromEditor;
 
         public SyntaxEditor() {
             _webView = new WebView2 {
                 Dock = DockStyle.Fill
             };
+            _commandChannel = new WebView2CommandChannel(_webView);
             Controls.Add(_webView);
             LookAndFeel.StyleChanged += LookAndFeel_StyleChanged;
             Rules = new List<MonacoThemeRule>();
@@ -83,7 +84,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEditorText(string text) {
-            SendCommand(EditorCommandType.SetText, text);
+            _commandChannel.Send(EditorCommandType.SetText, text);
         }
 
         private bool _readOnly = false;
@@ -100,7 +101,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEditorReadOnly(bool readOnly) {
-            SendCommand(EditorCommandType.SetReadOnly, readOnly);
+            _commandChannel.Send(EditorCommandType.SetReadOnly, readOnly);
         }
 
         private bool _isModified = false;
@@ -152,7 +153,7 @@ namespace SyntaxEditor {
         }
 
         private void SetShowLineNumbers(bool show) {
-            UpdateOption(EditorOption.LineNumbers, show);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.LineNumbers, show);
         }
 
         #endregion ShowLineNumbers
@@ -172,7 +173,7 @@ namespace SyntaxEditor {
         }
 
         private void SetShowMinimap(bool show) {
-            UpdateOption(EditorOption.Minimap, show);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.Minimap, show);
         }
 
         #endregion ShowMinimap
@@ -192,7 +193,7 @@ namespace SyntaxEditor {
         }
 
         private void SetShowGlyphMargin(bool show) {
-            UpdateOption(EditorOption.GlyphMargin, show);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.GlyphMargin, show);
         }
 
         #endregion ShowGlyphMargin
@@ -212,7 +213,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableFolding(bool enabled) {
-            UpdateOption(EditorOption.Folding, enabled);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.Folding, enabled);
         }
 
         #endregion EnableFolding
@@ -232,7 +233,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableContextMenu(bool enabled) {
-            UpdateOption(EditorOption.ContextMenu, enabled);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.ContextMenu, enabled);
         }
 
         #endregion EnableContextMenu
@@ -252,7 +253,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableSmoothScrolling(bool enabled) {
-            UpdateOption(EditorOption.SmoothScrolling, enabled);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.SmoothScrolling, enabled);
         }
 
         #endregion EnableSmoothScrolling
@@ -272,7 +273,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableScrollBeyondLastLine(bool enabled) {
-            UpdateOption(EditorOption.ScrollBeyondLastLine, enabled);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.ScrollBeyondLastLine, enabled);
         }
 
         #endregion EnableScrollBeyondLastLine
@@ -292,7 +293,7 @@ namespace SyntaxEditor {
         }
 
         private void SetScrollBeyondLastColumn(int columns) {
-            UpdateOption(EditorOption.ScrollBeyondLastColumn, columns);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.ScrollBeyondLastColumn, columns);
         }
 
         #endregion ScrollBeyondLastColumn
@@ -312,7 +313,7 @@ namespace SyntaxEditor {
         }
 
         private void SetLineNumbersMinChars(int minChars) {
-            UpdateOption(EditorOption.LineNumbersMinChars, minChars);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.LineNumbersMinChars, minChars);
         }
 
         #endregion LineNumbersMinChars
@@ -332,14 +333,14 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableDragAndDrop(bool enabled) {
-            UpdateOption(EditorOption.DragAndDrop, enabled);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.DragAndDrop, enabled);
         }
 
         #endregion EnableDragAndDrop
 
         #region EnableMouseWheelZoom
 
-        private bool _enableMouseWheelZoom = true;
+        private bool _enableMouseWheelZoom = false;
         [DefaultValue(false)]
         [DXCategory(CategoryName.Behavior)]
         public bool EnableMouseWheelZoom {
@@ -352,7 +353,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableMouseWheelZoom(bool enabled) {
-            UpdateOption(EditorOption.MouseWheelZoom, enabled);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.MouseWheelZoom, enabled);
         }
 
         #endregion EnableMouseWheelZoom
@@ -377,7 +378,7 @@ namespace SyntaxEditor {
                 EditorWordWrap.On => "on",
                 _ => throw new ArgumentOutOfRangeException(nameof(wordWrap))
             };
-            UpdateOption(EditorOption.WordWrap, monacoValue);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.WordWrap, monacoValue);
         }
 
         #endregion WordWrap
@@ -397,7 +398,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableStickyScroll(bool enabled) {
-            UpdateOption(EditorOption.StickyScroll, new { enabled });
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.StickyScroll, new { enabled });
         }
 
         #endregion EnableStickyScroll
@@ -419,7 +420,7 @@ namespace SyntaxEditor {
         }
 
         private void SetTabSize(int size) {
-            UpdateOption(EditorOption.TabSize, size);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.TabSize, size);
         }
 
         #endregion TabSize
@@ -439,7 +440,7 @@ namespace SyntaxEditor {
         }
 
         private void SetDetectIndentation(bool detect) {
-            UpdateOption(EditorOption.DetectIndentation, detect);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.DetectIndentation, detect);
         }
 
         #endregion DetectIndentation
@@ -459,7 +460,7 @@ namespace SyntaxEditor {
         }
 
         private void SetInsertSpaces(bool insertSpaces) {
-            UpdateOption(EditorOption.InsertSpaces, insertSpaces);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.InsertSpaces, insertSpaces);
         }
 
         #endregion InsertSpaces
@@ -488,7 +489,7 @@ namespace SyntaxEditor {
                 _ => throw new ArgumentOutOfRangeException(nameof(autoIndent))
             };
 
-            UpdateOption(EditorOption.AutoIndent, monacoValue);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.AutoIndent, monacoValue);
             SetTabSize(TabSize);
         }
 
@@ -509,7 +510,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableQuickSuggestions(bool enabled) {
-            UpdateOption(EditorOption.EnableQuickSuggestions, enabled);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.EnableQuickSuggestions, enabled);
         }
 
         #endregion EnableQuickSuggestions
@@ -530,7 +531,7 @@ namespace SyntaxEditor {
 
         private void SetEnableWordBasedSuggestions(bool enabled) {
             var value = enabled ? "currentDocument" : "off";
-            UpdateOption(EditorOption.EnableWordBasedSuggestions, value);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.EnableWordBasedSuggestions, value);
         }
 
         #endregion EnableWordBasedSuggestions
@@ -550,7 +551,7 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableSuggestOnTriggerCharacters(bool enabled) {
-            UpdateOption(EditorOption.EnableSuggestOnTriggerCharacters, enabled);
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.EnableSuggestOnTriggerCharacters, enabled);
         }
 
         #endregion EnableSuggestOnTriggerCharacters
@@ -570,81 +571,12 @@ namespace SyntaxEditor {
         }
 
         private void SetEnableParameterHints(bool enabled) {
-            UpdateOption(EditorOption.EnableParameterHints, new { enabled });
+            EditorOptionHelper.SendOption(_commandChannel, EditorOption.EnableParameterHints, new { enabled });
         }
 
         #endregion EnableParameterHints
 
         #endregion Options
-
-        #region Communication
-        private static string ToMonacoOption(EditorOption option) => option switch {
-            EditorOption.LineNumbers => "lineNumbers",
-            EditorOption.Minimap => "minimap",
-            EditorOption.GlyphMargin => "glyphMargin",
-            EditorOption.Folding => "folding",
-            EditorOption.ScrollBeyondLastLine => "scrollBeyondLastLine",
-            EditorOption.ScrollBeyondLastColumn => "scrollBeyondLastColumn",
-            EditorOption.ContextMenu => "contextmenu",
-            EditorOption.SmoothScrolling => "smoothScrolling",
-            EditorOption.DragAndDrop => "dragAndDrop",
-            EditorOption.MouseWheelZoom => "mouseWheelZoom",
-            EditorOption.LineNumbersMinChars => "lineNumbersMinChars",
-            EditorOption.WordWrap => "wordWrap",
-            EditorOption.StickyScroll => "stickyScroll",
-            EditorOption.TabSize => "tabSize",
-            EditorOption.InsertSpaces => "insertSpaces",
-            EditorOption.DetectIndentation => "detectIndentation",
-            EditorOption.AutoIndent => "autoIndent",
-            EditorOption.EnableQuickSuggestions => "quickSuggestions",
-            EditorOption.EnableWordBasedSuggestions => "wordBasedSuggestions",
-            EditorOption.EnableSuggestOnTriggerCharacters => "suggestOnTriggerCharacters",
-            EditorOption.EnableParameterHints => "parameterHints",
-            _ => throw new ArgumentOutOfRangeException(nameof(option))
-        };
-
-        private void UpdateOption(EditorOption option, object? value) {
-            var monacoOption = ToMonacoOption(option);
-
-            object? monacoValue = null;
-            switch(option) {
-                case EditorOption.LineNumbers:
-                    if(value is not bool show)
-                        throw new ArgumentException("LineNumbers requires boolean value.", nameof(value));
-                    monacoValue = show ? "on" : "off";
-                    break;
-                case EditorOption.Minimap:
-                    if(value is not bool enabled)
-                        throw new ArgumentException("Minimap requires boolean value.", nameof(value));
-                    monacoValue = new { enabled };
-                    break;
-                default:
-                    monacoValue = value;
-                    break;
-            }
-
-            SendCommand(EditorCommandType.UpdateOption, new {
-                option = monacoOption,
-                value = monacoValue
-            });
-        }
-
-        private void SendCommand(EditorCommandType type, object? payload = null) {
-            if (!_editorReady)
-                return;
-
-            var cmd = new EditorCommand {
-                Type = type,
-                Payload = payload
-            };
-
-            var options = new JsonSerializerOptions(JsonSerializerOptions.Web);
-
-            var json = JsonSerializer.Serialize(cmd, options);
-            _webView?.CoreWebView2?.PostWebMessageAsJson(json);
-        }
-
-        #endregion Communication
 
         #region Theming
 
@@ -663,7 +595,7 @@ namespace SyntaxEditor {
                     .ToList()
             };
 
-            SendCommand(EditorCommandType.RegisterTheme, payload);
+            _commandChannel.Send(EditorCommandType.RegisterTheme, payload);
         }
 
         private static Dictionary<string, object>? ConvertRule(MonacoThemeRule r) {
@@ -732,7 +664,7 @@ namespace SyntaxEditor {
         private void SetTheme(string themeName) {
             if (string.IsNullOrWhiteSpace(themeName))
                 return;
-            SendCommand(EditorCommandType.SetTheme, themeName);
+            _commandChannel.Send(EditorCommandType.SetTheme, themeName);
         }
 
         public void ApplyCurrentTheme() {
@@ -795,10 +727,10 @@ namespace SyntaxEditor {
         }
 
         private void HandleEditorReady() {
-            if (_editorReady)
+            if (_commandChannel.IsReady)
                 return;
 
-            _editorReady = true;
+            _commandChannel.IsReady = true;
             ApplyCurrentState();
             ApplyCurrentTheme();
             var handler = Events[nameof(EditorInitialized)] as EventHandler;
@@ -825,7 +757,7 @@ namespace SyntaxEditor {
             if (string.IsNullOrWhiteSpace(language))
                 return;
 
-            SendCommand(EditorCommandType.SetLanguage, language);
+            _commandChannel.Send(EditorCommandType.SetLanguage, language);
         }
 
         private TaskCompletionSource<IReadOnlyList<string>>? _languagesTcs;
@@ -840,7 +772,7 @@ namespace SyntaxEditor {
 
             using (linkedCts.Token.Register(() => tcs.TrySetCanceled(linkedCts.Token))) {
                 try {
-                    SendCommand(EditorCommandType.GetLanguages);
+                    _commandChannel.Send(EditorCommandType.GetLanguages);
                     return await tcs.Task.ConfigureAwait(false);
                 } finally {
                     Interlocked.CompareExchange(ref _languagesTcs, null, tcs);
@@ -859,7 +791,7 @@ namespace SyntaxEditor {
                 monarch = language.Monarch,
                 configuration = language.Configuration
             };
-            SendCommand(EditorCommandType.RegisterLanguage, payload);
+            _commandChannel.Send(EditorCommandType.RegisterLanguage, payload);
             _registeredLanguages[language.Id] = language;
         }
 
@@ -911,7 +843,7 @@ namespace SyntaxEditor {
                     webView.Dispose();
                     _webView = null;
                 }
-                _editorReady = false;
+                _commandChannel.IsReady = false;
                 LookAndFeel.StyleChanged -= LookAndFeel_StyleChanged;
             }
             base.Dispose(disposing);
@@ -920,7 +852,7 @@ namespace SyntaxEditor {
         #endregion Initialization and Cleanup
 
         public void MarkAsSaved() {
-            SendCommand(EditorCommandType.MarkAsSaved);
+            _commandChannel.Send(EditorCommandType.MarkAsSaved);
         }
 
         private void ApplyCurrentState() {
