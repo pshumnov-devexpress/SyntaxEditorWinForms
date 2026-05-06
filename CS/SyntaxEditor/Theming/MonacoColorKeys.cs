@@ -47,5 +47,9 @@ namespace SyntaxEditor.Theming {
         // Suggest
         public const string SuggestWidgetBackground = "editorSuggestWidget.background";
         public const string SuggestWidgetSelectedBackground = "editorSuggestWidget.selectedBackground";
+        public const string SuggestWidgetForeground = "editorSuggestWidget.foreground";
+        public const string SuggestWidgetSelectedForeground = "editorSuggestWidget.selectedForeground";
+        public const string SuggestWidgetHighlightForeground = "editorSuggestWidget.highlightForeground";
+        public const string SuggestWidgetFocusHighlightForeground = "editorSuggestWidget.focusHighlightForeground";
     }
 }
