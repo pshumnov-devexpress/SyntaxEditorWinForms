@@ -9,6 +9,8 @@ using DevExpress.Utils.Frames;
 
 namespace SyntaxEditor.Theming {
     public static class LookAndFeelExtensions {
+        public static MonacoThemeBase? SkinBaseOverride { get; set; }
+
         public static MonacoTheme CreateMonacoTheme(this UserLookAndFeel lookAndFeel, IList<MonacoThemeRule> rules, bool useSkinColors) {
             var result = new MonacoTheme {
                 Name = $"{lookAndFeel.ActiveSkinName.ToLowerInvariant().Replace(" ", "-")}",
@@ -21,6 +23,8 @@ namespace SyntaxEditor.Theming {
         }
 
         static MonacoThemeBase GetSkinBase(UserLookAndFeel lookAndFeel) {
+            if(SkinBaseOverride.HasValue)
+                return SkinBaseOverride.Value;
             if(lookAndFeel.ActiveSkinName == SkinStyle.HighContrast || lookAndFeel.ActiveSkinName == SkinStyle.HighContrastClassic) {
                 return FrameHelper.IsDarkSkin(lookAndFeel) ? MonacoThemeBase.HighContrast : MonacoThemeBase.HighContrastLight;
             }
