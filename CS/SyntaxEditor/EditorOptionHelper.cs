@@ -29,7 +29,7 @@ namespace SyntaxEditor {
         };
 
         public static void SendOption(IEditorCommandChannel channel, EditorOption option, object? value) {
-            var monacoOption = ToMonacoOption(option);
+            string monacoOption = ToMonacoOption(option);
 
             object? monacoValue = option switch {
                 EditorOption.LineNumbers when value is bool show => show ? "on" : "off",

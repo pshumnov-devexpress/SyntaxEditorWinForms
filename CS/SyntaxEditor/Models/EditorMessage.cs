@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace SyntaxEditor.Models {
-
     public enum EditorMessageType {
         TextChanged,
         EditorReady,
@@ -11,7 +10,6 @@ namespace SyntaxEditor.Models {
     }
 
     public sealed class EditorMessage {
-
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public EditorMessageType Type { get; set; }
         public JsonElement Payload { get; set; }

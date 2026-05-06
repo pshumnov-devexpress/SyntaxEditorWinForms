@@ -1,4 +1,4 @@
-﻿using DevExpress.XtraBars;
+using DevExpress.XtraBars;
 using SyntaxEditorExample.Helpers;
 using SyntaxEditor.Models;
 using SyntaxEditor.Theming;
@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace SyntaxEditorExample {
     public partial class MainForm : DevExpress.XtraEditors.XtraForm {
-        private List<MonacoThemeRule>? currentRules;
+        List<MonacoThemeRule>? currentRules;
 
         public MainForm() {
             InitializeComponent();
@@ -18,7 +18,7 @@ namespace SyntaxEditorExample {
             currentRules = [.. syntaxEditor.Rules];
         }
 
-        private void ConfigureUI() {
+        void ConfigureUI() {
             syntaxEditor.EditorInitialized += async (s, e) => {
                 try {
                     await RefreshLanguages();
@@ -91,37 +91,34 @@ namespace SyntaxEditorExample {
             ceEnableParameterHints.Checked = syntaxEditor.EnableParameterHints;
         }
 
-        #region Language Helpers
 
-        private void SetSelectedLanguage(string language) {
+        void SetSelectedLanguage(string language) {
             if(cbeLanguage.Properties.Items.Contains(language))
                 cbeLanguage.EditValue = language;
         }
 
-        private async System.Threading.Tasks.Task RefreshLanguages() {
+        async System.Threading.Tasks.Task RefreshLanguages() {
             try {
-                var languages = await syntaxEditor.GetAvailableLanguagesAsync();
+                IReadOnlyList<string> languages = await syntaxEditor.GetAvailableLanguagesAsync();
                 cbeLanguage.Properties.Items.Clear();
                 if(languages != null) {
-                    foreach(var lang in languages)
+                    foreach(string lang in languages)
                         cbeLanguage.Properties.Items.Add(lang);
                 }
             }
             catch { }
         }
 
-        #endregion Language Helpers
 
-        #region Ribbon Button Handlers
 
-        private void openItem_ItemClick(object sender, ItemClickEventArgs e) {
+        void openItem_ItemClick(object sender, ItemClickEventArgs e) {
             using var dlg = new OpenFileDialog();
             if(dlg.ShowDialog(this) == DialogResult.OK) {
                 syntaxEditor.Text = File.ReadAllText(dlg.FileName);
             }
         }
 
-        private void saveItem_ItemClick(object sender, ItemClickEventArgs e) {
+        void saveItem_ItemClick(object sender, ItemClickEventArgs e) {
             using var dlg = new SaveFileDialog();
             if(dlg.ShowDialog(this) == DialogResult.OK) {
                 File.WriteAllText(dlg.FileName, syntaxEditor.Text);
@@ -129,7 +126,7 @@ namespace SyntaxEditorExample {
             }
         }
 
-        private async void customLanguageItem_ItemClick(object sender, ItemClickEventArgs e) {
+        async void customLanguageItem_ItemClick(object sender, ItemClickEventArgs e) {
             try {
                 using var form = new CustomLanguageForm();
                 form.LanguageId = "MyLang";
@@ -155,7 +152,7 @@ namespace SyntaxEditorExample {
             }
         }
 
-        private void rulesItem_ItemClick(object sender, ItemClickEventArgs e) {
+        void rulesItem_ItemClick(object sender, ItemClickEventArgs e) {
             using var form = new RulesForm();
             if(currentRules != null) {
                 form.SetRules(currentRules);
@@ -169,141 +166,130 @@ namespace SyntaxEditorExample {
             }
         }
 
-        private void applySkinColorsCheckItem_CheckedChanged(object sender, ItemClickEventArgs e) {
+        void applySkinColorsCheckItem_CheckedChanged(object sender, ItemClickEventArgs e) {
             cbeActiveSkin.Enabled = !applySkinColorsCheckItem.Checked;
             object? theme = applySkinColorsCheckItem.Checked ? null : cbeActiveSkin.EditValue;
             SetSkinOverride(theme);
             syntaxEditor.ApplyDevExpressColors = applySkinColorsCheckItem.Checked;
         }
 
-        private void cbeActiveSkin_EditValueChanged(object? sender, EventArgs e) {
+        void cbeActiveSkin_EditValueChanged(object? sender, EventArgs e) {
             SetSkinOverride(cbeActiveSkin.EditValue);
             syntaxEditor.ApplyCurrentTheme();
         }
 
-        private void SetSkinOverride(object? theme) {
+        void SetSkinOverride(object? theme) {
             if(theme is MonacoThemeBase themeBase)
                 LookAndFeelExtensions.SkinBaseOverride = themeBase;
             else
                 LookAndFeelExtensions.SkinBaseOverride = null;
         }
 
-        #endregion Ribbon Button Handlers
 
-        #region General Options Handlers
 
-        private void ceReadOnly_CheckedChanged(object sender, EventArgs e) {
+        void ceReadOnly_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.ReadOnly = ceReadOnly.Checked;
         }
 
-        private void cbeLanguage_EditValueChanged(object sender, EventArgs e) {
-            var lang = cbeLanguage.EditValue?.ToString();
+        void cbeLanguage_EditValueChanged(object sender, EventArgs e) {
+            string? lang = cbeLanguage.EditValue?.ToString();
             if(!string.IsNullOrWhiteSpace(lang))
                 syntaxEditor.EditorLanguage = lang;
         }
 
-        #endregion General Options Handlers
 
-        #region Interaction Options Handlers
 
-        private void ceContextMenu_CheckedChanged(object sender, EventArgs e) {
+        void ceContextMenu_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableContextMenu = ceContextMenu.Checked;
         }
 
-        private void ceDragAndDrop_CheckedChanged(object sender, EventArgs e) {
+        void ceDragAndDrop_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableDragAndDrop = ceDragAndDrop.Checked;
         }
 
-        #endregion Interaction Options Handlers
 
-        #region Appearance Options Handlers
 
-        private void ceLineNumbers_CheckedChanged(object sender, EventArgs e) {
+        void ceLineNumbers_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.ShowLineNumbers = ceLineNumbers.Checked;
         }
 
-        private void seLineNumbersMinChars_EditValueChanged(object? sender, EventArgs e) {
+        void seLineNumbersMinChars_EditValueChanged(object? sender, EventArgs e) {
             syntaxEditor.LineNumbersMinChars = Convert.ToInt32(seLineNumbersMinChars.EditValue);
         }
 
-        private void ceMinimap_CheckedChanged(object sender, EventArgs e) {
+        void ceMinimap_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.ShowMinimap = ceMinimap.Checked;
         }
 
-        private void ceGlyphMargin_CheckedChanged(object sender, EventArgs e) {
+        void ceGlyphMargin_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.ShowGlyphMargin = ceGlyphMargin.Checked;
         }
 
-        private void ceFolding_CheckedChanged(object sender, EventArgs e) {
+        void ceFolding_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableFolding = ceFolding.Checked;
         }
 
-        private void ceStickyScroll_CheckedChanged(object sender, EventArgs e) {
+        void ceStickyScroll_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableStickyScroll = ceStickyScroll.Checked;
         }
 
-        private void cbeWordWrap_EditValueChanged(object? sender, EventArgs e) {
+        void cbeWordWrap_EditValueChanged(object? sender, EventArgs e) {
             if(cbeWordWrap.EditValue is EditorWordWrap ww)
                 syntaxEditor.WordWrap = ww;
         }
 
-        private void ceSmoothScrolling_CheckedChanged(object sender, EventArgs e) {
+        void ceSmoothScrolling_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableSmoothScrolling = ceSmoothScrolling.Checked;
         }
 
-        private void ceScrollBeyondLastLine_CheckedChanged(object sender, EventArgs e) {
+        void ceScrollBeyondLastLine_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableScrollBeyondLastLine = ceScrollBeyondLastLine.Checked;
         }
 
-        private void seScrollBeyondLastColumn_EditValueChanged(object? sender, EventArgs e) {
+        void seScrollBeyondLastColumn_EditValueChanged(object? sender, EventArgs e) {
             syntaxEditor.ScrollBeyondLastColumn = Convert.ToInt32(seScrollBeyondLastColumn.EditValue);
         }
 
-        private void ceMouseWheelZoom_CheckedChanged(object sender, EventArgs e) {
+        void ceMouseWheelZoom_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableMouseWheelZoom = ceMouseWheelZoom.Checked;
         }
 
-        #endregion Appearance Options Handlers
 
-        #region Editing Options Handlers
 
-        private void seTabSize_EditValueChanged(object sender, EventArgs e) {
+        void seTabSize_EditValueChanged(object sender, EventArgs e) {
             syntaxEditor.TabSize = Convert.ToInt32(seTabSize.EditValue);
         }
 
-        private void ceInsertSpaces_CheckedChanged(object sender, EventArgs e) {
+        void ceInsertSpaces_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.InsertSpaces = ceInsertSpaces.Checked;
         }
 
-        private void ceDetectIndentation_CheckedChanged(object sender, EventArgs e) {
+        void ceDetectIndentation_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.DetectIndentation = ceDetectIndentation.Checked;
         }
 
-        private void cbeAutoIndent_EditValueChanged(object sender, EventArgs e) {
+        void cbeAutoIndent_EditValueChanged(object sender, EventArgs e) {
             if(cbeAutoIndent.EditValue is EditorAutoIndent ai)
                 syntaxEditor.AutoIndent = ai;
         }
 
-        #endregion Editing Options Handlers
 
-        #region IntelliSense Options Handlers
 
-        private void ceQuickSuggestions_CheckedChanged(object sender, EventArgs e) {
+        void ceQuickSuggestions_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableQuickSuggestions = ceQuickSuggestions.Checked;
         }
 
-        private void ceWordBasedSuggestions_CheckedChanged(object sender, EventArgs e) {
+        void ceWordBasedSuggestions_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableWordBasedSuggestions = ceWordBasedSuggestions.Checked;
         }
 
-        private void ceSuggestOnTriggerCharacters_CheckedChanged(object sender, EventArgs e) {
+        void ceSuggestOnTriggerCharacters_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableSuggestOnTriggerCharacters = ceSuggestOnTriggerCharacters.Checked;
         }
 
-        private void ceEnableParameterHints_CheckedChanged(object sender, EventArgs e) {
+        void ceEnableParameterHints_CheckedChanged(object sender, EventArgs e) {
             syntaxEditor.EnableParameterHints = ceEnableParameterHints.Checked;
         }
 
-        #endregion IntelliSense Options Handlers
     }
 }

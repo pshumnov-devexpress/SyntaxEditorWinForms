@@ -12,8 +12,7 @@ using DevExpress.XtraEditors.Controls;
 
 namespace SyntaxEditorExample {
     public partial class RulesForm : XtraForm {
-
-        private BindingList<RuleItem> ruleItems = new BindingList<RuleItem>();
+        BindingList<RuleItem> ruleItems = new BindingList<RuleItem>();
 
         public RulesForm() {
             InitializeComponent();
@@ -23,7 +22,7 @@ namespace SyntaxEditorExample {
 
         public void SetRules(IReadOnlyList<MonacoThemeRule> rules) {
             ruleItems.Clear();
-            foreach(var r in rules) {
+            foreach(MonacoThemeRule r in rules) {
                 ruleItems.Add(new RuleItem {
                     Token = r.Token,
                     Foreground = r.Foreground,
@@ -42,11 +41,11 @@ namespace SyntaxEditorExample {
             }).ToList();
         }
 
-        private void ChkRawMode_CheckedChanged(object? sender, EventArgs e) {
+        void ChkRawMode_CheckedChanged(object? sender, EventArgs e) {
             bool isRaw = chkRawMode.Checked;
             if(isRaw) {
                 // Switch to raw JS mode: serialize grid rules to text
-                var rules = GetRules();
+                List<MonacoThemeRule> rules = GetRules();
                 rawEditor.Text = MonacoRulesParser.Serialize(rules);
                 navigationFrame1.SelectedPage = rawPage;
             }
@@ -54,7 +53,7 @@ namespace SyntaxEditorExample {
                 // Switch to grid mode: parse raw JS back to rules
                 if(MonacoRulesParser.TryParse(rawEditor.Text ?? string.Empty, out var parsed)) {
                     ruleItems.Clear();
-                    foreach(var r in parsed) {
+                    foreach(MonacoThemeRule r in parsed) {
                         ruleItems.Add(new RuleItem {
                             Token = r.Token,
                             Foreground = r.Foreground,
@@ -73,7 +72,7 @@ namespace SyntaxEditorExample {
             }
         }
 
-        private void BtnSave_Click(object? sender, EventArgs e) {
+        void BtnSave_Click(object? sender, EventArgs e) {
             // If in raw mode, apply raw JS first
             if(chkRawMode.Checked) {
                 if(!MonacoRulesParser.TryParse(rawEditor.Text ?? string.Empty, out var parsed)) {
@@ -82,7 +81,7 @@ namespace SyntaxEditorExample {
                     return;
                 }
                 ruleItems.Clear();
-                foreach(var r in parsed) {
+                foreach(MonacoThemeRule r in parsed) {
                     ruleItems.Add(new RuleItem {
                         Token = r.Token,
                         Foreground = r.Foreground,
@@ -103,7 +102,7 @@ namespace SyntaxEditorExample {
             public MonacoFontStyle? FontStyle { get; set; }
         }
 
-        private void repositoryItemButtonEdit1_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e) {
+        void repositoryItemButtonEdit1_ButtonClick(object sender, DevExpress.XtraEditors.Controls.ButtonPressedEventArgs e) {
             if(e.Button.Kind == ButtonPredefines.Delete) {
                 if(XtraMessageBox.Show("Do you wish to remove this token?", "Confirmation Dialog", MessageBoxButtons.YesNo) == DialogResult.Yes) {
                     gridView.DeleteRow(gridView.FocusedRowHandle);
@@ -111,8 +110,8 @@ namespace SyntaxEditorExample {
             }
         }
 
-        private void simpleButton1_Click(object sender, EventArgs e) {
-            var item = new RuleItem {
+        void simpleButton1_Click(object sender, EventArgs e) {
+            RuleItem item = new RuleItem {
                 Token = "new-token"
             };
             ruleItems.Add(item);

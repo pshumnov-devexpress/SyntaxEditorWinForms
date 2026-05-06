@@ -4,16 +4,16 @@ using System.Text.Json;
 
 namespace SyntaxEditor {
     public sealed class WebView2CommandChannel : IEditorCommandChannel {
-        private readonly WebView2? _webView;
+        readonly WebView2? webView;
 
         public WebView2CommandChannel(WebView2? webView) {
-            _webView = webView;
+            this.webView = webView;
         }
 
         public bool IsReady { get; set; }
 
         public void Send(EditorCommandType type, object? payload = null) {
-            if (!IsReady)
+            if(!IsReady)
                 return;
 
             var cmd = new EditorCommand {
@@ -22,8 +22,8 @@ namespace SyntaxEditor {
             };
 
             var options = new JsonSerializerOptions(JsonSerializerOptions.Web);
-            var json = JsonSerializer.Serialize(cmd, options);
-            _webView?.CoreWebView2?.PostWebMessageAsJson(json);
+            string json = JsonSerializer.Serialize(cmd, options);
+            webView?.CoreWebView2?.PostWebMessageAsJson(json);
         }
     }
 }

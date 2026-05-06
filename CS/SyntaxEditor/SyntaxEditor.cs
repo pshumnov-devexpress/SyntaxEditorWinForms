@@ -1,587 +1,211 @@
-using DevExpress.LookAndFeel;
-using DevExpress.Skins;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using DevExpress.XtraEditors;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 using SyntaxEditor.Models;
 using SyntaxEditor.Theming;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SyntaxEditor {
-    public class SyntaxEditor : XtraUserControl {
-
-        private WebView2? _webView;
-        private IEditorCommandChannel _commandChannel = null!;
-        private bool _updatingFromEditor;
+    public partial class SyntaxEditor : XtraUserControl, IEditorMessageHandler {
+        bool applyDevExpressColors = true;
+        EditorAutoIndent autoIndent = EditorAutoIndent.Full;
+        IEditorCommandChannel commandChannel = null!;
+        bool detectIndentation = true;
+        string editorLanguage = "csharp";
+        bool enableContextMenu = true;
+        bool enableDragAndDrop = true;
+        bool enableFolding = true;
+        bool enableMouseWheelZoom = false;
+        bool enableParameterHints = true;
+        bool enableQuickSuggestions = true;
+        bool enableScrollBeyondLastLine = true;
+        bool enableSmoothScrolling;
+        bool enableStickyScroll = true;
+        bool enableSuggestOnTriggerCharacters = true;
+        bool enableWordBasedSuggestions = true;
+        bool insertSpaces = true;
+        bool isModified = false;
+        TaskCompletionSource<IReadOnlyList<string>>? languagesTcs;
+        int lineNumbersMinChars = 5;
+        EditorMessageDispatcher messageDispatcher = null!;
+        bool readOnly = false;
+        readonly Dictionary<string, LanguageDescriptor> registeredLanguages = new();
+        int scrollBeyondLastColumn = 5;
+        bool showGlyphMargin = false;
+        bool showLineNumbers = true;
+        bool showMinimap = false;
+        int tabSize = 4;
+        string text = string.Empty;
+        string themeName = "vs";
+        bool updatingFromEditor;
+        WebView2? webView;
+        EditorWordWrap wordWrap = EditorWordWrap.Off;
 
         public SyntaxEditor() {
-            _webView = new WebView2 {
+            webView = new WebView2 {
                 Dock = DockStyle.Fill
             };
-            _commandChannel = new WebView2CommandChannel(_webView);
-            Controls.Add(_webView);
+            commandChannel = new WebView2CommandChannel(webView);
+            messageDispatcher = new EditorMessageDispatcher(this);
+            Controls.Add(webView);
             LookAndFeel.StyleChanged += LookAndFeel_StyleChanged;
             Rules = new List<MonacoThemeRule>();
         }
 
-        private void LookAndFeel_StyleChanged(object? sender, EventArgs e) {
+        static string? ConvertFontStyle(MonacoFontStyle style) {
+            if(style == MonacoFontStyle.None)
+                return null;
+
+            StringBuilder sb = new StringBuilder(32);
+
+            if((style & MonacoFontStyle.Bold) != 0)
+                sb.Append("bold ");
+
+            if((style & MonacoFontStyle.Italic) != 0)
+                sb.Append("italic ");
+
+            if((style & MonacoFontStyle.Underline) != 0)
+                sb.Append("underline ");
+
+            if(sb.Length == 0)
+                return null;
+
+            sb.Length--;
+            return sb.ToString();
+        }
+
+        // Theming helpers
+        static Dictionary<string, object>? ConvertRule(MonacoThemeRule r) {
+            Dictionary<string, object> rule = new Dictionary<string, object> {
+                ["token"] = r.Token
+            };
+
+            if(r.Foreground is Color fg)
+                rule["foreground"] = ToHex(fg, false);
+
+            if(r.Background is Color bg)
+                rule["background"] = ToHex(bg, false);
+
+            string? fontStyle = ConvertFontStyle(r.FontStyle ?? MonacoFontStyle.None);
+            if(!string.IsNullOrEmpty(fontStyle))
+                rule["fontStyle"] = fontStyle;
+
+            return rule.Count > 1 ? rule : null;
+        }
+
+        void CoreWebView2_ContextMenuRequested(object? sender, CoreWebView2ContextMenuRequestedEventArgs e) {
+            e.Handled = true;
+        }
+
+        void HandleEditorReady() {
+            if(commandChannel.IsReady)
+                return;
+
+            commandChannel.IsReady = true;
+            ApplyCurrentState();
+            ApplyCurrentTheme();
+            EventHandler? handler = Events[nameof(EditorInitialized)] as EventHandler;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
+        void HandleTextChanged(string newText) {
+            updatingFromEditor = true;
+            try {
+                text = newText;
+                EventHandler? handler = Events[nameof(TextChanged)] as EventHandler;
+                handler?.Invoke(this, EventArgs.Empty);
+            }
+            finally {
+                updatingFromEditor = false;
+            }
+        }
+
+        async Task InitializeAsync() {
+            WebView2? wv = webView;
+            if(wv == null)
+                return;
+
+            await wv.EnsureCoreWebView2Async();
+
+            if(webView != wv)
+                return;
+
+            // Unsubscribing followed by subscribing is needed to avoid registering multiple handlers in case SyntaxEditor is reinitialized.
+            wv.CoreWebView2.WebMessageReceived -= messageDispatcher.HandleWebMessageReceived;
+            wv.CoreWebView2.WebMessageReceived += messageDispatcher.HandleWebMessageReceived;
+            wv.CoreWebView2.ContextMenuRequested -= CoreWebView2_ContextMenuRequested;
+            wv.CoreWebView2.ContextMenuRequested += CoreWebView2_ContextMenuRequested;
+
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Monaco", "index.html");
+
+            if(!File.Exists(path))
+                throw new FileNotFoundException(path);
+
+            wv.Source = new Uri(path);
+        }
+
+        void LookAndFeel_StyleChanged(object? sender, EventArgs e) {
             ApplyCurrentTheme();
         }
 
-        protected override void OnHandleCreated(EventArgs e) {
-            base.OnHandleCreated(e);
-            _ = InitializeAsync();
+        static string MapBase(MonacoThemeBase value)
+        => value switch
+        {
+            MonacoThemeBase.Light => "vs",
+            MonacoThemeBase.Dark => "vs-dark",
+            MonacoThemeBase.HighContrast => "hc-black",
+            MonacoThemeBase.HighContrastLight => "hc-light",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        static string ToHex(Color c, bool addHashTag = true)
+        => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}".ToLower();
+
+        public void ApplyCurrentTheme() {
+            MonacoTheme monacoTheme = LookAndFeel.CreateMonacoTheme(Rules, ApplyDevExpressColors);
+            RegisterTheme(monacoTheme);
+            ThemeName = monacoTheme.Name;
         }
 
-        #region Events
+        public async Task<IReadOnlyList<string>> GetAvailableLanguagesAsync(CancellationToken cancellationToken = default) {
+            // RunContinuationsAsynchronously prevents the completion callback from running
+            // inline on the thread that calls TrySetResult, avoiding potential deadlocks.
+            TaskCompletionSource<IReadOnlyList<string>> tcs = new TaskCompletionSource<IReadOnlyList<string>>(TaskCreationOptions.RunContinuationsAsynchronously);
+            languagesTcs = tcs;
 
-        public event EventHandler EditorInitialized {
-            add {
-                Events.AddHandler(nameof(EditorInitialized), value);
-            }
-            remove {
-                Events.RemoveHandler(nameof(EditorInitialized), value);
-            }
-        }
-        public event EventHandler IsModifiedChanged {
-            add {
-                Events.AddHandler(nameof(IsModifiedChanged), value);
-            }
-            remove {
-                Events.RemoveHandler(nameof(IsModifiedChanged), value);
-            }
-        }
+            // Auto-cancel if no response arrives within 5 seconds.
+            using CancellationTokenSource timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
 
-        #endregion Events
-
-        #region Basic Properties
-
-        private string _text = string.Empty;
-        [DefaultValue("")]
-        [DXCategory(CategoryName.Appearance)]
-        public override string Text {
-            get => _text;
-            set {
-                if (_text == value)
-                    return;
-                _text = value ?? string.Empty;
-                if (!_updatingFromEditor)
-                    SetEditorText(_text);
-                var handler = Events[nameof(TextChanged)] as EventHandler;
-                handler?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        private void SetEditorText(string text) {
-            _commandChannel.Send(EditorCommandType.SetText, text);
-        }
-
-        private bool _readOnly = false;
-        [DefaultValue(false)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool ReadOnly {
-            get => _readOnly;
-            set {
-                if (_readOnly == value)
-                    return;
-                _readOnly = value;
-                SetEditorReadOnly(value);
+            // When either token fires, attempt to cancel the pending TCS.
+            using(linkedCts.Token.Register(() => tcs.TrySetCanceled(linkedCts.Token))) {
+                try {
+                    commandChannel.Send(EditorCommandType.GetLanguages);
+                    return await tcs.Task.ConfigureAwait(false);
+                }
+                finally {
+                    // Atomically clear languagesTcs only if it still points to our instance,
+                    // so a concurrent call's TCS is not accidentally discarded.
+                    Interlocked.CompareExchange(ref languagesTcs, null, tcs);
+                }
             }
         }
 
-        private void SetEditorReadOnly(bool readOnly) {
-            _commandChannel.Send(EditorCommandType.SetReadOnly, readOnly);
+        public void MarkAsSaved() {
+            commandChannel.Send(EditorCommandType.MarkAsSaved);
         }
 
-        private bool _isModified = false;
-        [DefaultValue(false)]
-        [DXCategory(CategoryName.Data)]
-        public bool IsModified {
-            get => _isModified;
-            private set {
-                if (_isModified == value)
-                    return;
-                _isModified = value;
-                var handler = Events[nameof(IsModifiedChanged)] as EventHandler;
-                handler?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
-        #endregion Basic Properties
-
-        #region Theme Properties
-        public List<MonacoThemeRule> Rules { get; }
-
-        bool _applyDevExpressColors = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Appearance)]
-        public bool ApplyDevExpressColors {
-            get => _applyDevExpressColors;
-            set {
-                if(_applyDevExpressColors == value) return;
-                _applyDevExpressColors = value;
-                ApplyCurrentTheme();
-            }
-        }
-        #endregion
-
-        #region Options
-
-        #region ShowLineNumbers
-
-        private bool _showLineNumbers = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Appearance)]
-        public bool ShowLineNumbers {
-            get => _showLineNumbers;
-            set {
-                if (_showLineNumbers == value) return;
-                _showLineNumbers = value;
-                SetShowLineNumbers(value);
-            }
-        }
-
-        private void SetShowLineNumbers(bool show) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.LineNumbers, show);
-        }
-
-        #endregion ShowLineNumbers
-
-        #region ShowMinimap
-
-        private bool _showMinimap = false;
-        [DefaultValue(false)]
-        [DXCategory(CategoryName.Appearance)]
-        public bool ShowMinimap {
-            get => _showMinimap;
-            set {
-                if (_showMinimap == value) return;
-                _showMinimap = value;
-                SetShowMinimap(value);
-            }
-        }
-
-        private void SetShowMinimap(bool show) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.Minimap, show);
-        }
-
-        #endregion ShowMinimap
-
-        #region ShowGlyphMargin
-
-        private bool _showGlyphMargin = false;
-        [DefaultValue(false)]
-        [DXCategory(CategoryName.Appearance)]
-        public bool ShowGlyphMargin {
-            get => _showGlyphMargin;
-            set {
-                if (_showGlyphMargin == value) return;
-                _showGlyphMargin = value;
-                SetShowGlyphMargin(value);
-            }
-        }
-
-        private void SetShowGlyphMargin(bool show) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.GlyphMargin, show);
-        }
-
-        #endregion ShowGlyphMargin
-
-        #region EnableFolding
-
-        private bool _enableFolding = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Appearance)]
-        public bool EnableFolding {
-            get => _enableFolding;
-            set {
-                if (_enableFolding == value) return;
-                _enableFolding = value;
-                SetEnableFolding(value);
-            }
-        }
-
-        private void SetEnableFolding(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.Folding, enabled);
-        }
-
-        #endregion EnableFolding
-
-        #region EnableContextMenu
-
-        private bool _enableContextMenu = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableContextMenu {
-            get => _enableContextMenu;
-            set {
-                if (_enableContextMenu == value) return;
-                _enableContextMenu = value;
-                SetEnableContextMenu(value);
-            }
-        }
-
-        private void SetEnableContextMenu(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.ContextMenu, enabled);
-        }
-
-        #endregion EnableContextMenu
-
-        #region EnableSmoothScrolling
-
-        private bool _enableSmoothScrolling;
-        [DefaultValue(false)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableSmoothScrolling {
-            get => _enableSmoothScrolling;
-            set {
-                if (_enableSmoothScrolling == value) return;
-                _enableSmoothScrolling = value;
-                SetEnableSmoothScrolling(value);
-            }
-        }
-
-        private void SetEnableSmoothScrolling(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.SmoothScrolling, enabled);
-        }
-
-        #endregion EnableSmoothScrolling
-
-        #region EnableScrollBeyondLastLine
-
-        private bool _enableScrollBeyondLastLine = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableScrollBeyondLastLine {
-            get => _enableScrollBeyondLastLine;
-            set {
-                if (_enableScrollBeyondLastLine == value) return;
-                _enableScrollBeyondLastLine = value;
-                SetEnableScrollBeyondLastLine(value);
-            }
-        }
-
-        private void SetEnableScrollBeyondLastLine(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.ScrollBeyondLastLine, enabled);
-        }
-
-        #endregion EnableScrollBeyondLastLine
-
-        #region ScrollBeyondLastColumn
-
-        private int _scrollBeyondLastColumn = 5;
-        [DefaultValue(5)]
-        [DXCategory(CategoryName.Behavior)]
-        public int ScrollBeyondLastColumn {
-            get => _scrollBeyondLastColumn;
-            set {
-                if (_scrollBeyondLastColumn == value) return;
-                _scrollBeyondLastColumn = value;
-                SetScrollBeyondLastColumn(value);
-            }
-        }
-
-        private void SetScrollBeyondLastColumn(int columns) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.ScrollBeyondLastColumn, columns);
-        }
-
-        #endregion ScrollBeyondLastColumn
-
-        #region LineNumbersMinChars
-
-        private int _lineNumbersMinChars = 5;
-        [DefaultValue(5)]
-        [DXCategory(CategoryName.Appearance)]
-        public int LineNumbersMinChars {
-            get => _lineNumbersMinChars;
-            set {
-                if (_lineNumbersMinChars == value) return;
-                _lineNumbersMinChars = value;
-                SetLineNumbersMinChars(value);
-            }
-        }
-
-        private void SetLineNumbersMinChars(int minChars) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.LineNumbersMinChars, minChars);
-        }
-
-        #endregion LineNumbersMinChars
-
-        #region EnableDragAndDrop
-
-        private bool _enableDragAndDrop = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableDragAndDrop {
-            get => _enableDragAndDrop;
-            set {
-                if (_enableDragAndDrop == value) return;
-                _enableDragAndDrop = value;
-                SetEnableDragAndDrop(value);
-            }
-        }
-
-        private void SetEnableDragAndDrop(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.DragAndDrop, enabled);
-        }
-
-        #endregion EnableDragAndDrop
-
-        #region EnableMouseWheelZoom
-
-        private bool _enableMouseWheelZoom = false;
-        [DefaultValue(false)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableMouseWheelZoom {
-            get => _enableMouseWheelZoom;
-            set {
-                if (_enableMouseWheelZoom == value) return;
-                _enableMouseWheelZoom = value;
-                SetEnableMouseWheelZoom(value);
-            }
-        }
-
-        private void SetEnableMouseWheelZoom(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.MouseWheelZoom, enabled);
-        }
-
-        #endregion EnableMouseWheelZoom
-
-        #region WordWrap
-
-        private EditorWordWrap _wordWrap = EditorWordWrap.Off;
-        [DefaultValue(EditorWordWrap.Off)]
-        [DXCategory(CategoryName.Appearance)]
-        public EditorWordWrap WordWrap {
-            get => _wordWrap;
-            set {
-                if (_wordWrap == value) return;
-                _wordWrap = value;
-                SetWordWrap(value);
-            }
-        }
-
-        private void SetWordWrap(EditorWordWrap wordWrap) {
-            string monacoValue = wordWrap switch {
-                EditorWordWrap.Off => "off",
-                EditorWordWrap.On => "on",
-                _ => throw new ArgumentOutOfRangeException(nameof(wordWrap))
-            };
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.WordWrap, monacoValue);
-        }
-
-        #endregion WordWrap
-
-        #region EnableStickyScroll
-
-        private bool _enableStickyScroll = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Appearance)]
-        public bool EnableStickyScroll {
-            get => _enableStickyScroll;
-            set {
-                if (_enableStickyScroll == value) return;
-                _enableStickyScroll = value;
-                SetEnableStickyScroll(value);
-            }
-        }
-
-        private void SetEnableStickyScroll(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.StickyScroll, new { enabled });
-        }
-
-        #endregion EnableStickyScroll
-
-        #region TabSize
-
-        private int _tabSize = 4;
-        [DefaultValue(4)]
-        [DXCategory(CategoryName.Behavior)]
-        public int TabSize {
-            get => _tabSize;
-            set {
-                if (value < 1 || value > 64)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                if (_tabSize == value) return;
-                _tabSize = value;
-                SetTabSize(value);
-            }
-        }
-
-        private void SetTabSize(int size) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.TabSize, size);
-        }
-
-        #endregion TabSize
-
-        #region DetectIndentation
-
-        private bool _detectIndentation = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool DetectIndentation {
-            get => _detectIndentation;
-            set {
-                if (_detectIndentation == value) return;
-                _detectIndentation = value;
-                SetDetectIndentation(value);
-            }
-        }
-
-        private void SetDetectIndentation(bool detect) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.DetectIndentation, detect);
-        }
-
-        #endregion DetectIndentation
-
-        #region InsertSpaces
-
-        private bool _insertSpaces = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool InsertSpaces {
-            get => _insertSpaces;
-            set {
-                if (_insertSpaces == value) return;
-                _insertSpaces = value;
-                SetInsertSpaces(value);
-            }
-        }
-
-        private void SetInsertSpaces(bool insertSpaces) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.InsertSpaces, insertSpaces);
-        }
-
-        #endregion InsertSpaces
-
-        #region AutoIndent
-
-        private EditorAutoIndent _autoIndent = EditorAutoIndent.Full;
-        [DefaultValue(EditorAutoIndent.Full)]
-        [DXCategory(CategoryName.Behavior)]
-        public EditorAutoIndent AutoIndent {
-            get => _autoIndent;
-            set {
-                if (_autoIndent == value) return;
-                _autoIndent = value;
-                SetAutoIndent(value);
-            }
-        }
-
-        private void SetAutoIndent(EditorAutoIndent autoIndent) {
-            string monacoValue = autoIndent switch {
-                EditorAutoIndent.None => "none",
-                EditorAutoIndent.Keep => "keep",
-                EditorAutoIndent.Brackets => "brackets",
-                EditorAutoIndent.Advanced => "advanced",
-                EditorAutoIndent.Full => "full",
-                _ => throw new ArgumentOutOfRangeException(nameof(autoIndent))
-            };
-
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.AutoIndent, monacoValue);
-            SetTabSize(TabSize);
-        }
-
-        #endregion AutoIndent
-
-        #region EnableQuickSuggestions
-
-        private bool _enableQuickSuggestions = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableQuickSuggestions {
-            get => _enableQuickSuggestions;
-            set {
-                if (_enableQuickSuggestions == value) return;
-                _enableQuickSuggestions = value;
-                SetEnableQuickSuggestions(value);
-            }
-        }
-
-        private void SetEnableQuickSuggestions(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.EnableQuickSuggestions, enabled);
-        }
-
-        #endregion EnableQuickSuggestions
-
-        #region EnableWordBasedSuggestions
-
-        private bool _enableWordBasedSuggestions = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableWordBasedSuggestions {
-            get => _enableWordBasedSuggestions;
-            set {
-                if (_enableWordBasedSuggestions == value) return;
-                _enableWordBasedSuggestions = value;
-                SetEnableWordBasedSuggestions(value);
-            }
-        }
-
-        private void SetEnableWordBasedSuggestions(bool enabled) {
-            var value = enabled ? "currentDocument" : "off";
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.EnableWordBasedSuggestions, value);
-        }
-
-        #endregion EnableWordBasedSuggestions
-
-        #region EnableSuggestOnTriggerCharacters
-
-        private bool _enableSuggestOnTriggerCharacters = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableSuggestOnTriggerCharacters {
-            get => _enableSuggestOnTriggerCharacters;
-            set {
-                if (_enableSuggestOnTriggerCharacters == value) return;
-                _enableSuggestOnTriggerCharacters = value;
-                SetEnableSuggestOnTriggerCharacters(value);
-            }
-        }
-
-        private void SetEnableSuggestOnTriggerCharacters(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.EnableSuggestOnTriggerCharacters, enabled);
-        }
-
-        #endregion EnableSuggestOnTriggerCharacters
-
-        #region EnableParameterHints
-
-        private bool _enableParameterHints = true;
-        [DefaultValue(true)]
-        [DXCategory(CategoryName.Behavior)]
-        public bool EnableParameterHints {
-            get => _enableParameterHints;
-            set {
-                if (_enableParameterHints == value) return;
-                _enableParameterHints = value;
-                SetEnableParameterHints(value);
-            }
-        }
-
-        private void SetEnableParameterHints(bool enabled) {
-            EditorOptionHelper.SendOption(_commandChannel, EditorOption.EnableParameterHints, new { enabled });
-        }
-
-        #endregion EnableParameterHints
-
-        #endregion Options
-
-        #region Theming
-
+        // Public methods
         public void RegisterTheme(MonacoTheme theme) {
-            if (theme == null)
+            if(theme == null)
                 throw new ArgumentNullException(nameof(theme));
 
             var payload = new {
@@ -595,294 +219,46 @@ namespace SyntaxEditor {
                     .ToList()
             };
 
-            _commandChannel.Send(EditorCommandType.RegisterTheme, payload);
+            commandChannel.Send(EditorCommandType.RegisterTheme, payload);
         }
 
-        private static Dictionary<string, object>? ConvertRule(MonacoThemeRule r) {
-            var rule = new Dictionary<string, object> {
-                ["token"] = r.Token
-            };
-
-            if (r.Foreground is Color fg)
-                rule["foreground"] = ToHex(fg, false);
-
-            if (r.Background is Color bg)
-                rule["background"] = ToHex(bg, false);
-
-            var fontStyle = ConvertFontStyle(r.FontStyle ?? MonacoFontStyle.None);
-            if (!string.IsNullOrEmpty(fontStyle))
-                rule["fontStyle"] = fontStyle;
-
-            return rule.Count > 1 ? rule : null;
+        void IEditorMessageHandler.OnEditorReady() {
+            HandleEditorReady();
         }
 
-        private static string? ConvertFontStyle(MonacoFontStyle style) {
-            if (style == MonacoFontStyle.None)
-                return null;
-
-            var sb = new StringBuilder(32);
-
-            if ((style & MonacoFontStyle.Bold) != 0)
-                sb.Append("bold ");
-
-            if ((style & MonacoFontStyle.Italic) != 0)
-                sb.Append("italic ");
-
-            if ((style & MonacoFontStyle.Underline) != 0)
-                sb.Append("underline ");
-
-            if (sb.Length == 0)
-                return null;
-
-            sb.Length--;
-            return sb.ToString();
+        void IEditorMessageHandler.OnIsModifiedChanged(bool isModified) {
+            IsModified = isModified;
         }
 
-        private static string MapBase(MonacoThemeBase value) => value switch {
-            MonacoThemeBase.Light => "vs",
-            MonacoThemeBase.Dark => "vs-dark",
-            MonacoThemeBase.HighContrast => "hc-black",
-            MonacoThemeBase.HighContrastLight => "hc-light",
-            _ => throw new ArgumentOutOfRangeException()
-        };
-
-        private static string ToHex(Color c, bool addHashTag = true)
-            => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}".ToLower();
-
-        private string _themeName = "vs";
-        [DefaultValue("vs")]
-        [DXCategory(CategoryName.Appearance)]
-        public string ThemeName {
-            get => _themeName;
-            set {
-                if (_themeName == value) return;
-                _themeName = value;
-                SetTheme(value);
-            }
+        void IEditorMessageHandler.OnLanguagesReceived(IReadOnlyList<string> languages) {
+            languagesTcs?.TrySetResult(languages);
         }
 
-        private void SetTheme(string themeName) {
-            if (string.IsNullOrWhiteSpace(themeName))
-                return;
-            _commandChannel.Send(EditorCommandType.SetTheme, themeName);
+        // IEditorMessageHandler implementation
+        void IEditorMessageHandler.OnTextChanged(string text) {
+            HandleTextChanged(text);
         }
 
-        public void ApplyCurrentTheme() {
-            var monacoTheme = LookAndFeel.CreateMonacoTheme(Rules, ApplyDevExpressColors);
-
-            RegisterTheme(monacoTheme);
-            ThemeName = monacoTheme.Name;
-        }
-        #endregion Theming
-
-        #region Processing Monaco Messages
-
-        private void CoreWebView2_WebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e) {
-            if (sender is not CoreWebView2)
-                return;
-
-            EditorMessage? message;
-
-            try {
-                message = JsonSerializer.Deserialize<EditorMessage>(e.WebMessageAsJson, JsonSerializerOptions.Web);
-            } catch {
-                return;
-            }
-
-            if (message?.Type == null)
-                return;
-
-            switch (message.Type) {
-                case EditorMessageType.TextChanged:
-                    HandleTextChanged(message.Payload.GetString() ?? string.Empty);
-                    break;
-                case EditorMessageType.EditorReady:
-                    HandleEditorReady();
-                    break;
-                case EditorMessageType.IsDirtyChanged:
-                    IsModified = message.Payload.GetBoolean();
-                    break;
-                case EditorMessageType.Languages:
-                    var langs = message.Payload
-                        .EnumerateArray()
-                        .Select(x => x.GetString()!)
-                        .ToList();
-
-                    _languagesTcs?.TrySetResult(langs);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void HandleTextChanged(string text) {
-            _updatingFromEditor = true;
-            try {
-                _text = text;
-                var handler = Events[nameof(TextChanged)] as EventHandler;
-                handler?.Invoke(this, EventArgs.Empty);
-            } finally {
-                _updatingFromEditor = false;
-            }
-        }
-
-        private void HandleEditorReady() {
-            if (_commandChannel.IsReady)
-                return;
-
-            _commandChannel.IsReady = true;
-            ApplyCurrentState();
-            ApplyCurrentTheme();
-            var handler = Events[nameof(EditorInitialized)] as EventHandler;
-            handler?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion Processing Monaco Messages
-
-        #region Language Support
-
-        private string _editorLanguage = "csharp";
-        [DefaultValue("csharp")]
-        [DXCategory(CategoryName.Behavior)]
-        public string EditorLanguage {
-            get => _editorLanguage;
-            set {
-                if (_editorLanguage == value) return;
-                _editorLanguage = value;
-                SetEditorLanguage(value);
-            }
-        }
-
-        private void SetEditorLanguage(string language) {
-            if (string.IsNullOrWhiteSpace(language))
-                return;
-
-            _commandChannel.Send(EditorCommandType.SetLanguage, language);
-        }
-
-        private TaskCompletionSource<IReadOnlyList<string>>? _languagesTcs;
-
-        public async Task<IReadOnlyList<string>> GetAvailableLanguagesAsync(CancellationToken cancellationToken = default) {
-
-            var tcs = new TaskCompletionSource<IReadOnlyList<string>>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _languagesTcs = tcs;
-
-            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
-
-            using (linkedCts.Token.Register(() => tcs.TrySetCanceled(linkedCts.Token))) {
-                try {
-                    _commandChannel.Send(EditorCommandType.GetLanguages);
-                    return await tcs.Task.ConfigureAwait(false);
-                } finally {
-                    Interlocked.CompareExchange(ref _languagesTcs, null, tcs);
-                }
-            }
-        }
-
-        private readonly Dictionary<string, LanguageDescriptor> _registeredLanguages = new();
-
-        public void RegisterLanguage(LanguageDescriptor language) {
-            if (language == null)
-                throw new ArgumentNullException(nameof(language));
-
-            var payload = new {
-                id = language.Id,
-                monarch = language.Monarch,
-                configuration = language.Configuration
-            };
-            _commandChannel.Send(EditorCommandType.RegisterLanguage, payload);
-            _registeredLanguages[language.Id] = language;
-        }
-
-        private void RestoreRegisteredLanguages() {
-            foreach (var language in _registeredLanguages.Values) {
-                RegisterLanguage(language);
-            }
-        }
-
-        #endregion Language Support
-
-        #region Initialization and Cleanup
-
-        private async Task InitializeAsync() {
-            var webView = _webView;
-            if (webView == null)
-                return;
-
-            await webView.EnsureCoreWebView2Async();
-
-            if (_webView != webView)
-                return;
-
-            webView.CoreWebView2.WebMessageReceived -= CoreWebView2_WebMessageReceived;
-            webView.CoreWebView2.WebMessageReceived += CoreWebView2_WebMessageReceived;
-            webView.CoreWebView2.ContextMenuRequested -= CoreWebView2_ContextMenuRequested;
-            webView.CoreWebView2.ContextMenuRequested += CoreWebView2_ContextMenuRequested;
-
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Monaco", "index.html");
-
-            if (!File.Exists(path))
-                throw new FileNotFoundException(path);
-
-            webView.Source = new Uri(path);
-        }
-
-        private void CoreWebView2_ContextMenuRequested(object? sender, CoreWebView2ContextMenuRequestedEventArgs e) {
-            e.Handled = true;
+        protected override void OnHandleCreated(EventArgs e) {
+            base.OnHandleCreated(e);
+            _ = InitializeAsync();
         }
 
         protected override void Dispose(bool disposing) {
-            if (disposing) {
-                var webView = _webView;
-                if (webView != null) {
-                    if (webView.CoreWebView2 != null) {
-                        webView.CoreWebView2.WebMessageReceived -= CoreWebView2_WebMessageReceived;
-                        webView.CoreWebView2.ContextMenuRequested -= CoreWebView2_ContextMenuRequested;
+            if(disposing) {
+                WebView2? wv = webView;
+                if(wv != null) {
+                    if(wv.CoreWebView2 != null) {
+                        wv.CoreWebView2.WebMessageReceived -= messageDispatcher.HandleWebMessageReceived;
+                        wv.CoreWebView2.ContextMenuRequested -= CoreWebView2_ContextMenuRequested;
                     }
-                    webView.Dispose();
-                    _webView = null;
+                    wv.Dispose();
+                    webView = null;
                 }
-                _commandChannel.IsReady = false;
+                commandChannel.IsReady = false;
                 LookAndFeel.StyleChanged -= LookAndFeel_StyleChanged;
             }
             base.Dispose(disposing);
-        }
-
-        #endregion Initialization and Cleanup
-
-        public void MarkAsSaved() {
-            _commandChannel.Send(EditorCommandType.MarkAsSaved);
-        }
-
-        private void ApplyCurrentState() {
-            RestoreRegisteredLanguages();
-
-            SetEditorLanguage(EditorLanguage);
-            SetEditorReadOnly(ReadOnly);
-            SetEditorText(Text);
-            SetShowLineNumbers(ShowLineNumbers);
-            SetShowMinimap(ShowMinimap);
-            SetShowGlyphMargin(ShowGlyphMargin);
-            SetEnableFolding(EnableFolding);
-            SetEnableContextMenu(EnableContextMenu);
-            SetEnableSmoothScrolling(EnableSmoothScrolling);
-            SetEnableScrollBeyondLastLine(EnableScrollBeyondLastLine);
-            SetScrollBeyondLastColumn(ScrollBeyondLastColumn);
-            SetLineNumbersMinChars(LineNumbersMinChars);
-            SetEnableDragAndDrop(EnableDragAndDrop);
-            SetEnableMouseWheelZoom(EnableMouseWheelZoom);
-            SetWordWrap(WordWrap);
-            SetTheme(ThemeName);
-            SetEnableStickyScroll(EnableStickyScroll);
-            SetTabSize(TabSize);
-            SetInsertSpaces(InsertSpaces);
-            SetDetectIndentation(DetectIndentation);
-            SetAutoIndent(AutoIndent);
-            SetEnableQuickSuggestions(EnableQuickSuggestions);
-            SetEnableWordBasedSuggestions(EnableWordBasedSuggestions);
-            SetEnableSuggestOnTriggerCharacters(EnableSuggestOnTriggerCharacters);
-            SetEnableParameterHints(EnableParameterHints);
         }
     }
 }

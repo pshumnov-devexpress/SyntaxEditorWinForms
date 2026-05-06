@@ -12,7 +12,7 @@ namespace SyntaxEditor.Theming {
         public static MonacoThemeBase? SkinBaseOverride { get; set; }
 
         public static MonacoTheme CreateMonacoTheme(this UserLookAndFeel lookAndFeel, IList<MonacoThemeRule> rules, bool useSkinColors) {
-            var result = new MonacoTheme {
+            MonacoTheme result = new MonacoTheme {
                 Name = $"{lookAndFeel.ActiveSkinName.ToLowerInvariant().Replace(" ", "-")}",
                 Base = GetSkinBase(lookAndFeel),
                 Colors = useSkinColors ? CreateMonacoColors(lookAndFeel) : null,
@@ -33,12 +33,12 @@ namespace SyntaxEditor.Theming {
 
         static Dictionary<string, Color> CreateMonacoColors(UserLookAndFeel lookAndFeel) {
             var result = new Dictionary<string, Color>();
-            var skin = CommonSkins.GetSkin(lookAndFeel);
+            Skin skin = CommonSkins.GetSkin(lookAndFeel);
             if(skin == null)
                 return result;
 
-            var reportSkin = ReportsSkins.GetSkin(lookAndFeel);
-            var reportElem = reportSkin[ReportsSkins.SkinScriptControl];
+            Skin reportSkin = ReportsSkins.GetSkin(lookAndFeel);
+            SkinElement reportElem = reportSkin[ReportsSkins.SkinScriptControl];
 
             // === Base colors ===
             result[MonacoColorKeys.EditorBackground] = skin.Colors.GetColor("Window");
@@ -52,9 +52,9 @@ namespace SyntaxEditor.Theming {
             result[MonacoColorKeys.CursorForeground] = skin.Colors.GetColor("WindowText");
 
             // === Selection ===
-            var selectionElem = skin[CommonSkins.SkinSelection];
+            SkinElement selectionElem = skin[CommonSkins.SkinSelection];
             int opacity = selectionElem.Properties.GetInteger(CommonSkins.SkinSelectionOpacity, 40);
-            var color = Color.FromArgb(opacity, selectionElem.Color.GetBackColor());
+            Color color = Color.FromArgb(opacity, selectionElem.Color.GetBackColor());
             result[MonacoColorKeys.SelectionBackground] = color;
             result[MonacoColorKeys.InactiveSelectionBackground] = color;
 
@@ -75,8 +75,8 @@ namespace SyntaxEditor.Theming {
             result[MonacoColorKeys.ScrollbarSliderActiveBackground] = skin.Colors.GetColor("WindowText");
 
             // === Brackets ===
-            var bracketColor = reportElem.Properties.GetColor("BracketHighlightColor");
-            var bracketOpacity = reportElem.Properties.GetInteger("BracketHighlightColorAlpha", 40);
+            Color bracketColor = reportElem.Properties.GetColor("BracketHighlightColor");
+            int bracketOpacity = reportElem.Properties.GetInteger("BracketHighlightColorAlpha", 40);
             result[MonacoColorKeys.BracketMatchBackground] = Color.FromArgb(bracketOpacity, bracketColor);
             result[MonacoColorKeys.BracketMatchBorder] = Color.FromArgb(bracketOpacity, bracketColor);
             result[MonacoColorKeys.BracketMatchHighlightForeground1] = skin.Colors.GetColor("Question");
@@ -101,7 +101,7 @@ namespace SyntaxEditor.Theming {
         static IList<MonacoThemeRule> CreateDevExpressTokenRules(UserLookAndFeel lookAndFeel, IList<MonacoThemeRule>? rules) {
             List<MonacoThemeRule> result = rules != null ? new List<MonacoThemeRule>(rules) : new List<MonacoThemeRule>();
 
-            var skin = CommonSkins.GetSkin(lookAndFeel);
+            Skin skin = CommonSkins.GetSkin(lookAndFeel);
             if(skin == null)
                 return result;
 
