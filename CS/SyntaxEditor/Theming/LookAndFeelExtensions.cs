@@ -94,16 +94,12 @@ namespace SyntaxEditor.Theming {
             // === Suggest ===
             result[MonacoColorKeys.SuggestWidgetBackground] = skin.Colors.GetColor("Window");
             result[MonacoColorKeys.SuggestWidgetSelectedBackground] = skin.Colors.GetColor("Highlight");
-
-            // Waiting for Designer's color decision.
-            //result[MonacoColorKeys.SuggestWidgetForeground] = skin.Colors.GetColor("WindowText");
-            //result[MonacoColorKeys.SuggestWidgetSelectedForeground] = skin.Colors.GetColor("WindowText");
-            //result[MonacoColorKeys.SuggestWidgetHighlightForeground] = skin.Colors.GetColor("Question");
-            //result[MonacoColorKeys.SuggestWidgetFocusHighlightForeground] = skin.Colors.GetColor("Question");
+            result[MonacoColorKeys.SuggestWidgetSelectedForeground] = skin.Colors.GetColor("HighlightText");
+            result[MonacoColorKeys.SuggestWidgetFocusHighlightForeground] = skin.Colors.GetColor("HighlightText");
 
             return result;
         }
-
+            
         static IList<MonacoThemeRule> CreateDevExpressTokenRules(UserLookAndFeel lookAndFeel, IList<MonacoThemeRule>? rules) {
             List<MonacoThemeRule> result = rules != null ? new List<MonacoThemeRule>(rules) : new List<MonacoThemeRule>();
 
