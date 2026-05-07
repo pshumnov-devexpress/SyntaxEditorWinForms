@@ -14,7 +14,7 @@ namespace SyntaxEditorExample {
         public MainForm() {
             InitializeComponent();
             ConfigureUI();
-            syntaxEditor.Text = Constants.defaultCSharpText;
+            syntaxEditor.Text = Constants.defaultCSharpText.Replace("    ", "\t");
             currentRules = [.. syntaxEditor.Rules];
         }
 
