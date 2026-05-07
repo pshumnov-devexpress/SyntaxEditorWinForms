@@ -23,7 +23,8 @@ namespace SyntaxEditor {
 
             try {
                 message = JsonSerializer.Deserialize<EditorMessage>(e.WebMessageAsJson, JsonSerializerOptions.Web);
-            } catch { return; }
+            }
+            catch { return; }
 
             if(message?.Type == null)
                 return;

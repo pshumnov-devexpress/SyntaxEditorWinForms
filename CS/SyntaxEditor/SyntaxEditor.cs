@@ -157,18 +157,19 @@ namespace SyntaxEditor {
             ApplyCurrentTheme();
         }
 
-        static string MapBase(MonacoThemeBase value)
-        => value switch
-        {
-            MonacoThemeBase.Light => "vs",
-            MonacoThemeBase.Dark => "vs-dark",
-            MonacoThemeBase.HighContrast => "hc-black",
-            MonacoThemeBase.HighContrastLight => "hc-light",
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        static string MapBase(MonacoThemeBase value) {
+            return value switch {
+                MonacoThemeBase.Light => "vs",
+                MonacoThemeBase.Dark => "vs-dark",
+                MonacoThemeBase.HighContrast => "hc-black",
+                MonacoThemeBase.HighContrastLight => "hc-light",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
 
-        static string ToHex(Color c, bool addHashTag = true)
-        => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}".ToLower();
+        static string ToHex(Color c, bool addHashTag = true) {
+            return $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}".ToLower();
+        }
 
         public void ApplyCurrentTheme() {
             MonacoTheme monacoTheme = LookAndFeel.CreateMonacoTheme(Rules, ApplyDevExpressColors);

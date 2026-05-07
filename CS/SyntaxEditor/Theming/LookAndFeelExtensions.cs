@@ -99,7 +99,7 @@ namespace SyntaxEditor.Theming {
 
             return result;
         }
-            
+
         static IList<MonacoThemeRule> CreateDevExpressTokenRules(UserLookAndFeel lookAndFeel, IList<MonacoThemeRule>? rules) {
             List<MonacoThemeRule> result = rules != null ? new List<MonacoThemeRule>(rules) : new List<MonacoThemeRule>();
 

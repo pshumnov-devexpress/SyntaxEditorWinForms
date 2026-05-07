@@ -30,8 +30,9 @@ namespace SyntaxEditorExample.Helpers {
             return sb.ToString();
         }
 
-        static string ToHex(Color c, bool addHashTag = true)
-           => $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}";
+        static string ToHex(Color c, bool addHashTag = true) {
+            return $"{(addHashTag ? "#" : string.Empty)}{c.R:X2}{c.G:X2}{c.B:X2}";
+        }
 
         public static string Serialize(IReadOnlyList<MonacoThemeRule> rules) {
             if(rules == null || rules.Count == 0)
